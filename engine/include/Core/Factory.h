@@ -9,6 +9,7 @@
 
 #include <new>
 #include <map>
+#include <boost/shared_ptr.hpp>
 #include <Core/Common.h>
 
 namespace ros {
@@ -31,6 +32,7 @@ namespace ros {
         public:
             typedef _ClassId ClassId;
             typedef _BaseClass BaseClass;
+            typedef boost::shared_ptr<BaseClass> BaseClassPtr;
             typedef _Traits Traits;
 
             template<class DerivedClass>
@@ -63,6 +65,10 @@ namespace ros {
 
             inline void DestroyInstance(BaseClass* instance) const {
                 Traits::DestroyInstance(instance);
+            }
+
+            inline BaseClassPtr MakeShared(const ClassId& id) const {
+                return BaseClassPtr(CreateInstance(id));
             }
 
         private:
