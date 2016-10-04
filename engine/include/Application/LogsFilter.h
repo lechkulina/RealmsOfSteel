@@ -9,19 +9,11 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <Core/PropertyTree.h>
 #include <Core/Environment.h>
 #include <Application/LogMessage.h>
 
 namespace ros {
-
-    typedef boost::property_tree::ptree PropertyTree;
-    typedef PropertyTree::iterator PropertyIter;
-    typedef PropertyTree::const_iterator PropertyConstIter;
-
-    typedef boost::optional<std::string> StringOpt;
-    typedef boost::optional<int> IntOpt;
-    typedef boost::optional<float> FloatOpt;
 
     class ROS_API LogsFilter : public boost::noncopyable {
         public:
