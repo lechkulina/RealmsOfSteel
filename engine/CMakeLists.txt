@@ -8,7 +8,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     Source/Application/SDLApplication.cpp
 )
 target_compile_definitions(Engine
-    PUBLIC ROS_VERSION=${PROJECT_VERSION}
+    PUBLIC ROS_VERSION="${PROJECT_VERSION}"
     PUBLIC ROS_LINKAGE_${ROS_LINKAGE_TYPE}
 )
 target_compile_options(Engine PUBLIC -Wall -Wextra -Wpedantic -Wno-long-long $<$<CONFIG:RELEASE>:-Winline> $<$<CONFIG:RELEASE>:-Wdisabled-optimization>)
