@@ -6,6 +6,7 @@
 #
 add_library(Engine ${ROS_LINKAGE_TYPE}
     Source/Application/LogMessage.cpp
+    Source/Application/LogsSink.cpp
     Source/Application/SDLApplication.cpp
 )
 target_compile_definitions(Engine
