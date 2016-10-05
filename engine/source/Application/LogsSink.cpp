@@ -6,9 +6,11 @@
  */
 #include <iostream>
 #include <Core/Factory.h>
+#include "LogsLevelFilter.h"
 #include <Application/LogsSink.h>
 
 ros::LogsSink::LogsSink() {
+    filtersFactory.RegisterClass<LogsLevelFilter>("Level");
 }
 
 bool ros::LogsSink::Init(const PropertyTree& config) {

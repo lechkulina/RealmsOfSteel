@@ -6,6 +6,7 @@
 #
 add_library(Engine ${ROS_LINKAGE_TYPE}
     Source/Application/LogMessage.cpp
+    Source/Application/LogsLevelFilter.cpp
     Source/Application/LogsSink.cpp
     Source/Application/LogsConsoleSink.cpp
     Source/Application/Logger.cpp
