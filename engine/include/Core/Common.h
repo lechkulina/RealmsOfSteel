@@ -25,16 +25,6 @@
 
 namespace ros {
 
-    template<class Type, size_t Size>
-    inline Type* ArrayBegin(Type (&array)[Size]) {
-        return &array[0];
-    }
-
-    template<class Type, size_t Size>
-    inline Type* ArrayEnd(Type (&array)[Size]) {
-        return &array[0] + Size;
-    }
-
     const size_t KB = 1024;
     const size_t MB = 1024 * 1024;
 
