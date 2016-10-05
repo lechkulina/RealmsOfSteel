@@ -28,6 +28,8 @@ namespace ros {
 
     const char* LogLevel_ToString(LogLevel level);
     LogLevelOpt LogLevel_FromString(const char* str);
+    std::ostream& operator<<(std::ostream& stream, LogLevel level);
+
     class ROS_API LogMessage : public boost::format {
             typedef boost::chrono::system_clock Clock;
 

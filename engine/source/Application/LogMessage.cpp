@@ -40,6 +40,10 @@ ros::LogLevelOpt ros::LogLevel_FromString(const char* str) {
     return LogLevelOpt();
 }
 
+std::ostream& ros::operator<<(std::ostream& stream, LogLevel level) {
+    return stream << LogLevel_ToString(level);
+}
+
 std::ostream& ros::operator<<(std::ostream& stream, const LogMessage& message) {
-    return stream << message.str() << std::endl;
+    return stream << "[" << message.GetLevel() << "] " << message.str() << std::endl;
 }
