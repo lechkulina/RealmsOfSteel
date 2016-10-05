@@ -8,6 +8,7 @@
 #define ROS_LOG_MESSAGE_H
 
 #include <ostream>
+#include <boost/optional.hpp>
 #include <boost/format.hpp>
 #include <boost/chrono.hpp>
 #include <Core/Common.h>
@@ -23,6 +24,10 @@ namespace ros {
         LogLevel_Critical
     };
 
+    typedef boost::optional<LogLevel> LogLevelOpt;
+
+    const char* LogLevel_ToString(LogLevel level);
+    LogLevelOpt LogLevel_FromString(const char* str);
     class ROS_API LogMessage : public boost::format {
             typedef boost::chrono::system_clock Clock;
 
