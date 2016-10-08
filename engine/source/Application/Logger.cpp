@@ -7,9 +7,11 @@
 #include <iostream>
 #include <Application/Logger.h>
 #include "LogsConsoleSink.h"
+#include "LogsFileSink.h"
 
 ros::Logger::Logger() {
     sinksFactory.RegisterClass<LogsConsoleSink>("Console");
+    sinksFactory.RegisterClass<LogsFileSink>("File");
 }
 
 bool ros::Logger::Init(const PropertyTree& config) {
