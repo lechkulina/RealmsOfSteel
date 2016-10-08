@@ -52,7 +52,7 @@ bool ros::LogsFileSink::Init(const PropertyTree& config) {
 }
 
 bool ros::LogsFileSink::SendMessage(const LogMessage& message) {
-    stream << message << std::endl;
+    stream << message;
     return stream.good();
 }
 

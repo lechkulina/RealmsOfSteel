@@ -29,7 +29,7 @@ bool ros::LogsConsoleSink::Init(const PropertyTree& config) {
 }
 
 bool ros::LogsConsoleSink::SendMessage(const LogMessage& message) {
-    (*stream) << message << std::endl;
+    (*stream) << message;
     return stream->good();
 }
 
