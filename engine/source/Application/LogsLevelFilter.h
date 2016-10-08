@@ -17,7 +17,7 @@ namespace ros {
             virtual bool IsMessageAccepted(const LogMessage& message) const;
 
         private:
-            LogLevelOpt threshold;
+            LogLevelOpt thresholdLevel;
     };
 
 }

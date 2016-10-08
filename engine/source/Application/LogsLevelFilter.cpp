@@ -8,21 +8,26 @@
 #include "LogsLevelFilter.h"
 
 bool ros::LogsLevelFilter::Init(const PropertyTree& config) {
-    StringOpt thresholdConfig = config.get_optional<std::string>("Threshold");
-    if (thresholdConfig) {
-        LogLevelOpt threshold = LogLevel_FromString(thresholdConfig->c_str());
-        if (threshold) {
-            this->threshold = threshold;
-        } else {
-            std::cerr << "Unknown threshold " << *thresholdConfig << " found in standard output sink config" << std::endl;
-        }
+    StringOpt thresholdLevelConfig = config.get_optional<std::string>("ThresholdLevel");
+    if (!thresholdLevelConfig) {
+        std::cerr << "Missing threshold level in level filter config" << std::endl;
+        return false;
     }
+
+    LogLevelOpt thresholdLevel = LogLevel_FromString(thresholdLevelConfig->c_str());
+    if (!thresholdLevel) {
+        std::cerr << "Unknown threshold level " << *thresholdLevelConfig << " found in level filter config" << std::endl;
+        return false;
+
+    }
+
+    this->thresholdLevel = thresholdLevel;
     return true;
 }
 
 bool ros::LogsLevelFilter::IsMessageAccepted(const LogMessage& message) const {
-    if (!threshold) {
+    if (!thresholdLevel) {
         return true;
     }
-    return message.GetLevel() >= *threshold;
+    return message.GetLevel() >= *thresholdLevel;
 }
