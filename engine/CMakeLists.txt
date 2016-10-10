@@ -11,7 +11,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     Source/Application/LogsConsoleSink.cpp
     Source/Application/LogsFileSink.cpp
     Source/Application/Logger.cpp
-    Source/Application/SDLApplication.cpp
+    Source/Application/Application.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
@@ -51,6 +51,7 @@ if (ROS_USE_SDL)
         target_include_directories(Engine PRIVATE ${SDL2_INCLUDE_DIR})
         target_link_libraries(Engine PRIVATE ${SDL2_LIBRARY})
         target_compile_definitions(Engine PRIVATE ROS_USING_SDL SDL_MAIN_HANDLED)
+        target_sources(Engine PRIVATE Source/Application/SDLApplication.cpp)
     endif()
 endif()
 
