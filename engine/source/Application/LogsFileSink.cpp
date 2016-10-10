@@ -44,7 +44,7 @@ bool ros::LogsFileSink::Init(const PropertyTree& config) {
 
     stream.open(filePathConfig->c_str(), openMode);
     if (!stream.good()) {
-        std::cerr << " Failed to open file " << *filePathConfig << " for writing" << std::endl;
+        std::cerr << "Failed to open file " << *filePathConfig << " for writing" << std::endl;
         return false;
     }
 

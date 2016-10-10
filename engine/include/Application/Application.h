@@ -8,6 +8,7 @@
 #define ROS_APPLICATION_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include <Core/PropertyTree.h>
 #include <Core/Environment.h>
 #include <Core/Factory.h>
@@ -16,6 +17,7 @@ namespace ros {
 
     class Application;
     typedef boost::shared_ptr<Application> ApplicationPtr;
+    typedef Factory<std::string, Application> ApplicationFactory;
 
     class ROS_API Application : public boost::noncopyable {
         public:
@@ -28,8 +30,6 @@ namespace ros {
             virtual void Uninit() =0;
 
         private:
-            typedef Factory<std::string, Application> ApplicationFactory;
-
             static ApplicationFactory factory;
     };
 

@@ -16,7 +16,11 @@ namespace ros {
     typedef PropertyTree::iterator PropertyIter;
     typedef PropertyTree::const_iterator PropertyConstIter;
 
-    typedef boost::optional<std::string> StringOpt;
+    typedef boost::property_tree::ptree_bad_path BadPathException;
+
+    typedef std::string String;
+
+    typedef boost::optional<String> StringOpt;
     typedef boost::optional<int> IntOpt;
     typedef boost::optional<float> FloatOpt;
 

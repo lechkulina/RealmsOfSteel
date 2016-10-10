@@ -8,7 +8,7 @@
 #include <Application/Application.h>
 #include "SDLApplication.h"
 
-ros::Application::ApplicationFactory ros::Application::factory;
+ros::ApplicationFactory ros::Application::factory;
 
 ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
     if (factory.IsEmpty()) {
@@ -19,13 +19,13 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
 
     ApplicationPtr instance;
     try {
-        std::string platformName = config.get<std::string>("Application.PlatformName");
-        instance.reset(factory.CreateInstance(platformName));
+        String backendType = config.get<String>("Application.BackendType");
+        instance.reset(factory.CreateInstance(backendType));
         if (!instance) {
-            std::cerr << "Failed to create application: Unknown platform " << platformName << std::endl;
+            std::cerr << "Failed to create application: Unknown backend type " << backendType << std::endl;
             return ApplicationPtr();
         }
-    } catch (const boost::property_tree::ptree_bad_path& exception) {
+    } catch (const BadPathException& exception) {
         std::cerr << "Failed to read application configuration: " << exception.what() << std::endl;
         return ApplicationPtr();
     }
