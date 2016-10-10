@@ -12,6 +12,7 @@
 #include <Core/PropertyTree.h>
 #include <Core/Environment.h>
 #include <Core/Factory.h>
+#include <Application/Window.h>
 
 namespace ros {
 
@@ -25,9 +26,14 @@ namespace ros {
 
             virtual ~Application() {}
 
-            virtual bool Init(const PropertyTree& config) =0;
+            virtual bool Init(const PropertyTree& config);
             virtual int Run() =0;
             virtual void Uninit() =0;
+
+            WindowPtr GetWindow() const { return window; }
+
+        protected:
+            WindowPtr window;
 
         private:
             static ApplicationFactory factory;

@@ -8,8 +8,6 @@
 #define ROS_SDL_APPLICATION_H
 
 #include <SDL2/SDL.h>
-#include <GL/glew.h>
-#include <GL/GL.h>
 #include <Application/Application.h>
 
 namespace ros {
@@ -21,8 +19,6 @@ namespace ros {
             virtual void Uninit();
 
         private:
-            SDL_Window* window;
-            SDL_GLContext context;
             bool hasQuit;
 
             void OnEvent(const SDL_Event& event);

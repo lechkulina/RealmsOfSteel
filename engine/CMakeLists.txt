@@ -12,6 +12,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     Source/Application/LogsFileSink.cpp
     Source/Application/Logger.cpp
     Source/Application/Application.cpp
+    Source/Application/Window.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
@@ -42,6 +43,7 @@ if (ROS_USE_OPENGL)
         target_include_directories(Engine PRIVATE ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS})
         target_link_libraries(Engine PRIVATE ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
         target_compile_definitions(Engine PRIVATE ROS_USING_OPENGL)
+        target_sources(Engine PRIVATE Source/Application/OpenGLWindow.cpp)
     endif()
 endif()
 

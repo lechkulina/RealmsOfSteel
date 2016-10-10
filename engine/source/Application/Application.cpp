@@ -36,3 +36,8 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
 
     return instance;
 }
+
+bool ros::Application::Init(const PropertyTree& config) {
+    window = Window::Create(config);
+    return window;
+}

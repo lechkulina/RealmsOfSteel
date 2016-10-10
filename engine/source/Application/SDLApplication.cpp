@@ -16,31 +16,7 @@ bool ros::SDLApplication::Init(const PropertyTree& config) {
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
-
-    context = SDL_GL_CreateContext(window);
-    if (!context) {
-        std::cerr << "Failed to create OpenGL context " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        return false;
-    }
-
-    GLenum error = glewInit();
-    if (error != GLEW_OK) {
-        std::cerr << "Failed to initialize GLEW " << glewGetErrorString(error) << std::endl;
-        SDL_GL_DeleteContext(context);
-        SDL_DestroyWindow(window);
-        return false;
-    }
-
-    std::cout << "Using OpenGL " << glGetString(GL_VERSION) << " from " << glGetString(GL_VENDOR) << std::endl;
-    return true;
+    return Application::Init(config);
 }
 
 int ros::SDLApplication::Run() {
@@ -49,9 +25,6 @@ int ros::SDLApplication::Run() {
     float maxAccumulatedTime = 50.0f;
     float accumulatedTime = 0.0f;
     float startTime = (float)SDL_GetTicks();
-
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
 
     while (!hasQuit) {
         SDL_Event event;
@@ -72,15 +45,15 @@ int ros::SDLApplication::Run() {
         }
 
         OnRender();
-        SDL_GL_SwapWindow(window);
+
+        window->Swap();
     }
 
     return EXIT_SUCCESS;
 }
 
 void ros::SDLApplication::Uninit() {
-    SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
+    window->Uninit();
     SDL_Quit();
 }
 
@@ -112,5 +85,6 @@ void ros::SDLApplication::OnUpdate(float) {
 }
 
 void ros::SDLApplication::OnRender() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    window->OnRender();
+
 }
