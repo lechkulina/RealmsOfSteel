@@ -13,26 +13,34 @@ ros::OpenGLWindow::OpenGLWindow()
 }
 
 bool ros::OpenGLWindow::Init(const PropertyTree& config) {
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    try {
+        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    context = SDL_GL_CreateContext(window);
-    if (!context) {
-        std::cerr << "Failed to create OpenGL context " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        return false;
-    }
+        int width = config.get("Application.Window.Width", 640);
+        int height = config.get("Application.Window.Height", 480);
+        window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 
-    GLenum error = glewInit();
-    if (error != GLEW_OK) {
-        std::cerr << "Failed to initialize GLEW " << glewGetErrorString(error) << std::endl;
-        SDL_GL_DeleteContext(context);
-        SDL_DestroyWindow(window);
+        context = SDL_GL_CreateContext(window);
+        if (!context) {
+            std::cerr << "Failed to create OpenGL context " << SDL_GetError() << std::endl;
+            SDL_DestroyWindow(window);
+            return false;
+        }
+
+        GLenum error = glewInit();
+        if (error != GLEW_OK) {
+            std::cerr << "Failed to initialize GLEW " << glewGetErrorString(error) << std::endl;
+            SDL_GL_DeleteContext(context);
+            SDL_DestroyWindow(window);
+            return false;
+        }
+    }  catch (const BadPathException& exception) {
+        std::cerr << "Failed to read OpenGL window configuration: " << exception.what() << std::endl;
         return false;
     }
 
