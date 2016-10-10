@@ -19,7 +19,7 @@ ros::WindowPtr ros::Window::Create(const PropertyTree& config) {
 
     WindowPtr instance;
     try {
-        String backendType = config.get<String>("Application.Window.BackendType");
+        String backendType = config.get<String>("Application.Window");
         instance.reset(factory.CreateInstance(backendType));
         if (!instance) {
             std::cerr << "Failed to create window: Unknown backend type " << backendType << std::endl;

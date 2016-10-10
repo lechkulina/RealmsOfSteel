@@ -19,7 +19,7 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
 
     ApplicationPtr instance;
     try {
-        String backendType = config.get<String>("Application.BackendType");
+        String backendType = config.get<String>("Application");
         instance.reset(factory.CreateInstance(backendType));
         if (!instance) {
             std::cerr << "Failed to create application: Unknown backend type " << backendType << std::endl;
