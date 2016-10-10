@@ -44,9 +44,9 @@ int ros::SDLApplication::Run() {
             accumulatedTime -= deltaTime;
         }
 
+        window->ClearBuffers();
         OnRender();
-
-        window->Swap();
+        window->SwapBuffers();
     }
 
     return EXIT_SUCCESS;
@@ -85,6 +85,5 @@ void ros::SDLApplication::OnUpdate(float) {
 }
 
 void ros::SDLApplication::OnRender() {
-    window->OnRender();
 
 }

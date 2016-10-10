@@ -17,7 +17,7 @@ namespace ros {
 
     class Window;
     typedef boost::shared_ptr<Window> WindowPtr;
-    typedef Factory<std::string, Window> WindowFactory;
+    typedef Factory<String, Window> WindowFactory;
 
     class ROS_API Window : public boost::noncopyable {
         public:
@@ -27,9 +27,8 @@ namespace ros {
 
             virtual bool Init(const PropertyTree& config) =0;
             virtual void Uninit() =0;
-            virtual void Swap() =0;
-
-            virtual void OnRender() =0;
+            virtual void SwapBuffers() =0;
+            virtual void ClearBuffers() =0;
 
         private:
             static WindowFactory factory;

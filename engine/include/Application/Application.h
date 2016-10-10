@@ -18,7 +18,7 @@ namespace ros {
 
     class Application;
     typedef boost::shared_ptr<Application> ApplicationPtr;
-    typedef Factory<std::string, Application> ApplicationFactory;
+    typedef Factory<String, Application> ApplicationFactory;
 
     class ROS_API Application : public boost::noncopyable {
         public:

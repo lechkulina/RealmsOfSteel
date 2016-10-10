@@ -53,10 +53,10 @@ void ros::OpenGLWindow::Uninit() {
     SDL_DestroyWindow(window);
 }
 
-void ros::OpenGLWindow::Swap() {
+void ros::OpenGLWindow::SwapBuffers() {
     SDL_GL_SwapWindow(window);
 }
 
-void ros::OpenGLWindow::OnRender() {
+void ros::OpenGLWindow::ClearBuffers() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

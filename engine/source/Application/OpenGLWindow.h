@@ -20,9 +20,8 @@ namespace ros {
 
             virtual bool Init(const PropertyTree& config);
             virtual void Uninit();
-            virtual void Swap();
-
-            virtual void OnRender();
+            virtual void SwapBuffers();
+            virtual void ClearBuffers();
 
         private:
             SDL_Window* window;
