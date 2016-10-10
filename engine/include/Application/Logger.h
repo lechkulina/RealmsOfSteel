@@ -24,6 +24,26 @@ namespace ros {
             virtual bool SendMessage(const LogMessage& message);
             virtual void FlushMessages();
 
+            inline bool SendTrace(const LogFormat& format) {
+                return SendMessage(LogMessage(LogLevel_Trace, format.str()));
+            }
+
+            inline bool SendDebug(const LogFormat& format) {
+                return SendMessage(LogMessage(LogLevel_Debug, format.str()));
+            }
+
+            inline bool SendWarning(const LogFormat& format) {
+                return SendMessage(LogMessage(LogLevel_Warning, format.str()));
+            }
+
+            inline bool SendError(const LogFormat& format) {
+                return SendMessage(LogMessage(LogLevel_Error, format.str()));
+            }
+
+            inline bool SendCritical(const LogFormat& format) {
+                return SendMessage(LogMessage(LogLevel_Critical, format.str()));
+            }
+
         protected:
             typedef std::list<LogsSinkPtr> LogsSinksList;
             typedef LogsSinksList::iterator LogsSinksIter;

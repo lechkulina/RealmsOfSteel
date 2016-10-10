@@ -11,8 +11,7 @@
 bool ros::SDLApplication::Init(const PropertyTree& config) {
     Logger logger;
     logger.Init(config);
-    logger.SendMessage(LogMessage(LogLevel_Trace, "Starting Realms Of Steel %s") % ROS_VERSION);
-    logger.SendMessage(LogMessage(LogLevel_Error, "Foo bar"));
+    logger.SendTrace(LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
 
     SDL_Init(SDL_INIT_VIDEO);
 

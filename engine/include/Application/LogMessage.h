@@ -9,10 +9,11 @@
 
 #include <ostream>
 #include <boost/optional.hpp>
-#include <boost/format.hpp>
 #include <boost/chrono.hpp>
+#include <boost/format.hpp>
 #include <Core/Common.h>
 #include <Core/Environment.h>
+#include <Core/PropertyTree.h>
 
 namespace ros {
 
@@ -30,35 +31,23 @@ namespace ros {
     LogLevelOpt LogLevel_FromString(const char* str);
     std::ostream& operator<<(std::ostream& stream, LogLevel level);
 
-    class ROS_API LogMessage : public boost::format {
+    typedef boost::format LogFormat;
+
+    class ROS_API LogMessage {
             typedef boost::chrono::system_clock Clock;
 
         public:
             typedef Clock::time_point TimePoint;
 
-            LogMessage(LogLevel level, const char* format = ROS_NULL)
-                : boost::format(format)
-                , level(level)
-                , timePoint(Clock::now()) {
-            }
-
-            LogMessage(LogLevel level, const std::string& format)
-                : boost::format(format)
-                , level(level)
-                , timePoint(Clock::now()) {
-            }
+            LogMessage(LogLevel level, const String& message);
 
             LogLevel GetLevel() const { return level; }
+            const String& GetMessage() const { return message; }
             TimePoint GetTimePoint() const { return timePoint; }
-
-            template<class Arg>
-            inline LogMessage& operator%(const Arg& arg) {
-                boost::format::operator%(arg);
-                return *this;
-            }
 
         private:
             LogLevel level;
+            String message;
             TimePoint timePoint;
     };
 

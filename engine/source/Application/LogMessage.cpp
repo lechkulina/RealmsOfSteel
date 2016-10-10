@@ -45,5 +45,11 @@ std::ostream& ros::operator<<(std::ostream& stream, LogLevel level) {
 }
 
 std::ostream& ros::operator<<(std::ostream& stream, const LogMessage& message) {
-    return stream << "[" << message.GetLevel() << "] " << message.str() << std::endl;
+    return stream << "[" << message.GetLevel() << "] " << message.GetMessage() << std::endl;
+}
+
+ros::LogMessage::LogMessage(LogLevel level, const String& message)
+    : level(level)
+    , message(message)
+    , timePoint(Clock::now()) {
 }
