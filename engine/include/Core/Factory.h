@@ -71,6 +71,10 @@ namespace ros {
                 return BaseClassPtr(CreateInstance(id));
             }
 
+            inline bool IsEmpty() const {
+                return creators.empty();
+            }
+
         private:
             typedef BaseClass* (*Creator)();
             typedef std::map<ClassId, Creator> CreatorsMap;
