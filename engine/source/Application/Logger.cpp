@@ -9,6 +9,27 @@
 #include "LogsConsoleSink.h"
 #include "LogsFileSink.h"
 
+ros::LoggerPtr ros::Logger::instance;
+
+ros::LoggerPtr ros::Logger::CreateInstance(const PropertyTree& config) {
+    if (instance) {
+        return instance;
+    }
+
+    try {
+        const PropertyTree& subConfig = config.get_child("Logger");
+        instance.reset(new Logger());
+        if (instance && !instance->Init(subConfig)) {
+            instance.reset();
+        }
+    } catch (const BadPathException& exception) {
+        std::cerr << "Failed to read logger configuration: " << exception.what() << std::endl;
+        instance.reset();
+    }
+
+    return instance;
+}
+
 ros::Logger::Logger() {
     sinksFactory.RegisterClass<LogsConsoleSink>("Console");
     sinksFactory.RegisterClass<LogsFileSink>("File");
@@ -18,6 +39,7 @@ bool ros::Logger::Init(const PropertyTree& config) {
     if (!LogsSink::Init(config)) {
         return false;
     }
+
     for (PropertyConstIter iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "Sink") {
             const std::string& id = iter->second.data();
@@ -29,6 +51,7 @@ bool ros::Logger::Init(const PropertyTree& config) {
             sinks.push_back(sink);
         }
     }
+
     return true;
 }
 

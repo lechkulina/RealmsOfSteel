@@ -15,33 +15,37 @@
 
 namespace ros {
 
+    class Logger;
+    typedef boost::shared_ptr<Logger> LoggerPtr;
+
     class ROS_API Logger : public LogsSink {
         public:
-            Logger();
+            static LoggerPtr CreateInstance(const PropertyTree& config);
+            static LoggerPtr GetInstance() { return instance; }
 
             virtual bool Init(const PropertyTree& config);
 
             virtual bool SendMessage(const LogMessage& message);
             virtual void FlushMessages();
 
-            inline bool SendTrace(const LogFormat& format) {
-                return SendMessage(LogMessage(LogLevel_Trace, format.str()));
+            static inline bool SendTrace(const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(LogLevel_Trace, format.str()));
             }
 
-            inline bool SendDebug(const LogFormat& format) {
-                return SendMessage(LogMessage(LogLevel_Debug, format.str()));
+            static inline bool SendDebug(const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(LogLevel_Debug, format.str()));
             }
 
-            inline bool SendWarning(const LogFormat& format) {
-                return SendMessage(LogMessage(LogLevel_Warning, format.str()));
+            static inline bool SendWarning(const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(LogLevel_Warning, format.str()));
             }
 
-            inline bool SendError(const LogFormat& format) {
-                return SendMessage(LogMessage(LogLevel_Error, format.str()));
+            static inline bool SendError(const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(LogLevel_Error, format.str()));
             }
 
-            inline bool SendCritical(const LogFormat& format) {
-                return SendMessage(LogMessage(LogLevel_Critical, format.str()));
+            static inline bool SendCritical(const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(LogLevel_Critical, format.str()));
             }
 
         protected:
@@ -54,10 +58,11 @@ namespace ros {
         private:
             typedef Factory<std::string, LogsSink> LogsSinksFactory;
 
+            static LoggerPtr instance;
             LogsSinksFactory sinksFactory;
-    };
 
-    typedef boost::shared_ptr<Logger> LoggerPtr;
+            Logger();
+    };
 
 }
 
