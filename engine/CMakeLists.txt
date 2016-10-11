@@ -24,7 +24,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 find_package(Boost REQUIRED COMPONENTS system thread filesystem chrono)
 if (Boost_FOUND)
     target_include_directories(Engine PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(Engine PRIVATE ${Boost_LIBRARIES})
+    target_link_libraries(Engine PUBLIC ${Boost_LIBRARIES})
 endif()
 
 if (ROS_USE_ZIP)
