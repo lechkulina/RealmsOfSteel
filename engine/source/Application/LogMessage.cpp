@@ -10,34 +10,37 @@
 #include <Application/LogMessage.h>
 
 namespace ros {
-    static const struct LogLevelMapping {
-        LogLevel level;
-        const char* str;
-    } logLevelMappings[] = {
-        {LogLevel_Trace, "Trace"},
-        {LogLevel_Debug, "Debug"},
-        {LogLevel_Warning, "Warning"},
-        {LogLevel_Error, "Error"},
-        {LogLevel_Critical, "Critical"}
-    };
-}
 
-const char* ros::LogLevel_ToString(LogLevel level) {
-    const LogLevelMapping* iter = std::find_if(boost::begin(logLevelMappings), boost::end(logLevelMappings),
-                                               boost::bind(&LogLevelMapping::level, _1) == level);
-    if (iter != boost::end(logLevelMappings)) {
-        return iter->str;
-    }
-    return ROS_NULL;
+    static const struct LogLevelMapping {
+        const char* str;
+        LogLevel level;
+    } logLevelMappings[] = {
+        {"Trace", LogLevel_Trace},
+        {"Debug", LogLevel_Debug},
+        {"Warning", LogLevel_Warning},
+        {"Error", LogLevel_Error},
+        {"Critical", LogLevel_Critical}
+    };
+
 }
 
 ros::LogLevelOpt ros::LogLevel_FromString(const char* str) {
     const LogLevelMapping* iter = std::find_if(boost::begin(logLevelMappings), boost::end(logLevelMappings),
-                                               boost::bind(strcmp, boost::bind(&LogLevelMapping::str, _1), str) == 0);
+                                                 boost::bind(strcmp, boost::bind(&LogLevelMapping::str, _1), str) == 0);
     if (iter != boost::end(logLevelMappings)) {
         return iter->level;
     }
     return LogLevelOpt();
+}
+
+
+const char* ros::LogLevel_ToString(LogLevel level) {
+    const LogLevelMapping* iter = std::find_if(boost::begin(logLevelMappings), boost::end(logLevelMappings),
+                                                 boost::bind(&LogLevelMapping::level, _1) == level);
+    if (iter != boost::end(logLevelMappings)) {
+        return iter->str;
+    }
+    return ROS_NULL;
 }
 
 std::ostream& ros::operator<<(std::ostream& stream, LogLevel level) {

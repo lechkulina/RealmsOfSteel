@@ -27,8 +27,8 @@ namespace ros {
 
     typedef boost::optional<LogLevel> LogLevelOpt;
 
-    const char* LogLevel_ToString(LogLevel level);
     LogLevelOpt LogLevel_FromString(const char* str);
+    const char* LogLevel_ToString(LogLevel level);
     std::ostream& operator<<(std::ostream& stream, LogLevel level);
 
     typedef boost::format LogFormat;
