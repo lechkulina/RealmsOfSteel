@@ -36,6 +36,11 @@ bool ros::Logger::Init(const PropertyTree& config) {
         }
     }
 
+    if (sinks.empty()) {
+        std::cerr << "Failed to initialize logger: There are no sinks" << std::endl;
+        return false;
+    }
+
     return true;
 }
 
