@@ -9,9 +9,7 @@
 #include "SDLApplication.h"
 
 bool ros::SDLApplication::Init(const PropertyTree& config) {
-    Logger logger;
-    logger.Init(config);
-    logger.SendTrace(LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
+    std::cout << "Starting Realms Of Steel" << ROS_VERSION << std::endl;
 
     SDL_Init(SDL_INIT_VIDEO);
 
