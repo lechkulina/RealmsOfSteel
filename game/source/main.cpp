@@ -6,18 +6,24 @@
  */
 #include <cstdlib>
 #include <boost/property_tree/info_parser.hpp>
+#include <Application/Logger.h>
 #include <Application/Application.h>
 
-using namespace ros;
-
 int main() {
+    int exitCode = EXIT_FAILURE;
+
     ros::PropertyTree config;
     boost::property_tree::read_info("Config.info", config);
-    ros::ApplicationPtr application = ros::Application::Create(config);
-    int exitCode = EXIT_FAILURE;
-    if (application) {
-        exitCode = application->Run();
-        application->Uninit();
+
+    if (!ros::Logger::Create(config.get_child("Logger"))) {
+        return exitCode;
     }
+    if (!ros::Application::Create(config.get_child("Application"))) {
+        return exitCode;
+    }
+
+    exitCode = ros::Application::GetInstance()->Run();
+    ros::Application::GetInstance()->Uninit();
+
     return exitCode;
 }
