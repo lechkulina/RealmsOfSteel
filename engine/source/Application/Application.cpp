@@ -9,35 +9,45 @@
 #include "SDLApplication.h"
 
 ros::ApplicationFactory ros::Application::factory;
+ros::ApplicationPtr ros::Application::application;
 
 ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
+    if (application) {
+        return application;
+    }
+
     if (factory.IsEmpty()) {
 #ifdef ROS_USING_SDL
         factory.RegisterClass<SDLApplication>("SDL");
 #endif
     }
 
-    ApplicationPtr instance;
-    try {
-        String backendType = config.get<String>("Application");
-        instance.reset(factory.CreateInstance(backendType));
-        if (!instance) {
-            std::cerr << "Failed to create application: Unknown backend type " << backendType << std::endl;
-            return ApplicationPtr();
-        }
-    } catch (const BadPathException& exception) {
-        std::cerr << "Failed to read application configuration: " << exception.what() << std::endl;
-        return ApplicationPtr();
+    const String& type = config.data();
+    application.reset(factory.CreateInstance(type));
+    if (!application) {
+        std::cerr << "Failed to create application: Unknown type " << type << std::endl;
+        return application;
     }
 
-    if (!instance->Init(config)) {
-        return ApplicationPtr();
+    if (!application->Init(config)) {
+        application.reset();
     }
 
-    return instance;
+    return application;
 }
 
 bool ros::Application::Init(const PropertyTree& config) {
-    window = Window::Create(config);
-    return window;
+    PropertyConstAssocIter iter = config.find("Window");
+    if (iter == config.not_found()) {
+        std::cerr << "Failed to initialize application: Missing window configuration" << std::endl;
+        return false;
+    }
+
+    WindowPtr window = Window::Create(iter->second);
+    if (!window) {
+        return false;
+    }
+    this->window = window;
+
+    return true;
 }

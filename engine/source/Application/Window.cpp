@@ -17,22 +17,16 @@ ros::WindowPtr ros::Window::Create(const PropertyTree& config) {
 #endif
     }
 
-    WindowPtr instance;
-    try {
-        String backendType = config.get<String>("Application.Window");
-        instance.reset(factory.CreateInstance(backendType));
-        if (!instance) {
-            std::cerr << "Failed to create window: Unknown backend type " << backendType << std::endl;
-            return WindowPtr();
-        }
-    } catch (const BadPathException& exception) {
-        std::cerr << "Failed to read window configuration: " << exception.what() << std::endl;
-        return WindowPtr();
+    String type = config.data();
+    WindowPtr window(factory.CreateInstance(type));
+    if (!window) {
+        std::cerr << "Failed to create window: Unknown type " << type << std::endl;
+        return window;
     }
 
-    if (!instance->Init(config)) {
-        return WindowPtr();
+    if (!window->Init(config)) {
+        window.reset();
     }
 
-    return instance;
+    return window;
 }

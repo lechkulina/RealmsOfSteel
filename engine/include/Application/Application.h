@@ -23,6 +23,7 @@ namespace ros {
     class ROS_API Application : public boost::noncopyable {
         public:
             static ApplicationPtr Create(const PropertyTree& config);
+            static ApplicationPtr GetInstance() { return application; }
 
             virtual ~Application() {}
 
@@ -37,6 +38,7 @@ namespace ros {
 
         private:
             static ApplicationFactory factory;
+            static ApplicationPtr application;
     };
 
 }
