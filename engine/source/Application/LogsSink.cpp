@@ -5,24 +5,39 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <iostream>
-#include <Core/Factory.h>
-#include "LogsLevelFilter.h"
 #include <Application/LogsSink.h>
+#include "LogsConsoleSink.h"
+#include "LogsFileSink.h"
 
-ros::LogsSink::LogsSink() {
-    filtersFactory.RegisterClass<LogsLevelFilter>("Level");
+ros::LogsSinkFactory ros::LogsSink::factory;
+
+ros::LogsSinkPtr ros::LogsSink::Create(const PropertyTree& config) {
+    if (factory.IsEmpty()) {
+        factory.RegisterClass<LogsConsoleSink>("Console");
+        factory.RegisterClass<LogsFileSink>("File");
+    }
+
+    const String& type = config.data();
+    LogsSinkPtr sink(factory.CreateInstance(type));
+    if (!sink) {
+        std::cerr << "Failed to create sink: Unknown type " << type << std::endl;
+        return sink;
+    }
+
+    if (!sink->Init(config)) {
+        sink.reset();
+    }
+
+    return sink;
 }
 
 bool ros::LogsSink::Init(const PropertyTree& config) {
     for (PropertyConstIter iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "Filter") {
-            const std::string& id = iter->second.data();
-            LogsFilterPtr filter = filtersFactory.MakeShared(id);
-            if (!filter || !filter->Init(iter->second)) {
-                std::cerr << "Failed to create filter " << id << std::endl;
-                continue;
+            LogsFilterPtr filter = LogsFilter::Create(iter->second);
+            if (filter) {
+                filters.push_back(filter);
             }
-            filters.push_back(filter);
         }
     }
     return true;
@@ -35,12 +50,4 @@ bool ros::LogsSink::IsMessageAccepted(const LogMessage& message) const {
         }
     }
     return true;
-}
-
-void ros::LogsSink::AddFilter(LogsFilterPtr filter) {
-    filters.push_back(filter);
-}
-
-void ros::LogsSink::RemoveFilter(LogsFilterPtr filter) {
-    filters.remove(filter);
 }
