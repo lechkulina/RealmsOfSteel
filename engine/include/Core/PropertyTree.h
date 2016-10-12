@@ -13,10 +13,11 @@
 namespace ros {
 
     typedef boost::property_tree::ptree PropertyTree;
+
     typedef PropertyTree::iterator PropertyIter;
     typedef PropertyTree::const_iterator PropertyConstIter;
-
-    typedef boost::property_tree::ptree_bad_path BadPathException;
+    typedef PropertyTree::assoc_iterator PropertyAssocIter;
+    typedef PropertyTree::const_assoc_iterator PropertyConstAssocIter;
 
     typedef std::string String;
 
