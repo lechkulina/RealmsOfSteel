@@ -6,33 +6,20 @@
  */
 #include <iostream>
 #include <Application/Logger.h>
-#include "LogsConsoleSink.h"
-#include "LogsFileSink.h"
 
-ros::LoggerPtr ros::Logger::instance;
+ros::LoggerPtr ros::Logger::logger;
 
-ros::LoggerPtr ros::Logger::CreateInstance(const PropertyTree& config) {
-    if (instance) {
-        return instance;
+ros::LoggerPtr ros::Logger::Create(const PropertyTree& config) {
+    if (logger) {
+        return logger;
     }
 
-    try {
-        const PropertyTree& subConfig = config.get_child("Logger");
-        instance.reset(new Logger());
-        if (instance && !instance->Init(subConfig)) {
-            instance.reset();
-        }
-    } catch (const BadPathException& exception) {
-        std::cerr << "Failed to read logger configuration: " << exception.what() << std::endl;
-        instance.reset();
+    logger.reset(new Logger());
+    if (!logger->Init(config)) {
+        logger.reset();
     }
 
-    return instance;
-}
-
-ros::Logger::Logger() {
-    sinksFactory.RegisterClass<LogsConsoleSink>("Console");
-    sinksFactory.RegisterClass<LogsFileSink>("File");
+    return logger;
 }
 
 bool ros::Logger::Init(const PropertyTree& config) {
@@ -42,13 +29,10 @@ bool ros::Logger::Init(const PropertyTree& config) {
 
     for (PropertyConstIter iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "Sink") {
-            const std::string& id = iter->second.data();
-            LogsSinkPtr sink = sinksFactory.MakeShared(id);
-            if (!sink || !sink->Init(iter->second)) {
-                std::cerr << "Failed to create sink " << id << std::endl;
-                continue;
+            LogsSinkPtr sink = LogsSink::Create(iter->second);
+            if (sink) {
+                sinks.push_back(sink);
             }
-            sinks.push_back(sink);
         }
     }
 
@@ -59,12 +43,14 @@ bool ros::Logger::SendMessage(const LogMessage& message) {
     if (!IsMessageAccepted(message)) {
         return false;
     }
+
     for (LogsSinksIter iter = sinks.begin(); iter != sinks.end(); ++iter) {
         LogsSinkPtr sink = *iter;
         if (sink->IsMessageAccepted(message) && !sink->SendMessage(message)) {
             return false;
         }
     }
+
     return true;
 }
 

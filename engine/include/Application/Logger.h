@@ -20,8 +20,8 @@ namespace ros {
 
     class ROS_API Logger : public LogsSink {
         public:
-            static LoggerPtr CreateInstance(const PropertyTree& config);
-            static LoggerPtr GetInstance() { return instance; }
+            static LoggerPtr Create(const PropertyTree& config);
+            static LoggerPtr GetInstance() { return logger; }
 
             virtual bool Init(const PropertyTree& config);
 
@@ -58,10 +58,7 @@ namespace ros {
         private:
             typedef Factory<std::string, LogsSink> LogsSinksFactory;
 
-            static LoggerPtr instance;
-            LogsSinksFactory sinksFactory;
-
-            Logger();
+            static LoggerPtr logger;
     };
 
 }
