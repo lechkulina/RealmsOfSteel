@@ -5,23 +5,24 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <iostream>
+#include <algorithm>
+#include <boost/bind.hpp>
+#include <boost/range.hpp>
 #include "LogsLevelFilter.h"
 
 bool ros::LogsLevelFilter::Init(const PropertyTree& config) {
-    StringOpt thresholdLevelConfig = config.get_optional<std::string>("ThresholdLevel");
+    StringOpt thresholdLevelConfig = config.get_optional<String>("ThresholdLevel");
     if (!thresholdLevelConfig) {
-        std::cerr << "Missing threshold level in level filter config" << std::endl;
+        std::cerr << "Failed to initialize level filter: Missing threshold level" << std::endl;
         return false;
     }
-
-    LogLevelOpt thresholdLevel = LogLevel_FromString(thresholdLevelConfig->c_str());
-    if (!thresholdLevel) {
-        std::cerr << "Unknown threshold level " << *thresholdLevelConfig << " found in level filter config" << std::endl;
+    LogLevelOpt thresholdLevelMapping = LogLevel_FromString(thresholdLevelConfig->c_str());
+    if (!thresholdLevelMapping) {
+        std::cerr << "Failed to initialize level filter: Unknown threshold level" << *thresholdLevelConfig << std::endl;
         return false;
-
     }
+    thresholdLevel = thresholdLevelMapping;
 
-    this->thresholdLevel = thresholdLevel;
     return true;
 }
 
