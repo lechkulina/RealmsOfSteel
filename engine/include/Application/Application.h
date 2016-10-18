@@ -27,14 +27,10 @@ namespace ros {
 
             virtual ~Application() {}
 
-            virtual bool Init(const PropertyTree& config);
-            virtual int Run() =0;
+            virtual bool Init(const PropertyTree& config) =0;
             virtual void Uninit() =0;
-
-            WindowPtr GetWindow() const { return window; }
-
-        protected:
-            WindowPtr window;
+            virtual int Run() =0;
+            virtual WindowPtr GetWindow() const =0;
 
         private:
             static ApplicationFactory factory;

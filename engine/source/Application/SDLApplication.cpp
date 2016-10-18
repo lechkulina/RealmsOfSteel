@@ -7,15 +7,52 @@
 #include <Application/Logger.h>
 #include "SDLApplication.h"
 
+ros::SDLApplication::SDLApplication()
+    : hasQuit(false) {
+}
+
+ros::SDLApplication::~SDLApplication() {
+    Uninit();
+}
+
 bool ros::SDLApplication::Init(const PropertyTree& config) {
-    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: %s") % SDL_GetError());
+        Uninit();
+        return false;
+    }
 
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_version version;
+    memset(&version, 0, sizeof(version));
+    SDL_GetVersion(&version);
+    Logger::Report(LogLevel_Debug, LogFormat("Using SDL %d.%d.%d") % (int)version.major % (int)version.minor % (int)version.patch);
 
-    return Application::Init(config);
+    PropertyConstAssocIter iter = config.find("Window");
+    if (iter == config.not_found()) {
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: Missing window configuration"));
+        Uninit();
+        return false;
+    }
+
+    window = Window::Create(iter->second);
+    if (!window) {
+        Uninit();
+        return false;
+    }
+
+    return true;
+}
+
+void ros::SDLApplication::Uninit() {
+    if (window) {
+        window->Uninit();
+    }
+    SDL_Quit();
 }
 
 int ros::SDLApplication::Run() {
+    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
+
     float fps = 60.0f;
     float deltaTime = (1 / fps) * 1000;
     float maxAccumulatedTime = 50.0f;
@@ -46,11 +83,6 @@ int ros::SDLApplication::Run() {
     }
 
     return EXIT_SUCCESS;
-}
-
-void ros::SDLApplication::Uninit() {
-    window->Uninit();
-    SDL_Quit();
 }
 
 void ros::SDLApplication::OnEvent(const SDL_Event& event) {

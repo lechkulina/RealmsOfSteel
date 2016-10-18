@@ -35,19 +35,3 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
 
     return application;
 }
-
-bool ros::Application::Init(const PropertyTree& config) {
-    PropertyConstAssocIter iter = config.find("Window");
-    if (iter == config.not_found()) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize application: Missing window configuration"));
-        return false;
-    }
-
-    WindowPtr window = Window::Create(iter->second);
-    if (!window) {
-        return false;
-    }
-    this->window = window;
-
-    return true;
-}
