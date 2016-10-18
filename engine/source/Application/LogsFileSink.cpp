@@ -34,6 +34,10 @@ namespace ros {
 
 }
 
+ros::LogsFileSink::~LogsFileSink() {
+    Uninit();
+}
+
 bool ros::LogsFileSink::Init(const PropertyTree& config) {
     if (!LogsSink::Init(config)) {
         return false;
@@ -42,6 +46,7 @@ bool ros::LogsFileSink::Init(const PropertyTree& config) {
     StringOpt filePathConfig = config.get_optional<String>("FilePath");
     if (!filePathConfig) {
         std::cerr << "Failed to initialize console sink: Missing file path" << std::endl;
+        Uninit();
         return false;
     }
 
@@ -49,16 +54,25 @@ bool ros::LogsFileSink::Init(const PropertyTree& config) {
     OpenModeOpt openModeMapped = OpenMode_FromString(openModeConfig.c_str());
     if (!openModeMapped) {
         std::cerr << "Failed to initialize console sink: Unknown open mode " << openModeConfig << std::endl;
+        Uninit();
         return false;
     }
 
     stream.open(filePathConfig->c_str(), *openModeMapped);
     if (!stream.good()) {
         std::cerr << "Failed to initialize console sink: Unable to open file " << *filePathConfig << std::endl;
+        Uninit();
         return false;
     }
 
     return true;
+}
+
+void ros::LogsFileSink::Uninit() {
+    if (stream.is_open()) {
+        stream.close();
+    }
+    LogsSink::Uninit();
 }
 
 bool ros::LogsFileSink::SendMessage(const LogMessage& message) {

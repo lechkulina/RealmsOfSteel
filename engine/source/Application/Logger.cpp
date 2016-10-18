@@ -38,10 +38,16 @@ bool ros::Logger::Init(const PropertyTree& config) {
 
     if (sinks.empty()) {
         std::cerr << "Failed to initialize logger: There are no sinks" << std::endl;
+        Uninit();
         return false;
     }
 
     return true;
+}
+
+void ros::Logger::Uninit() {
+    sinks.clear();
+    LogsSink::Uninit();
 }
 
 bool ros::Logger::SendMessage(const LogMessage& message) {

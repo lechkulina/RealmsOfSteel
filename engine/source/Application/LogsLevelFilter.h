@@ -14,6 +14,7 @@ namespace ros {
     class ROS_API LogsLevelFilter : public LogsFilter {
         public:
             virtual bool Init(const PropertyTree& config);
+            virtual void Uninit();
             virtual bool IsMessageAccepted(const LogMessage& message) const;
 
         private:

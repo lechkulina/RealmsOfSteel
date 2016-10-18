@@ -43,6 +43,10 @@ bool ros::LogsSink::Init(const PropertyTree& config) {
     return true;
 }
 
+void ros::LogsSink::Uninit() {
+    filters.clear();
+}
+
 bool ros::LogsSink::IsMessageAccepted(const LogMessage& message) const {
     for (LogsFiltersConstIter iter = filters.begin(); iter != filters.end(); ++iter) {
         if (!(*iter)->IsMessageAccepted(message)) {

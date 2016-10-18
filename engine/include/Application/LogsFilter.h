@@ -27,6 +27,7 @@ namespace ros {
             virtual ~LogsFilter() {}
 
             virtual bool Init(const PropertyTree& config) =0;
+            virtual void Uninit() =0;
             virtual bool IsMessageAccepted(const LogMessage& message) const =0;
 
         private:

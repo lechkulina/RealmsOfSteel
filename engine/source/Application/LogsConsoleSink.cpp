@@ -45,11 +45,17 @@ bool ros::LogsConsoleSink::Init(const PropertyTree& config) {
     std::ostream* streamMapped = Stream_FromString(streamConfig.c_str());
     if (!streamMapped) {
         std::cerr << "Failed to initialize console sink: Unknown stream " << streamConfig << std::endl;
+        Uninit();
         return false;
     }
     stream = streamMapped;
 
     return true;
+}
+
+void ros::LogsConsoleSink::Uninit() {
+    stream = ROS_NULL;
+    LogsSink::Uninit();
 }
 
 bool ros::LogsConsoleSink::SendMessage(const LogMessage& message) {

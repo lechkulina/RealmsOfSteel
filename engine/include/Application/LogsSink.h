@@ -25,6 +25,7 @@ namespace ros {
             static LogsSinkPtr Create(const PropertyTree& config);
 
             virtual bool Init(const PropertyTree& config);
+            virtual void Uninit();
             virtual bool IsMessageAccepted(const LogMessage& message) const;
 
             virtual bool SendMessage(const LogMessage& message) =0;

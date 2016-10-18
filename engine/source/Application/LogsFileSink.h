@@ -14,7 +14,10 @@ namespace ros {
 
     class LogsFileSink : public LogsSink {
         public:
+            virtual ~LogsFileSink();
+
             virtual bool Init(const PropertyTree& config);
+            virtual void Uninit();
 
             virtual bool SendMessage(const LogMessage& message);
             virtual void FlushMessages();

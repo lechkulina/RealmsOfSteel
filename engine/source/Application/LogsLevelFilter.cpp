@@ -26,6 +26,10 @@ bool ros::LogsLevelFilter::Init(const PropertyTree& config) {
     return true;
 }
 
+void ros::LogsLevelFilter::Uninit() {
+    thresholdLevel.reset();
+}
+
 bool ros::LogsLevelFilter::IsMessageAccepted(const LogMessage& message) const {
     if (!thresholdLevel) {
         return true;
