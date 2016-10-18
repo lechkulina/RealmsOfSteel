@@ -12,6 +12,10 @@ ros::OpenGLWindow::OpenGLWindow()
     , context(ROS_NULL) {
 }
 
+ros::OpenGLWindow::~OpenGLWindow() {
+    Uninit();
+}
+
 bool ros::OpenGLWindow::Init(const PropertyTree& config) {
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -44,8 +48,12 @@ bool ros::OpenGLWindow::Init(const PropertyTree& config) {
 }
 
 void ros::OpenGLWindow::Uninit() {
-    SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
+    if (context) {
+        SDL_GL_DeleteContext(context);
+    }
+    if (window) {
+        SDL_DestroyWindow(window);
+    }
 }
 
 void ros::OpenGLWindow::SwapBuffers() {

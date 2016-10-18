@@ -17,6 +17,7 @@ namespace ros {
     class ROS_API OpenGLWindow : public Window {
         public:
             OpenGLWindow();
+            virtual ~OpenGLWindow();
 
             virtual bool Init(const PropertyTree& config);
             virtual void Uninit();
