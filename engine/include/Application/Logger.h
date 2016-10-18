@@ -28,24 +28,8 @@ namespace ros {
             virtual bool SendMessage(const LogMessage& message);
             virtual void FlushMessages();
 
-            static inline bool SendTrace(const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(LogLevel_Trace, format.str()));
-            }
-
-            static inline bool SendDebug(const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(LogLevel_Debug, format.str()));
-            }
-
-            static inline bool SendWarning(const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(LogLevel_Warning, format.str()));
-            }
-
-            static inline bool SendError(const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(LogLevel_Error, format.str()));
-            }
-
-            static inline bool SendCritical(const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(LogLevel_Critical, format.str()));
+            static bool Report(LogLevel level, const LogFormat& format) {
+                return GetInstance()->SendMessage(LogMessage(level, format.str()));
             }
 
         protected:

@@ -4,7 +4,6 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
 #include <Application/Logger.h>
 #include "OpenGLWindow.h"
 
@@ -27,21 +26,20 @@ bool ros::OpenGLWindow::Init(const PropertyTree& config) {
 
     context = SDL_GL_CreateContext(window);
     if (!context) {
-        std::cerr << "Failed to initialize OpenGL window: " << SDL_GetError() << std::endl;
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize OpenGL window: %s") % SDL_GetError());
         SDL_DestroyWindow(window);
         return false;
     }
 
     GLenum error = glewInit();
     if (error != GLEW_OK) {
-        std::cerr << "Failed to initialize OpenGL window: " << glewGetErrorString(error) << std::endl;
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize OpenGL window: %s") % glewGetErrorString(error));
         SDL_GL_DeleteContext(context);
         SDL_DestroyWindow(window);
         return false;
     }
 
-    std::cout << "Using OpenGL " <<  glGetString(GL_VERSION) << " from " << glGetString(GL_VENDOR) << std::endl;
-
+    Logger::Report(LogLevel_Debug, LogFormat("Using OpenGL %s from %s") % glGetString(GL_VERSION) % glGetString(GL_VENDOR));
     return true;
 }
 

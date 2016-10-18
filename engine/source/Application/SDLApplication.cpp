@@ -4,12 +4,11 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
 #include <Application/Logger.h>
 #include "SDLApplication.h"
 
 bool ros::SDLApplication::Init(const PropertyTree& config) {
-    std::cout << "Starting Realms Of Steel" << ROS_VERSION << std::endl;
+    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
 
     SDL_Init(SDL_INIT_VIDEO);
 

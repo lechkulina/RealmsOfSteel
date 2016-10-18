@@ -4,7 +4,7 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
+#include <Application/Logger.h>
 #include <Application/Window.h>
 #include "OpenGLWindow.h"
 
@@ -20,7 +20,7 @@ ros::WindowPtr ros::Window::Create(const PropertyTree& config) {
     String type = config.data();
     WindowPtr window(factory.CreateInstance(type));
     if (!window) {
-        std::cerr << "Failed to create window: Unknown type " << type << std::endl;
+        Logger::Report(LogLevel_Error, LogFormat("Failed to create window: Unknown type %s") % type);
         return window;
     }
 

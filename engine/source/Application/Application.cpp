@@ -4,7 +4,7 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
+#include <Application/Logger.h>
 #include <Application/Application.h>
 #include "SDLApplication.h"
 
@@ -25,7 +25,7 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
     const String& type = config.data();
     application.reset(factory.CreateInstance(type));
     if (!application) {
-        std::cerr << "Failed to create application: Unknown type " << type << std::endl;
+        Logger::Report(LogLevel_Error, LogFormat("Failed to create application: Unknown type %s") % type);
         return application;
     }
 
@@ -39,7 +39,7 @@ ros::ApplicationPtr ros::Application::Create(const PropertyTree& config) {
 bool ros::Application::Init(const PropertyTree& config) {
     PropertyConstAssocIter iter = config.find("Window");
     if (iter == config.not_found()) {
-        std::cerr << "Failed to initialize application: Missing window configuration" << std::endl;
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize application: Missing window configuration"));
         return false;
     }
 
