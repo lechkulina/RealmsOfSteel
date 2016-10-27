@@ -5,18 +5,18 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <Application/Logger.h>
-#include "OpenGLWindow.h"
+#include "SDLOpenGLWindow.h"
 
-ros::OpenGLWindow::OpenGLWindow()
+ros::SDLOpenGLWindow::SDLOpenGLWindow()
     : window(ROS_NULL)
     , context(ROS_NULL) {
 }
 
-ros::OpenGLWindow::~OpenGLWindow() {
+ros::SDLOpenGLWindow::~SDLOpenGLWindow() {
     Uninit();
 }
 
-bool ros::OpenGLWindow::Init(const PropertyTree& config) {
+bool ros::SDLOpenGLWindow::Init(const PropertyTree& config) {
     // set OpenGL attributes before creating OpenGL window
     int redSizeConfig = config.get("Application.Window.RedSize", 8);
     int greenSizeConfig = config.get("Application.Window.GreenSize", 8);
@@ -100,7 +100,7 @@ bool ros::OpenGLWindow::Init(const PropertyTree& config) {
     return true;
 }
 
-void ros::OpenGLWindow::Uninit() {
+void ros::SDLOpenGLWindow::Uninit() {
     if (context) {
         SDL_GL_DeleteContext(context);
     }
@@ -109,10 +109,10 @@ void ros::OpenGLWindow::Uninit() {
     }
 }
 
-void ros::OpenGLWindow::SwapBuffers() {
+void ros::SDLOpenGLWindow::SwapBuffers() {
     SDL_GL_SwapWindow(window);
 }
 
-void ros::OpenGLWindow::ClearBuffers() {
+void ros::SDLOpenGLWindow::ClearBuffers() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

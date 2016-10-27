@@ -6,14 +6,14 @@
  */
 #include <Application/Logger.h>
 #include <Application/Window.h>
-#include "OpenGLWindow.h"
+#include "SDLOpenGLWindow.h"
 
 ros::WindowFactory ros::Window::factory;
 
 ros::WindowPtr ros::Window::Create(const PropertyTree& config) {
     if (factory.IsEmpty()) {
-#ifdef ROS_USING_OPENGL
-        factory.RegisterClass<OpenGLWindow>("OpenGL");
+#if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
+        factory.RegisterClass<SDLOpenGLWindow>("SDLOpenGL");
 #endif
     }
 

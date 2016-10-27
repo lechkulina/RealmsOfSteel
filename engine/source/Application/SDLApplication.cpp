@@ -17,7 +17,8 @@ ros::SDLApplication::~SDLApplication() {
 
 bool ros::SDLApplication::Init(const PropertyTree& config) {
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: %s") % SDL_GetError());
+        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: %s")
+                       % SDL_GetError());
         Uninit();
         return false;
     }
@@ -25,7 +26,8 @@ bool ros::SDLApplication::Init(const PropertyTree& config) {
     SDL_version version;
     memset(&version, 0, sizeof(version));
     SDL_GetVersion(&version);
-    Logger::Report(LogLevel_Debug, LogFormat("Using SDL %d.%d.%d") % (int)version.major % (int)version.minor % (int)version.patch);
+    Logger::Report(LogLevel_Debug, LogFormat("Using SDL %d.%d.%d")
+                   % (int)version.major % (int)version.minor % (int)version.patch);
 
     PropertyConstAssocIter iter = config.find("Window");
     if (iter == config.not_found()) {
@@ -51,7 +53,8 @@ void ros::SDLApplication::Uninit() {
 }
 
 int ros::SDLApplication::Run() {
-    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s") % ROS_VERSION);
+    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s")
+                   % ROS_VERSION);
 
     float fps = 60.0f;
     float deltaTime = (1 / fps) * 1000;

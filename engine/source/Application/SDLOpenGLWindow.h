@@ -4,8 +4,8 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_OPENGL_WINDOW_H
-#define ROS_OPENGL_WINDOW_H
+#ifndef ROS_SDL_OPENGL_WINDOW_H
+#define ROS_SDL_OPENGL_WINDOW_H
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -14,10 +14,10 @@
 
 namespace ros {
 
-    class ROS_API OpenGLWindow : public Window {
+    class ROS_API SDLOpenGLWindow : public Window {
         public:
-            OpenGLWindow();
-            virtual ~OpenGLWindow();
+            SDLOpenGLWindow();
+            virtual ~SDLOpenGLWindow();
 
             virtual bool Init(const PropertyTree& config);
             virtual void Uninit();
@@ -31,5 +31,5 @@ namespace ros {
 
 }
 
-#endif // ROS_OPENGL_WINDOW_H
+#endif // ROS_SDL_OPENGL_WINDOW_H
 
