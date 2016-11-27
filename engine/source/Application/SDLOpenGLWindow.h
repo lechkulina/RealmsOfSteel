@@ -21,12 +21,23 @@ namespace ros {
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
 
+            virtual int getWidth() const { return width; }
+            virtual int getHeight() const { return height; }
+            virtual bool isDoubleBuffered() const { return doubleBuffered; }
+            virtual bool isResizable() const { return resizable; }
+            virtual bool isFullscreen() const { return fullscreen; }
+
             virtual void swapBuffers();
             virtual void clearBuffers();
 
         private:
             SDL_Window* window;
             SDL_GLContext context;
+            int width;
+            int height;
+            bool doubleBuffered;
+            bool resizable;
+            bool fullscreen;
     };
 }
 

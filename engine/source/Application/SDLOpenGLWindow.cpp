@@ -9,7 +9,12 @@
 
 ros::SDLOpenGLWindow::SDLOpenGLWindow()
     : window(ROS_NULL)
-    , context(ROS_NULL) {
+    , context(ROS_NULL)
+    , width(0)
+    , height(0)
+    , doubleBuffered(false)
+    , resizable(false)
+    , fullscreen(false) {
 }
 
 ros::SDLOpenGLWindow::~SDLOpenGLWindow() {
@@ -18,53 +23,55 @@ ros::SDLOpenGLWindow::~SDLOpenGLWindow() {
 
 bool ros::SDLOpenGLWindow::init(const PropertyTree& config) {
     // set OpenGL attributes before creating OpenGL window
-    int redSizeConfig = config.get("Application.Window.RedSize", 8);
-    int greenSizeConfig = config.get("Application.Window.GreenSize", 8);
-    int blueSizeConfig = config.get("Application.Window.BlueSize", 8);
-    int alphaSizeConfig = config.get("Application.Window.AlphaSize", 8);
-    if (SDL_GL_SetAttribute(SDL_GL_RED_SIZE, redSizeConfig) != 0 ||
-        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, greenSizeConfig) != 0 ||
-        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, blueSizeConfig) != 0||
-        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaSizeConfig) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL color buffer channels sizes to %d.%d.%d.%d: %s")
-                            % redSizeConfig % greenSizeConfig % blueSizeConfig % alphaSizeConfig  % SDL_GetError());
+    int redSize = config.get("Application.Window.RedSize", 8);
+    int greenSize = config.get("Application.Window.GreenSize", 8);
+    int blueSize = config.get("Application.Window.BlueSize", 8);
+    int alphaSize = config.get("Application.Window.AlphaSize", 8);
+    if (SDL_GL_SetAttribute(SDL_GL_RED_SIZE, redSize) != 0 ||
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, greenSize) != 0 ||
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, blueSize) != 0||
+        SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaSize) != 0) {
+        Logger::report(LogLevel_Error, boost::format("Failed to set color buffer channels sizes to %d.%d.%d.%d: %s")
+                            % redSize % greenSize % blueSize % alphaSize % SDL_GetError());
         uninit();
         return false;
     }
 
-    int depthSizeConfig = config.get("Application.Window.DepthSize", 16);
-    if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depthSizeConfig) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL depth buffer size to %d: %s") % depthSizeConfig % SDL_GetError());
+    int depthSize = config.get("Application.Window.DepthSize", 16);
+    if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depthSize) != 0) {
+        Logger::report(LogLevel_Error, boost::format("Failed to set depth buffer size to %d: %s") % depthSize % SDL_GetError());
         uninit();
         return false;
     }
 
-    int stencilSizeConfig = config.get("Application.Window.StencilSize", 0);
-    if (SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencilSizeConfig) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL stencil buffer size to %d: %s") % stencilSizeConfig % SDL_GetError());
+    int stencilSize = config.get("Application.Window.StencilSize", 0);
+    if (SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencilSize) != 0) {
+        Logger::report(LogLevel_Error, boost::format("Failed to set stencil buffer size to %d: %s") % stencilSize % SDL_GetError());
         uninit();
         return false;
     }
 
-    bool enableDoubleBufferingConfig = config.get("Application.Window.EnableDoubleBuffering", true);
-    if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, enableDoubleBufferingConfig) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to %s OpenGL double buffering: %s")
-                            % (enableDoubleBufferingConfig ? "enable" : "disable")  % SDL_GetError());
+    doubleBuffered = config.get("Application.Window.DoubleBuffered", true);
+    if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffered) != 0) {
+        Logger::report(LogLevel_Error, boost::format("Failed to %s double buffering: %s")
+                            % (doubleBuffered ? "enable" : "disable")  % SDL_GetError());
         uninit();
         return false;
     }
 
     // create SDL window usable with OpenGL context
-    Uint32 flagsConfig = SDL_WINDOW_OPENGL;
-    if (config.get("Application.Window.AllowResizing", 0)) {
-        flagsConfig |= SDL_WINDOW_RESIZABLE;
+    Uint32 flags = SDL_WINDOW_OPENGL;
+    if (config.get("Application.Window.Resizable", 0)) {
+        flags |= SDL_WINDOW_RESIZABLE;
+        resizable = true;
     }
-    if (config.get("Application.Window.RunInFullscreen", 0)) {
-        flagsConfig |= SDL_WINDOW_FULLSCREEN;
+    if (config.get("Application.Window.Fullscreen", 0)) {
+        flags |= SDL_WINDOW_FULLSCREEN;
+        fullscreen = true;
     }
-    int widthConfig = config.get("Application.Window.Width", 640);
-    int heightConfig = config.get("Application.Window.Height", 480);
-    window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, widthConfig, heightConfig, flagsConfig);
+    width = config.get("Application.Window.Width", 640);
+    height = config.get("Application.Window.Height", 480);
+    window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
     if (!window) {
         Logger::report(LogLevel_Error, boost::format("Failed to create SDL window: %s") % SDL_GetError());
         uninit();
@@ -92,10 +99,17 @@ bool ros::SDLOpenGLWindow::init(const PropertyTree& config) {
 void ros::SDLOpenGLWindow::uninit() {
     if (context) {
         SDL_GL_DeleteContext(context);
+        context = ROS_NULL;
     }
     if (window) {
         SDL_DestroyWindow(window);
+        window = ROS_NULL;
     }
+    width = 0;
+    height = 0;
+    doubleBuffered = false;
+    resizable = false;
+    fullscreen = false;
 }
 
 void ros::SDLOpenGLWindow::swapBuffers() {
