@@ -206,8 +206,8 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
 
         case SDL_MOUSEMOTION: {
             MouseMotionEvent ev;
-            ev.x = event.motion.x;
-            ev.y = event.motion.y;
+            ev.x = (float)event.motion.x / window->getWidth();
+            ev.y = (float)event.motion.y / window->getHeight();
 
             onMouseMotionEvent(ev);
         } break;
@@ -215,8 +215,8 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP: {
             MousePressEvent ev;
-            ev.x = event.button.x;
-            ev.y = event.button.y;
+            ev.x = (float)event.button.x / window->getWidth();
+            ev.y = (float)event.button.y / window->getHeight();
             ev.button = MouseButton_fromSDLButton(event.button.button);
             ev.state = ButtonState_fromSDLState(event.button.state);
 
