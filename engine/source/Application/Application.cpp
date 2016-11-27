@@ -36,3 +36,10 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
 
     return application;
 }
+
+void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
+    for (ViewList::iterator iter = views.begin(); iter != views.end(); ++iter) {
+        ViewPtr view = *iter;
+        view->onKeyboardPressEvent(event);
+    }
+}
