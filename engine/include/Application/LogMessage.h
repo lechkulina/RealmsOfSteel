@@ -7,16 +7,11 @@
 #ifndef ROS_LOG_MESSAGE_H
 #define ROS_LOG_MESSAGE_H
 
-#include <ostream>
-#include <boost/optional.hpp>
-#include <boost/chrono.hpp>
 #include <boost/format.hpp>
-#include <Core/Common.h>
-#include <Core/Environment.h>
-#include <Core/PropertyTree.h>
+#include <core/Common.h>
+#include <core/Environment.h>
 
 namespace ros {
-
     enum LogLevel {
         LogLevel_Trace,
         LogLevel_Debug,
@@ -27,32 +22,25 @@ namespace ros {
 
     typedef boost::optional<LogLevel> LogLevelOpt;
 
-    LogLevelOpt LogLevel_FromString(const char* str);
-    const char* LogLevel_ToString(LogLevel level);
+    LogLevelOpt LogLevel_fromString(const char* str);
+    const char* LogLevel_toString(LogLevel level);
     std::ostream& operator<<(std::ostream& stream, LogLevel level);
 
-    typedef boost::format LogFormat;
-
     class ROS_API LogMessage {
-            typedef boost::chrono::system_clock Clock;
-
         public:
-            typedef Clock::time_point TimePoint;
+            LogMessage(LogLevel level, const std::string& message);
 
-            LogMessage(LogLevel level, const String& message);
-
-            LogLevel GetLevel() const { return level; }
-            const String& GetMessage() const { return message; }
-            TimePoint GetTimePoint() const { return timePoint; }
+            LogLevel getLevel() const { return level; }
+            const std::string& getMessage() const { return message; }
+            SystemClock::time_point getTimePoint() const { return timePoint; }
 
         private:
             LogLevel level;
-            String message;
-            TimePoint timePoint;
+            std::string message;
+            SystemClock::time_point timePoint;
     };
 
     std::ostream& operator<<(std::ostream& stream, const LogMessage& message);
-
 }
 
 #endif // ROS_LOG_MESSAGE_H

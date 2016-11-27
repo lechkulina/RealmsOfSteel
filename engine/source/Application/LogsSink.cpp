@@ -4,52 +4,52 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
-#include <Application/LogsSink.h>
+#include <application/LogsSink.h>
 #include "LogsConsoleSink.h"
 #include "LogsFileSink.h"
 
 ros::LogsSinkFactory ros::LogsSink::factory;
 
-ros::LogsSinkPtr ros::LogsSink::Create(const PropertyTree& config) {
-    if (factory.IsEmpty()) {
-        factory.RegisterClass<LogsConsoleSink>("Console");
-        factory.RegisterClass<LogsFileSink>("File");
+ros::LogsSinkPtr ros::LogsSink::create(const PropertyTree& config) {
+    if (factory.isEmpty()) {
+        factory.registerClass<LogsConsoleSink>("Console");
+        factory.registerClass<LogsFileSink>("File");
     }
 
-    const String& type = config.data();
-    LogsSinkPtr sink(factory.CreateInstance(type));
+    const std::string& type = config.data();
+    LogsSinkPtr sink(factory.create(type));
     if (!sink) {
         std::cerr << "Failed to create sink: Unknown type " << type << std::endl;
-        return sink;
+        return LogsSinkPtr();
     }
-
-    if (!sink->Init(config)) {
-        sink.reset();
+    if (!sink->init(config)) {
+        return LogsSinkPtr();
     }
 
     return sink;
 }
 
-bool ros::LogsSink::Init(const PropertyTree& config) {
-    for (PropertyConstIter iter = config.begin(); iter != config.end(); ++iter) {
+bool ros::LogsSink::init(const PropertyTree& config) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "Filter") {
-            LogsFilterPtr filter = LogsFilter::Create(iter->second);
-            if (filter) {
-                filters.push_back(filter);
+            LogsFilterPtr filter = LogsFilter::create(iter->second);
+            if (!filter) {
+                continue;
             }
+            filters.push_back(filter);
         }
     }
     return true;
 }
 
-void ros::LogsSink::Uninit() {
+void ros::LogsSink::uninit() {
     filters.clear();
 }
 
-bool ros::LogsSink::IsMessageAccepted(const LogMessage& message) const {
-    for (LogsFiltersConstIter iter = filters.begin(); iter != filters.end(); ++iter) {
-        if (!(*iter)->IsMessageAccepted(message)) {
+bool ros::LogsSink::isMessageAccepted(const LogMessage& message) const {
+    for (LogsFilterList::const_iterator iter = filters.begin(); iter != filters.end(); ++iter) {
+        LogsFilterPtr filter = *iter;
+        if (!filter->isMessageAccepted(message)) {
             return false;
         }
     }

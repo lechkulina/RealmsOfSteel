@@ -6,26 +6,27 @@
  */
 #include <Application/Logger.h>
 #include <Application/Window.h>
-#include "SDLOpenGLWindow.h"
+#if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
+    #include "SDLOpenGLWindow.h"
+#endif
 
 ros::WindowFactory ros::Window::factory;
 
-ros::WindowPtr ros::Window::Create(const PropertyTree& config) {
-    if (factory.IsEmpty()) {
+ros::WindowPtr ros::Window::create(const PropertyTree& config) {
+    if (factory.isEmpty()) {
 #if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
-        factory.RegisterClass<SDLOpenGLWindow>("SDLOpenGL");
+        factory.registerClass<SDLOpenGLWindow>("OpenGL");
 #endif
     }
 
-    String type = config.data();
-    WindowPtr window(factory.CreateInstance(type));
+    std::string type = config.data();
+    WindowPtr window(factory.create(type));
     if (!window) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to create window: Unknown type %s") % type);
-        return window;
+        Logger::report(LogLevel_Error, boost::format("Failed to create window: Unknown type %s") % type);
+        return WindowPtr();
     }
-
-    if (!window->Init(config)) {
-        window.reset();
+    if (!window->init(config)) {
+        return WindowPtr();
     }
 
     return window;

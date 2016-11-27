@@ -4,78 +4,74 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
-#include <algorithm>
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
 #include "LogsFileSink.h"
 
-namespace ros {
-
-    typedef std::ios_base::openmode OpenMode;
-    typedef boost::optional<OpenMode> OpenModeOpt;
-
-    static const struct OpenModeMapping {
+namespace {
+    typedef boost::optional<std::ios_base::openmode> OpenModeOpt;
+    struct OpenModeMapping {
         const char* str;
-        OpenMode openMode;
-    } openModeMappings[] = {
+        std::ios_base::openmode openMode;
+    };
+
+    const OpenModeMapping openModeMappings[] = {
         {"Append", std::ios_base::out|std::ios_base::app},
         {"Truncate", std::ios_base::out|std::ios_base::trunc}
     };
 
-    static OpenModeOpt OpenMode_FromString(const char* str) {
+    OpenModeOpt OpenMode_fromString(const char* str) {
         const OpenModeMapping* iter = std::find_if(boost::begin(openModeMappings), boost::end(openModeMappings),
-                                                     boost::bind(strcmp, boost::bind(&OpenModeMapping::str, _1), str) == 0);
+            boost::bind(strcmp, boost::bind(&OpenModeMapping::str, _1), str) == 0);
         if (iter != boost::end(openModeMappings)) {
             return iter->openMode;
         }
         return OpenModeOpt();
     }
-
 }
 
 ros::LogsFileSink::~LogsFileSink() {
-    Uninit();
+    uninit();
 }
 
-bool ros::LogsFileSink::Init(const PropertyTree& config) {
-    if (!LogsSink::Init(config)) {
+bool ros::LogsFileSink::init(const PropertyTree& config) {
+    if (!LogsSink::init(config)) {
         return false;
     }
 
-    StringOpt filePathConfig = config.get_optional<String>("FilePath");
-    if (!filePathConfig) {
+    StringOpt filePath = config.get_optional<std::string>("FilePath");
+    if (!filePath) {
         std::cerr << "Failed to initialize console sink: Missing file path" << std::endl;
-        Uninit();
+        uninit();
         return false;
     }
 
-    String openModeConfig = config.get<String>("OpenMode", "Truncate");
-    OpenModeOpt openModeMapped = OpenMode_FromString(openModeConfig.c_str());
-    if (!openModeMapped) {
-        std::cerr << "Failed to initialize console sink: Unknown open mode " << openModeConfig << std::endl;
-        Uninit();
+    std::string openModeStr = config.get<std::string>("OpenMode", "Truncate");
+    OpenModeOpt openMode = OpenMode_fromString(openModeStr.c_str());
+    if (!openMode) {
+        std::cerr << "Failed to initialize console sink: Unknown open mode " << openModeStr << std::endl;
+        uninit();
         return false;
     }
 
-    stream.open(filePathConfig->c_str(), *openModeMapped);
+    stream.open(filePath->c_str(), *openMode);
     if (!stream.good()) {
-        std::cerr << "Failed to initialize console sink: Unable to open file " << *filePathConfig << std::endl;
-        Uninit();
+        std::cerr << "Failed to initialize console sink: Unable to open file " << *filePath << std::endl;
+        uninit();
         return false;
     }
 
     return true;
 }
 
-void ros::LogsFileSink::Uninit() {
+void ros::LogsFileSink::uninit() {
     if (stream.is_open()) {
         stream.close();
     }
-    LogsSink::Uninit();
+    LogsSink::uninit();
 }
 
-bool ros::LogsFileSink::SendMessage(const LogMessage& message) {
+bool ros::LogsFileSink::sendMessage(const LogMessage& message) {
     if (!stream.is_open()) {
         return false;
     }
@@ -83,7 +79,7 @@ bool ros::LogsFileSink::SendMessage(const LogMessage& message) {
     return stream.good();
 }
 
-void ros::LogsFileSink::FlushMessages() {
+void ros::LogsFileSink::flushMessages() {
     if (stream.is_open()) {
         stream.flush();
     }

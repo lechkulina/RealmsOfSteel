@@ -7,33 +7,29 @@
 #ifndef ROS_LOGS_FILTER_H
 #define ROS_LOGS_FILTER_H
 
-#include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
-#include <Core/PropertyTree.h>
-#include <Core/Environment.h>
-#include <Core/Factory.h>
-#include <Application/LogMessage.h>
+#include <core/Common.h>
+#include <core/Environment.h>
+#include <core/Factory.h>
+#include <application/LogMessage.h>
 
 namespace ros {
-
     class LogsFilter;
     typedef boost::shared_ptr<LogsFilter> LogsFilterPtr;
-    typedef Factory<String, LogsFilter> LogsFilterFactory;
+    typedef Factory<std::string, LogsFilter> LogsFilterFactory;
 
     class ROS_API LogsFilter : public boost::noncopyable {
         public:
-            static LogsFilterPtr Create(const PropertyTree& config);
+            static LogsFilterPtr create(const PropertyTree& config);
 
             virtual ~LogsFilter() {}
 
-            virtual bool Init(const PropertyTree& config) =0;
-            virtual void Uninit() =0;
-            virtual bool IsMessageAccepted(const LogMessage& message) const =0;
+            virtual bool init(const PropertyTree& config) =0;
+            virtual void uninit() =0;
+            virtual bool isMessageAccepted(const LogMessage& message) const =0;
 
         private:
             static LogsFilterFactory factory;
     };
-
 }
 
 #endif // ROS_LOGS_FILTER_H

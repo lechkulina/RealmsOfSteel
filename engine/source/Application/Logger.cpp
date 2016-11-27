@@ -4,60 +4,60 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
-#include <Application/Logger.h>
+#include <application/Logger.h>
 
 ros::LoggerPtr ros::Logger::logger;
 
-ros::LoggerPtr ros::Logger::Create(const PropertyTree& config) {
+ros::LoggerPtr ros::Logger::create(const PropertyTree& config) {
     if (logger) {
         return logger;
     }
 
     logger.reset(new Logger());
-    if (!logger->Init(config)) {
+    if (!logger->init(config)) {
         logger.reset();
     }
 
     return logger;
 }
 
-bool ros::Logger::Init(const PropertyTree& config) {
-    if (!LogsSink::Init(config)) {
+bool ros::Logger::init(const PropertyTree& config) {
+    if (!LogsSink::init(config)) {
         return false;
     }
 
-    for (PropertyConstIter iter = config.begin(); iter != config.end(); ++iter) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "Sink") {
-            LogsSinkPtr sink = LogsSink::Create(iter->second);
-            if (sink) {
-                sinks.push_back(sink);
+            LogsSinkPtr sink = LogsSink::create(iter->second);
+            if (!sink) {
+                continue;
             }
+            sinks.push_back(sink);
         }
     }
 
     if (sinks.empty()) {
         std::cerr << "Failed to initialize logger: There are no sinks" << std::endl;
-        Uninit();
+        uninit();
         return false;
     }
 
     return true;
 }
 
-void ros::Logger::Uninit() {
+void ros::Logger::uninit() {
     sinks.clear();
-    LogsSink::Uninit();
+    LogsSink::uninit();
 }
 
-bool ros::Logger::SendMessage(const LogMessage& message) {
-    if (!IsMessageAccepted(message)) {
+bool ros::Logger::sendMessage(const LogMessage& message) {
+    if (!isMessageAccepted(message)) {
         return false;
     }
 
-    for (LogsSinksIter iter = sinks.begin(); iter != sinks.end(); ++iter) {
+    for (LogsSinkList::iterator iter = sinks.begin(); iter != sinks.end(); ++iter) {
         LogsSinkPtr sink = *iter;
-        if (sink->IsMessageAccepted(message) && !sink->SendMessage(message)) {
+        if (sink->isMessageAccepted(message) && !sink->sendMessage(message)) {
             return false;
         }
     }
@@ -65,8 +65,9 @@ bool ros::Logger::SendMessage(const LogMessage& message) {
     return true;
 }
 
-void ros::Logger::FlushMessages() {
-    for (LogsSinksIter iter = sinks.begin(); iter != sinks.end(); ++iter) {
-        (*iter)->FlushMessages();
+void ros::Logger::flushMessages() {
+    for (LogsSinkList::iterator iter = sinks.begin(); iter != sinks.end(); ++iter) {
+        LogsSinkPtr sink = *iter;
+        sink->flushMessages();
     }
 }

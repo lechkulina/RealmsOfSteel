@@ -4,7 +4,7 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <Application/Logger.h>
+#include <application/Logger.h>
 #include "SDLApplication.h"
 
 ros::SDLApplication::SDLApplication()
@@ -12,49 +12,46 @@ ros::SDLApplication::SDLApplication()
 }
 
 ros::SDLApplication::~SDLApplication() {
-    Uninit();
+    uninit();
 }
 
-bool ros::SDLApplication::Init(const PropertyTree& config) {
+bool ros::SDLApplication::init(const PropertyTree& config) {
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: %s")
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize SDL application: %s") % SDL_GetError());
+        uninit();
         return false;
     }
 
     SDL_version version;
     memset(&version, 0, sizeof(version));
     SDL_GetVersion(&version);
-    Logger::Report(LogLevel_Debug, LogFormat("Using SDL %d.%d.%d")
-                   % (int)version.major % (int)version.minor % (int)version.patch);
+    Logger::report(LogLevel_Debug, boost::format("Using SDL %d.%d.%d") % (int)version.major % (int)version.minor % (int)version.patch);
 
-    PropertyConstAssocIter iter = config.find("Window");
+    PropertyTree::const_assoc_iterator iter = config.find("Window");
     if (iter == config.not_found()) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize SDL application: Missing window configuration"));
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize SDL application: Missing window configuration"));
+        uninit();
         return false;
     }
 
-    window = Window::Create(iter->second);
+    window = Window::create(iter->second);
     if (!window) {
-        Uninit();
+        uninit();
         return false;
     }
 
     return true;
 }
 
-void ros::SDLApplication::Uninit() {
+void ros::SDLApplication::uninit() {
     if (window) {
-        window->Uninit();
+        window->uninit();
     }
     SDL_Quit();
 }
 
-int ros::SDLApplication::Run() {
-    Logger::Report(LogLevel_Trace, LogFormat("Starting Realms Of Steel %s")
-                   % ROS_VERSION);
+int ros::SDLApplication::run() {
+    Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
 
     float fps = 60.0f;
     float deltaTime = (1 / fps) * 1000;
@@ -65,7 +62,7 @@ int ros::SDLApplication::Run() {
     while (!hasQuit) {
         SDL_Event event;
         if (SDL_PollEvent(&event) > 0) {
-            OnEvent(event);
+            onEvent(event);
             continue;
         }
 
@@ -76,33 +73,26 @@ int ros::SDLApplication::Run() {
         }
         startTime = currentTime;
         while (accumulatedTime > deltaTime) {
-            OnUpdate(deltaTime);
+            onUpdate(deltaTime);
             accumulatedTime -= deltaTime;
         }
 
-        window->ClearBuffers();
-        OnRender();
-        window->SwapBuffers();
+        window->clearBuffers();
+        onRender();
+        window->swapBuffers();
     }
 
     return EXIT_SUCCESS;
 }
 
-void ros::SDLApplication::OnEvent(const SDL_Event& event) {
+void ros::SDLApplication::onEvent(const SDL_Event& event) {
     switch (event.type) {
         case SDL_QUIT: {
             hasQuit = true;
         } break;
 
         case SDL_KEYDOWN: {
-            switch (event.key.keysym.scancode) {
-                case SDL_SCANCODE_ESCAPE: {
-                    hasQuit = true;
-                    break;
-                }
-                default:
-                    break;
-            }
+
         } break;
 
         default:
@@ -111,10 +101,10 @@ void ros::SDLApplication::OnEvent(const SDL_Event& event) {
 
 }
 
-void ros::SDLApplication::OnUpdate(float) {
+void ros::SDLApplication::onUpdate(float) {
 
 }
 
-void ros::SDLApplication::OnRender() {
+void ros::SDLApplication::onRender() {
 
 }

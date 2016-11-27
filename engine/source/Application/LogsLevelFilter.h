@@ -7,20 +7,18 @@
 #ifndef ROS_LOGS_LEVEL_FILTER_H
 #define ROS_LOGS_LEVEL_FILTER_H
 
-#include <Application/LogsFilter.h>
+#include <application/LogsFilter.h>
 
 namespace ros {
-
     class ROS_API LogsLevelFilter : public LogsFilter {
         public:
-            virtual bool Init(const PropertyTree& config);
-            virtual void Uninit();
-            virtual bool IsMessageAccepted(const LogMessage& message) const;
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
+            virtual bool isMessageAccepted(const LogMessage& message) const;
 
         private:
             LogLevelOpt thresholdLevel;
     };
-
 }
 
 #endif // ROS_LOGS_LEVEL_FILTER_H

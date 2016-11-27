@@ -4,61 +4,58 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
-#include <algorithm>
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
 #include "LogsConsoleSink.h"
 
-namespace ros {
+namespace {
+    struct StreamMapping {
+        const char* str;
+        std::ostream* stream;
+    };
 
-    static const struct StreamMapping {
-       const char* str;
-       std::ostream* stream;
-    } streamMappings[] = {
+    const StreamMapping streamMappings[] = {
         {"Output", &std::cout},
         {"Error", &std::cerr},
         {"Log", &std::clog}
     };
 
-    static std::ostream* Stream_FromString(const char* str) {
+    std::ostream* Stream_fromString(const char* str) {
         const StreamMapping* iter = std::find_if(boost::begin(streamMappings), boost::end(streamMappings),
-                                                   boost::bind(strcmp, boost::bind(&StreamMapping::str, _1), str) == 0);
+            boost::bind(strcmp, boost::bind(&StreamMapping::str, _1), str) == 0);
         if (iter != boost::end(streamMappings)) {
             return iter->stream;
         }
         return ROS_NULL;
     }
-
 }
 
 ros::LogsConsoleSink::LogsConsoleSink()
     : stream(ROS_NULL) {
 }
 
-bool ros::LogsConsoleSink::Init(const PropertyTree& config) {
-    if (!LogsSink::Init(config)) {
+bool ros::LogsConsoleSink::init(const PropertyTree& config) {
+    if (!LogsSink::init(config)) {
         return false;
     }
 
-    String streamConfig = config.get<String>("Stream", "Error");
-    std::ostream* streamMapped = Stream_FromString(streamConfig.c_str());
-    if (!streamMapped) {
-        std::cerr << "Failed to initialize console sink: Unknown stream " << streamConfig << std::endl;
-        Uninit();
+    std::string streamStr = config.get<std::string>("Stream", "Error");
+    stream = Stream_fromString(streamStr.c_str());
+    if (!stream) {
+        std::cerr << "Failed to initialize console sink: Unknown stream " << streamStr << std::endl;
+        uninit();
         return false;
     }
-    stream = streamMapped;
 
     return true;
 }
 
-void ros::LogsConsoleSink::Uninit() {
+void ros::LogsConsoleSink::uninit() {
     stream = ROS_NULL;
-    LogsSink::Uninit();
+    LogsSink::uninit();
 }
 
-bool ros::LogsConsoleSink::SendMessage(const LogMessage& message) {
+bool ros::LogsConsoleSink::sendMessage(const LogMessage& message) {
     if (!stream) {
         return false;
     }
@@ -66,7 +63,7 @@ bool ros::LogsConsoleSink::SendMessage(const LogMessage& message) {
     return stream->good();
 }
 
-void ros::LogsConsoleSink::FlushMessages() {
+void ros::LogsConsoleSink::flushMessages() {
     if (stream) {
         stream->flush();
     }

@@ -7,83 +7,64 @@
 #ifndef ROS_FACTORY_H
 #define ROS_FACTORY_H
 
-#include <new>
-#include <map>
-#include <boost/shared_ptr.hpp>
-#include <Core/Common.h>
+#include <core/Common.h>
 
 namespace ros {
-
-    template<class BaseClass>
+    template<class Base>
     class FactoryTraits {
         public:
-            template<class DerivedClass>
-            static BaseClass* CreateInstance() {
-                return new (std::nothrow) DerivedClass();
+            template<class Derived>
+            static Base* create() {
+                return new (std::nothrow) Derived();
             }
 
-            static void DestroyInstance(BaseClass* instance) {
+            static void destroy(Base* instance) {
                 delete instance;
             }
     };
 
-    template<class _ClassId, class _BaseClass, class _Traits = FactoryTraits<_BaseClass> >
+    template<class Id, class Base, class Traits = FactoryTraits<Base> >
     class Factory {
         public:
-            typedef _ClassId ClassId;
-            typedef _BaseClass BaseClass;
-            typedef boost::shared_ptr<BaseClass> BaseClassPtr;
-            typedef _Traits Traits;
-
-            template<class DerivedClass>
-            bool RegisterClass(const ClassId& id) {
-                if (IsClassRegistered(id)) {
+            template<class Derived>
+            bool registerClass(const Id& id) {
+                if (isClassRegistered(id))
                     return false;
-                }
-                creators[id] = &Traits::template CreateInstance<DerivedClass>;
+                creators[id] = &Traits::template create<Derived>;
                 return true;
             }
 
-            void UnregisterClass(const ClassId& id) {
-                CreatorsConstIter iter = creators.find(id);
-                if (iter != creators.end()) {
+            void unregisterClass(const Id& id) {
+                typename CreatorMap::const_iterator iter = creators.find(id);
+                if (iter != creators.end())
                     creators.erase(iter);
-                }
             }
 
-            inline bool IsClassRegistered(const ClassId& id) const {
+            inline bool isClassRegistered(const Id& id) const {
                 return creators.find(id) != creators.end();
             }
 
-            BaseClass* CreateInstance(const ClassId& id) const {
-                CreatorsConstIter iter = creators.find(id);
-                if (iter == creators.end()) {
+            Base* create(const Id& id) const {
+                typename CreatorMap::const_iterator iter = creators.find(id);
+                if (iter == creators.end())
                     return ROS_NULL;
-                }
                 return (*(iter->second))();
             }
 
-            inline void DestroyInstance(BaseClass* instance) const {
-                Traits::DestroyInstance(instance);
+            inline void destroy(Base* instance) const {
+                Traits::destroy(instance);
             }
 
-            inline BaseClassPtr MakeShared(const ClassId& id) const {
-                return BaseClassPtr(CreateInstance(id));
-            }
-
-            inline bool IsEmpty() const {
+            inline bool isEmpty() const {
                 return creators.empty();
             }
 
         private:
-            typedef BaseClass* (*Creator)();
-            typedef std::map<ClassId, Creator> CreatorsMap;
-            typedef typename CreatorsMap::iterator CreatorsIter;
-            typedef typename CreatorsMap::const_iterator CreatorsConstIter;
+            typedef Base* (*Creator)();
+            typedef std::map<Id, Creator> CreatorMap;
 
-            CreatorsMap creators;
+            CreatorMap creators;
     };
-
 }
 
 #endif // ROS_FACTORY_H

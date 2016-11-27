@@ -15,15 +15,15 @@ int main() {
     ros::PropertyTree config;
     boost::property_tree::read_info("Config.info", config);
 
-    if (!ros::Logger::Create(config.get_child("Logger"))) {
+    if (!ros::Logger::create(config.get_child("Logger"))) {
         return exitCode;
     }
-    if (!ros::Application::Create(config.get_child("Application"))) {
+    if (!ros::Application::create(config.get_child("Application"))) {
         return exitCode;
     }
 
-    exitCode = ros::Application::GetInstance()->Run();
-    ros::Application::GetInstance()->Uninit();
+    exitCode = ros::Application::getInstance()->run();
+    ros::Application::getInstance()->uninit();
 
     return exitCode;
 }

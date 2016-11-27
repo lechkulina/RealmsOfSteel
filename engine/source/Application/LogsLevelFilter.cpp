@@ -4,35 +4,32 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <iostream>
-#include <algorithm>
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
 #include "LogsLevelFilter.h"
 
-bool ros::LogsLevelFilter::Init(const PropertyTree& config) {
-    StringOpt thresholdLevelConfig = config.get_optional<String>("ThresholdLevel");
-    if (!thresholdLevelConfig) {
+bool ros::LogsLevelFilter::init(const PropertyTree& config) {
+    StringOpt thresholdLevelStr = config.get_optional<std::string>("ThresholdLevel");
+    if (!thresholdLevelStr) {
         std::cerr << "Failed to initialize level filter: Missing threshold level" << std::endl;
         return false;
     }
-    LogLevelOpt thresholdLevelMapping = LogLevel_FromString(thresholdLevelConfig->c_str());
-    if (!thresholdLevelMapping) {
-        std::cerr << "Failed to initialize level filter: Unknown threshold level" << *thresholdLevelConfig << std::endl;
+    thresholdLevel = LogLevel_fromString(thresholdLevelStr->c_str());
+    if (!thresholdLevel) {
+        std::cerr << "Failed to initialize level filter: Unknown threshold level" << *thresholdLevelStr << std::endl;
+        uninit();
         return false;
     }
-    thresholdLevel = thresholdLevelMapping;
-
     return true;
 }
 
-void ros::LogsLevelFilter::Uninit() {
+void ros::LogsLevelFilter::uninit() {
     thresholdLevel.reset();
 }
 
-bool ros::LogsLevelFilter::IsMessageAccepted(const LogMessage& message) const {
+bool ros::LogsLevelFilter::isMessageAccepted(const LogMessage& message) const {
     if (!thresholdLevel) {
         return true;
     }
-    return message.GetLevel() >= *thresholdLevel;
+    return message.getLevel() >= *thresholdLevel;
 }

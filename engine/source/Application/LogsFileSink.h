@@ -8,24 +8,22 @@
 #define ROS_LOGS_FILE_SINK_H
 
 #include <fstream>
-#include <Application/LogsSink.h>
+#include <application/LogsSink.h>
 
 namespace ros {
-
     class LogsFileSink : public LogsSink {
         public:
             virtual ~LogsFileSink();
 
-            virtual bool Init(const PropertyTree& config);
-            virtual void Uninit();
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
 
-            virtual bool SendMessage(const LogMessage& message);
-            virtual void FlushMessages();
+            virtual bool sendMessage(const LogMessage& message);
+            virtual void flushMessages();
 
         private:
             std::ofstream stream;
     };
-
 }
 
 #endif // ROS_LOGS_FILE_SINK_H

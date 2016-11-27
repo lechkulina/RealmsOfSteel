@@ -7,36 +7,32 @@
 #ifndef ROS_APPLICATION_H
 #define ROS_APPLICATION_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/noncopyable.hpp>
-#include <Core/PropertyTree.h>
-#include <Core/Environment.h>
-#include <Core/Factory.h>
-#include <Application/Window.h>
+#include <core/Common.h>
+#include <core/Environment.h>
+#include <core/Factory.h>
+#include <application/Window.h>
 
 namespace ros {
-
     class Application;
     typedef boost::shared_ptr<Application> ApplicationPtr;
-    typedef Factory<String, Application> ApplicationFactory;
+    typedef Factory<std::string, Application> ApplicationFactory;
 
     class ROS_API Application : public boost::noncopyable {
         public:
-            static ApplicationPtr Create(const PropertyTree& config);
-            static ApplicationPtr GetInstance() { return application; }
+            static ApplicationPtr create(const PropertyTree& config);
+            static ApplicationPtr getInstance() { return application; }
 
             virtual ~Application() {}
 
-            virtual bool Init(const PropertyTree& config) =0;
-            virtual void Uninit() =0;
-            virtual int Run() =0;
-            virtual WindowPtr GetWindow() const =0;
+            virtual bool init(const PropertyTree& config) =0;
+            virtual void uninit() =0;
+            virtual int run() =0;
+            virtual WindowPtr getWindow() const =0;
 
         private:
             static ApplicationFactory factory;
             static ApplicationPtr application;
     };
-
 }
 
 #endif // ROS_APPLICATION_H

@@ -13,10 +13,10 @@ ros::SDLOpenGLWindow::SDLOpenGLWindow()
 }
 
 ros::SDLOpenGLWindow::~SDLOpenGLWindow() {
-    Uninit();
+    uninit();
 }
 
-bool ros::SDLOpenGLWindow::Init(const PropertyTree& config) {
+bool ros::SDLOpenGLWindow::init(const PropertyTree& config) {
     // set OpenGL attributes before creating OpenGL window
     int redSizeConfig = config.get("Application.Window.RedSize", 8);
     int greenSizeConfig = config.get("Application.Window.GreenSize", 8);
@@ -26,37 +26,31 @@ bool ros::SDLOpenGLWindow::Init(const PropertyTree& config) {
         SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, greenSizeConfig) != 0 ||
         SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, blueSizeConfig) != 0||
         SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaSizeConfig) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to set OpenGL color buffer channels sizes to %d.%d.%d.%d: %s")
-                       % redSizeConfig % greenSizeConfig % blueSizeConfig % alphaSizeConfig
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL color buffer channels sizes to %d.%d.%d.%d: %s")
+                            % redSizeConfig % greenSizeConfig % blueSizeConfig % alphaSizeConfig  % SDL_GetError());
+        uninit();
         return false;
     }
 
     int depthSizeConfig = config.get("Application.Window.DepthSize", 16);
     if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depthSizeConfig) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to set OpenGL depth buffer size to %d: %s")
-                       % depthSizeConfig
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL depth buffer size to %d: %s") % depthSizeConfig % SDL_GetError());
+        uninit();
         return false;
     }
 
     int stencilSizeConfig = config.get("Application.Window.StencilSize", 0);
     if (SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencilSizeConfig) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to set OpenGL stencil buffer size to %d: %s")
-                       % stencilSizeConfig
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to set OpenGL stencil buffer size to %d: %s") % stencilSizeConfig % SDL_GetError());
+        uninit();
         return false;
     }
 
     bool enableDoubleBufferingConfig = config.get("Application.Window.EnableDoubleBuffering", true);
     if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, enableDoubleBufferingConfig) != 0) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to %s OpenGL double buffering: %s")
-                       % (enableDoubleBufferingConfig ? "enable" : "disable")
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to %s OpenGL double buffering: %s")
+                            % (enableDoubleBufferingConfig ? "enable" : "disable")  % SDL_GetError());
+        uninit();
         return false;
     }
 
@@ -72,35 +66,30 @@ bool ros::SDLOpenGLWindow::Init(const PropertyTree& config) {
     int heightConfig = config.get("Application.Window.Height", 480);
     window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, widthConfig, heightConfig, flagsConfig);
     if (!window) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to create SDL window: %s")
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to create SDL window: %s") % SDL_GetError());
+        uninit();
         return false;
     }
 
     context = SDL_GL_CreateContext(window);
     if (!context) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to create OpenGL context: %s")
-                       % SDL_GetError());
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to create OpenGL context: %s") % SDL_GetError());
+        uninit();
         return false;
     }
 
     GLenum error = glewInit();
     if (error != GLEW_OK) {
-        Logger::Report(LogLevel_Error, LogFormat("Failed to initialize OpenGL Extension Wrangler: %s")
-                       % glewGetErrorString(error));
-        Uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize OpenGL Extension Wrangler: %s") % glewGetErrorString(error));
+        uninit();
         return false;
     }
 
-    Logger::Report(LogLevel_Debug, LogFormat("Using OpenGL %s from %s")
-                   % glGetString(GL_VERSION)
-                   % glGetString(GL_VENDOR));
+    Logger::report(LogLevel_Debug, boost::format("Using OpenGL %s from %s") % glGetString(GL_VERSION) % glGetString(GL_VENDOR));
     return true;
 }
 
-void ros::SDLOpenGLWindow::Uninit() {
+void ros::SDLOpenGLWindow::uninit() {
     if (context) {
         SDL_GL_DeleteContext(context);
     }
@@ -109,10 +98,10 @@ void ros::SDLOpenGLWindow::Uninit() {
     }
 }
 
-void ros::SDLOpenGLWindow::SwapBuffers() {
+void ros::SDLOpenGLWindow::swapBuffers() {
     SDL_GL_SwapWindow(window);
 }
 
-void ros::SDLOpenGLWindow::ClearBuffers() {
+void ros::SDLOpenGLWindow::clearBuffers() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

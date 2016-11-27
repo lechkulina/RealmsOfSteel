@@ -7,25 +7,22 @@
 #ifndef ROS_LOGS_CONSOLE_SINK_H
 #define ROS_LOGS_CONSOLE_SINK_H
 
-#include <ostream>
-#include <Application/LogsSink.h>
+#include <application/LogsSink.h>
 
 namespace ros {
-
     class ROS_API LogsConsoleSink : public LogsSink {
         public:
             LogsConsoleSink();
 
-            virtual bool Init(const PropertyTree& config);
-            virtual void Uninit();
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
 
-            virtual bool SendMessage(const LogMessage& message);
-            virtual void FlushMessages();
+            virtual bool sendMessage(const LogMessage& message);
+            virtual void flushMessages();
 
         private:
             std::ostream* stream;
     };
-
 }
 
 #endif // ROS_LOGS_CONSOLE_SINK_H

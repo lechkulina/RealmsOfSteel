@@ -7,45 +7,37 @@
 #ifndef ROS_LOGGER_H
 #define ROS_LOGGER_H
 
-#include <string>
-#include <list>
-#include <Core/Environment.h>
-#include <Core/Factory.h>
-#include <Application/LogsSink.h>
+#include <core/Common.h>
+#include <core/Environment.h>
+#include <core/Factory.h>
+#include <application/LogsSink.h>
 
 namespace ros {
-
     class Logger;
     typedef boost::shared_ptr<Logger> LoggerPtr;
 
     class ROS_API Logger : public LogsSink {
         public:
-            static LoggerPtr Create(const PropertyTree& config);
-            static LoggerPtr GetInstance() { return logger; }
+            static LoggerPtr create(const PropertyTree& config);
+            static LoggerPtr getInstance() { return logger; }
 
-            virtual bool Init(const PropertyTree& config);
-            virtual void Uninit();
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
 
-            virtual bool SendMessage(const LogMessage& message);
-            virtual void FlushMessages();
+            virtual bool sendMessage(const LogMessage& message);
+            virtual void flushMessages();
 
-            static bool Report(LogLevel level, const LogFormat& format) {
-                return GetInstance()->SendMessage(LogMessage(level, format.str()));
+            static bool report(LogLevel level, const boost::format& format) {
+                return getInstance()->sendMessage(LogMessage(level, format.str()));
             }
 
         protected:
-            typedef std::list<LogsSinkPtr> LogsSinksList;
-            typedef LogsSinksList::iterator LogsSinksIter;
-            typedef LogsSinksList::const_iterator LogsSinksConstIter;
-
-            LogsSinksList sinks;
+            typedef std::list<LogsSinkPtr> LogsSinkList;
+            LogsSinkList sinks;
 
         private:
-            typedef Factory<std::string, LogsSink> LogsSinksFactory;
-
             static LoggerPtr logger;
     };
-
 }
 
 #endif // ROS_LOGGER_H

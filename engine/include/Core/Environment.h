@@ -4,25 +4,25 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_ENVIRONMENT_H
-#define ROS_ENVIRONMENT_H
+#ifndef ROS_ENV_H
+#define ROS_ENV_H
 
 #if defined(i386) || defined(__i386) || defined(__i386__) || defined(__IA32__) || \
     defined(_M_I86) || defined(_M_IX86) || defined(__X86__) || defined(_X86_) || \
     defined(__THW_INTEL__) || defined(__I86__) || defined(__INTEL__)
-    #define ROS_ARCHITECTURE_IA32
-    #define ROS_ARCHITECTURE_X86_X64
+    #define ROS_ARCH_IA32
+    #define ROS_ARCH_X86_X64
 #endif
 #if defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(_M_IA64) || \
     defined(__itanium__)
-    #define ROS_ARCHITECTURE_IA64
+    #define ROS_ARCH_IA64
 #endif
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || \
     defined(_M_X64) || defined(_M_AMD64)
-    #define ROS_ARCHITECTURE_AMD64
-    #define ROS_ARCHITECTURE_X86_X64
+    #define ROS_ARCH_AMD64
+    #define ROS_ARCH_X86_X64
 #endif
-#if !defined(ROS_ARCHITECTURE_IA32) && !defined(ROS_ARCHITECTURE_IA64) && !defined(ROS_ARCHITECTURE_AMD64)
+#if !defined(ROS_ARCH_IA32) && !defined(ROS_ARCH_IA64) && !defined(ROS_ARCH_AMD64)
     #error "Failed to detect the architecture!"
 #endif
 
@@ -44,15 +44,15 @@
 #endif
 
 #if defined(__GNUC__)
-    #define ROS_COMPILER_GCC
+    #define ROS_CC_GCC
     #if __GNUC__ >= 4
         #define ROS_FEATURE_VISIBILITY_ATTRIBUTE
     #endif
 #endif
 #if defined(_MSC_VER)
-    #define ROS_COMPILER_MSVC
+    #define ROS_CC_MSVC
 #endif
-#if !defined(ROS_COMPILER_GCC) && !defined(ROS_COMPILER_MSVC)
+#if !defined(ROS_CC_GCC) && !defined(ROS_CC_MSVC)
     #error "Failed to detect the compiler!"
 #endif
 
@@ -80,5 +80,5 @@
     #define ROS_API ROS_IMPORT
 #endif
 
-#endif // ROS_ENVIRONMENT_H
+#endif // ROS_ENV_H
 

@@ -8,29 +8,27 @@
 #define ROS_SDL_APPLICATION_H
 
 #include <SDL2/SDL.h>
-#include <Application/Application.h>
+#include <application/Application.h>
 
 namespace ros {
-
     class ROS_API SDLApplication : public Application {
         public:
             SDLApplication();
             virtual ~SDLApplication();
 
-            virtual bool Init(const PropertyTree& config);
-            virtual void Uninit();
-            virtual int Run();
-            virtual WindowPtr GetWindow() const { return window; }
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
+            virtual int run();
+            virtual WindowPtr getWindow() const { return window; }
 
         private:
             WindowPtr window;
             bool hasQuit;
 
-            void OnEvent(const SDL_Event& event);
-            void OnUpdate(float);
-            void OnRender();
+            void onEvent(const SDL_Event& event);
+            void onUpdate(float);
+            void onRender();
     };
-
 }
 
 #endif // ROS_SDL_APPLICATION_H

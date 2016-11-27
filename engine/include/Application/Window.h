@@ -7,33 +7,29 @@
 #ifndef ROS_WINDOW_H
 #define ROS_WINDOW_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/noncopyable.hpp>
-#include <Core/PropertyTree.h>
-#include <Core/Environment.h>
-#include <Core/Factory.h>
+#include <core/Common.h>
+#include <core/Environment.h>
 
 namespace ros {
-
     class Window;
     typedef boost::shared_ptr<Window> WindowPtr;
-    typedef Factory<String, Window> WindowFactory;
+    typedef Factory<std::string, Window> WindowFactory;
 
     class ROS_API Window : public boost::noncopyable {
         public:
-            static WindowPtr Create(const PropertyTree& config);
+            static WindowPtr create(const PropertyTree& config);
 
             virtual ~Window() {}
 
-            virtual bool Init(const PropertyTree& config) =0;
-            virtual void Uninit() =0;
-            virtual void SwapBuffers() =0;
-            virtual void ClearBuffers() =0;
+            virtual bool init(const PropertyTree& config) =0;
+            virtual void uninit() =0;
+
+            virtual void swapBuffers() =0;
+            virtual void clearBuffers() =0;
 
         private:
             static WindowFactory factory;
     };
-
 }
 
 #endif // ROS_WINDOW_H
