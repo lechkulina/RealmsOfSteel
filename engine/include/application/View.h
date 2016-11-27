@@ -12,6 +12,8 @@
 
 namespace ros {
     struct KeyboardPressEvent;
+    struct MouseMotionEvent;
+    struct MousePressEvent;
 
     class ROS_API View : public boost::noncopyable {
         public:
@@ -21,6 +23,8 @@ namespace ros {
             virtual void uninit() =0;
 
             virtual void onKeyboardPressEvent(const KeyboardPressEvent& event) =0;
+            virtual void onMouseMotionEvent(const MouseMotionEvent& event) =0;
+            virtual void onMousePressEvent(const MousePressEvent& event) =0;
     };
 
     typedef boost::shared_ptr<View> ViewPtr;

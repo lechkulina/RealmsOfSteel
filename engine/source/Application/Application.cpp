@@ -43,3 +43,17 @@ void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
         view->onKeyboardPressEvent(event);
     }
 }
+
+void ros::Application::onMouseMotionEvent(const MouseMotionEvent& event) {
+    for (ViewList::iterator iter = views.begin(); iter != views.end(); ++iter) {
+        ViewPtr view = *iter;
+        view->onMouseMotionEvent(event);
+    }
+}
+
+void ros::Application::onMousePressEvent(const MousePressEvent& event) {
+    for (ViewList::iterator iter = views.begin(); iter != views.end(); ++iter) {
+        ViewPtr view = *iter;
+        view->onMousePressEvent(event);
+    }
+}

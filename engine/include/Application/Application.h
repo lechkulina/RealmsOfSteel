@@ -121,6 +121,25 @@ namespace ros {
         ButtonState state;
     };
 
+    struct MouseMotionEvent {
+        float x;
+        float y;
+    };
+
+    enum MouseButton {
+        MouseButton_Unknown,
+        MouseButton_Left,
+        MouseButton_Middle,
+        MouseButton_Right
+    };
+
+    struct MousePressEvent {
+        MouseButton button;
+        ButtonState state;
+        float x;
+        float y;
+    };
+
     class Application;
     typedef boost::shared_ptr<Application> ApplicationPtr;
     typedef Factory<std::string, Application> ApplicationFactory;
@@ -141,7 +160,9 @@ namespace ros {
             typedef std::list<ViewPtr> ViewList;
             ViewList views;
 
-            void onKeyboardPressEvent(const KeyboardPressEvent& event);
+            virtual void onKeyboardPressEvent(const KeyboardPressEvent& event);
+            virtual void onMouseMotionEvent(const MouseMotionEvent& event);
+            virtual void onMousePressEvent(const MousePressEvent& event);
 
         private:
             static ApplicationFactory factory;

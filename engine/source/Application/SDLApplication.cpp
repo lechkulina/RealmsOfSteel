@@ -10,12 +10,10 @@
 #include "SDLApplication.h"
 
 namespace {
-    struct KeyboardButtonMapping {
-        SDL_Scancode scanCode;
+    const struct KeyboardButtonMapping {
+        SDL_Scancode code;
         ros::KeyboardButton button;
-    };
-
-    const KeyboardButtonMapping keyboardButtonMappings[] = {
+    } keyboardButtonMappings[] = {
         {SDL_SCANCODE_A, ros::KeyboardButton_A},
         {SDL_SCANCODE_B, ros::KeyboardButton_B},
         {SDL_SCANCODE_C, ros::KeyboardButton_C},
@@ -54,43 +52,61 @@ namespace {
         {SDL_SCANCODE_0, ros::KeyboardButton_0}
     };
 
-    ros::KeyboardButton KeyboardButton_fromSDLEvent(const SDL_KeyboardEvent& event) {
+    ros::KeyboardButton KeyboardButton_fromSDLScanCode(SDL_Scancode code) {
         const KeyboardButtonMapping* iter = std::find_if(boost::begin(keyboardButtonMappings), boost::end(keyboardButtonMappings),
-            boost::bind(&KeyboardButtonMapping::scanCode, _1) == event.keysym.scancode);
+            boost::bind(&KeyboardButtonMapping::code, _1) == code);
         if (iter != boost::end(keyboardButtonMappings)) {
             return iter->button;
         }
         return ros::KeyboardButton_Unknown;
     }
 
-    ros::KeyboardModifiers KeyboardModifiers_fromSDLEvent(const SDL_KeyboardEvent& event) {
-        if (event.keysym.mod & KMOD_LSHIFT)
+    ros::KeyboardModifiers KeyboardModifiers_fromSDLModifiers(Uint16 modifiers) {
+        if (modifiers & KMOD_LSHIFT)
             return ros::KeyboardModifiers_LeftShift;
-        if (event.keysym.mod & KMOD_RSHIFT)
+        if (modifiers & KMOD_RSHIFT)
             return ros::KeyboardModifiers_RightShift;
 
-        if (event.keysym.mod & KMOD_LALT)
+        if (modifiers & KMOD_LALT)
             return ros::KeyboardModifiers_LeftAlt;
-        if (event.keysym.mod & KMOD_RALT)
+        if (modifiers & KMOD_RALT)
             return ros::KeyboardModifiers_RightAlt;
 
-        if (event.keysym.mod & KMOD_LCTRL)
+        if (modifiers & KMOD_LCTRL)
             return ros::KeyboardModifiers_LeftControl;
-        if (event.keysym.mod & KMOD_RCTRL)
+        if (modifiers & KMOD_RCTRL)
             return ros::KeyboardModifiers_RightControl;
 
-        if (event.keysym.mod & KMOD_NUM)
+        if (modifiers & KMOD_NUM)
             return ros::KeyboardModifiers_NumLock;
-        if (event.keysym.mod & KMOD_CAPS)
+        if (modifiers & KMOD_CAPS)
             return ros::KeyboardModifiers_CapsLock;
-        if (event.keysym.mod != KMOD_NONE)
+        if (modifiers != KMOD_NONE)
             return ros::KeyboardModifiers_None;
 
         return ros::KeyboardModifiers_Unknown;
     }
 
-    inline ros::ButtonState ButtonState_fromSDLEvent(const SDL_KeyboardEvent& event) {
-        return event.state == SDL_PRESSED ? ros::ButtonState_Pressed : ros::ButtonState_Released;
+    inline ros::ButtonState ButtonState_fromSDLState(Uint8 state) {
+        return state == SDL_PRESSED ? ros::ButtonState_Pressed : ros::ButtonState_Released;
+    }
+
+    const struct MouseButtonMapping {
+        Uint8 code;
+        ros::MouseButton button;
+    } mouseButtonMappings[] = {
+        {SDL_BUTTON_LEFT, ros::MouseButton_Left},
+        {SDL_BUTTON_MIDDLE, ros::MouseButton_Middle},
+        {SDL_BUTTON_RIGHT, ros::MouseButton_Right}
+    };
+
+    ros::MouseButton MouseButton_fromSDLButton(Uint8 code) {
+        const MouseButtonMapping* iter = std::find_if(boost::begin(mouseButtonMappings), boost::end(mouseButtonMappings),
+            boost::bind(&MouseButtonMapping::code, _1) == code);
+        if (iter != boost::end(mouseButtonMappings)) {
+            return iter->button;
+        }
+        return ros::MouseButton_Unknown;
     }
 }
 
@@ -181,11 +197,30 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
         case SDL_KEYDOWN:
         case SDL_KEYUP: {
             KeyboardPressEvent ev;
-            ev.button = KeyboardButton_fromSDLEvent(event.key);
-            ev.modifiers = KeyboardModifiers_fromSDLEvent(event.key);
-            ev.state = ButtonState_fromSDLEvent(event.key);
+            ev.button = KeyboardButton_fromSDLScanCode(event.key.keysym.scancode);
+            ev.modifiers = KeyboardModifiers_fromSDLModifiers(event.key.keysym.mod);
+            ev.state = ButtonState_fromSDLState(event.key.state);
 
             onKeyboardPressEvent(ev);
+        } break;
+
+        case SDL_MOUSEMOTION: {
+            MouseMotionEvent ev;
+            ev.x = event.motion.x;
+            ev.y = event.motion.y;
+
+            onMouseMotionEvent(ev);
+        } break;
+
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP: {
+            MousePressEvent ev;
+            ev.x = event.button.x;
+            ev.y = event.button.y;
+            ev.button = MouseButton_fromSDLButton(event.button.button);
+            ev.state = ButtonState_fromSDLState(event.button.state);
+
+            onMousePressEvent(ev);
         } break;
 
         default:
