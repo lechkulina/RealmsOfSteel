@@ -13,23 +13,18 @@
 namespace ros {
     class ROS_API SDLOpenGLApplication : public Application {
         public:
-            SDLOpenGLApplication();
             virtual ~SDLOpenGLApplication();
 
             virtual void uninit();
-            virtual int run();
+
+            virtual float getTicks() const;
 
         protected:
             virtual bool preInit(const PropertyTree& config);
             virtual bool postInit(const PropertyTree& config);
             virtual WindowPtr createWindow(const PropertyTree& config);
 
-        private:
-            bool hasQuit;
-
-            void onEvent(const SDL_Event& event);
-            void onUpdate(float);
-            void onRender();
+            virtual bool translateEvent();
     };
 }
 

@@ -37,6 +37,11 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
     return application;
 }
 
+ros::Application::Application()
+    : isQuitRequested(false) {
+
+}
+
 bool ros::Application::init(const PropertyTree& config) {
     if (!preInit(config)) {
         uninit();
@@ -69,6 +74,42 @@ void ros::Application::uninit() {
     }
 }
 
+int ros::Application::run() {
+    Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
+
+    float framesPerSecond = 60.0f;
+    float maxAccumulatedTicks = 50.0f;
+
+    float frameDuration = (1 / framesPerSecond) * 1000;
+    float accumulatedTicks = 0.0f;
+    float previousTicks = getTicks();
+
+    while (!isQuitRequested) {
+        if (translateEvent()) {
+            continue;
+        }
+
+        float currentTicks = getTicks();
+        accumulatedTicks += currentTicks - previousTicks;
+        accumulatedTicks = std::max(accumulatedTicks, maxAccumulatedTicks);
+        previousTicks = currentTicks;
+        while (accumulatedTicks > frameDuration) {
+            onUpdateEvent(frameDuration);
+            accumulatedTicks -= frameDuration;
+        }
+
+        window->clearBuffers();
+        onRenderEvent();
+        window->swapBuffers();
+    }
+
+    return EXIT_SUCCESS;
+}
+
+void ros::Application::onQuitEvent() {
+    isQuitRequested = true;
+}
+
 void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
     for (ViewList::iterator iter = views.begin(); iter != views.end(); ++iter) {
         ViewPtr view = *iter;
@@ -88,4 +129,12 @@ void ros::Application::onMousePressEvent(const MousePressEvent& event) {
         ViewPtr view = *iter;
         view->onMousePressEvent(event);
     }
+}
+
+void ros::Application::onUpdateEvent(float) {
+
+}
+
+void ros::Application::onRenderEvent() {
+
 }

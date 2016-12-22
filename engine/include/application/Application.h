@@ -149,13 +149,16 @@ namespace ros {
             static ApplicationPtr create(const PropertyTree& config);
             static ApplicationPtr getInstance() { return application; }
 
+            Application();
             virtual ~Application() {}
 
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
-            virtual int run() =0;
+            virtual int run();
 
             WindowPtr getWindow() const { return window; }
+
+            virtual float getTicks() const =0;
 
         protected:
             typedef std::list<ViewPtr> ViewList;
@@ -165,14 +168,20 @@ namespace ros {
             virtual bool postInit(const PropertyTree& config) =0;
             virtual WindowPtr createWindow(const PropertyTree& config) =0;
 
+            virtual bool translateEvent() =0;
+
+            virtual void onQuitEvent();
             virtual void onKeyboardPressEvent(const KeyboardPressEvent& event);
             virtual void onMouseMotionEvent(const MouseMotionEvent& event);
             virtual void onMousePressEvent(const MousePressEvent& event);
+            virtual void onUpdateEvent(float duration);
+            virtual void onRenderEvent();
 
         private:
             static ApplicationFactory factory;
             static ApplicationPtr application;
             WindowPtr window;
+            bool isQuitRequested;
     };
 }
 

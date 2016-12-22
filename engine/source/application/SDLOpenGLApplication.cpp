@@ -111,10 +111,6 @@ namespace {
     }
 }
 
-ros::SDLOpenGLApplication::SDLOpenGLApplication()
-    : hasQuit(false) {
-}
-
 ros::SDLOpenGLApplication::~SDLOpenGLApplication() {
     uninit();
 }
@@ -142,39 +138,8 @@ void ros::SDLOpenGLApplication::uninit() {
     SDL_Quit();
 }
 
-int ros::SDLOpenGLApplication::run() {
-    Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
-
-    float fps = 60.0f;
-    float deltaTime = (1 / fps) * 1000;
-    float maxAccumulatedTime = 50.0f;
-    float accumulatedTime = 0.0f;
-    float startTime = (float)SDL_GetTicks();
-
-    while (!hasQuit) {
-        SDL_Event event;
-        if (SDL_PollEvent(&event) > 0) {
-            onEvent(event);
-            continue;
-        }
-
-        float currentTime = (float)SDL_GetTicks();
-        accumulatedTime += currentTime - startTime;
-        if (accumulatedTime > maxAccumulatedTime) {
-            accumulatedTime = maxAccumulatedTime;
-        }
-        startTime = currentTime;
-        while (accumulatedTime > deltaTime) {
-            onUpdate(deltaTime);
-            accumulatedTime -= deltaTime;
-        }
-
-        getWindow()->clearBuffers();
-        onRender();
-        getWindow()->swapBuffers();
-    }
-
-    return EXIT_SUCCESS;
+float ros::SDLOpenGLApplication::getTicks() const {
+    return (float)SDL_GetTicks();
 }
 
 ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& config) {
@@ -185,10 +150,15 @@ ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& confi
     return window;
 }
 
-void ros::SDLOpenGLApplication::onEvent(const SDL_Event& event) {
+bool ros::SDLOpenGLApplication::translateEvent() {
+    SDL_Event event;
+    if (SDL_PollEvent(&event) == 0) {
+        return false;
+    }
+
     switch (event.type) {
         case SDL_QUIT: {
-            hasQuit = true;
+            onQuitEvent();
         } break;
 
         case SDL_KEYDOWN:
@@ -224,13 +194,5 @@ void ros::SDLOpenGLApplication::onEvent(const SDL_Event& event) {
             break;
     }
 
+    return true;
 }
-
-void ros::SDLOpenGLApplication::onUpdate(float) {
-
-}
-
-void ros::SDLOpenGLApplication::onRender() {
-
-}
-
