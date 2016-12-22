@@ -9,12 +9,9 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <application/Events.h>
 
 namespace ros {
-    struct KeyboardPressEvent;
-    struct MouseMotionEvent;
-    struct MousePressEvent;
-
     class ROS_API View : public boost::noncopyable {
         public:
             virtual ~View() {}
