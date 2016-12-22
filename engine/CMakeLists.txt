@@ -13,7 +13,6 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/LogsFileSink.cpp
     source/application/Logger.cpp
     source/application/Application.cpp
-    source/application/Window.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
@@ -44,7 +43,6 @@ if (ROS_USE_OPENGL)
         target_include_directories(Engine PRIVATE ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS})
         target_link_libraries(Engine PRIVATE ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
         target_compile_definitions(Engine PRIVATE ROS_USING_OPENGL)
-
     endif()
 endif()
 
@@ -54,9 +52,11 @@ if (ROS_USE_SDL)
         target_include_directories(Engine PRIVATE ${SDL2_INCLUDE_DIR})
         target_link_libraries(Engine PRIVATE ${SDL2_LIBRARY})
         target_compile_definitions(Engine PRIVATE ROS_USING_SDL SDL_MAIN_HANDLED)
-        target_sources(Engine PRIVATE source/application/SDLApplication.cpp)
-        if (ROS_USE_OPENGL)
-            target_sources(Engine PRIVATE source/application/SDLOpenGLWindow.cpp)
+        if (OPENGL_FOUND AND GLEW_FOUND)
+            target_sources(Engine PRIVATE
+                source/application/SDLOpenGLApplication.cpp
+                source/application/SDLOpenGLWindow.cpp
+            )
         endif()
     endif()
 endif()

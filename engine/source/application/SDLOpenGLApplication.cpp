@@ -7,7 +7,8 @@
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
 #include <application/Logger.h>
-#include "SDLApplication.h"
+#include "SDLOpenGLApplication.h"
+#include "SDLOpenGLWindow.h"
 
 namespace {
     const struct KeyboardButtonMapping {
@@ -110,18 +111,17 @@ namespace {
     }
 }
 
-ros::SDLApplication::SDLApplication()
+ros::SDLOpenGLApplication::SDLOpenGLApplication()
     : hasQuit(false) {
 }
 
-ros::SDLApplication::~SDLApplication() {
+ros::SDLOpenGLApplication::~SDLOpenGLApplication() {
     uninit();
 }
 
-bool ros::SDLApplication::init(const PropertyTree& config) {
+bool ros::SDLOpenGLApplication::preInit(const PropertyTree&) {
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize SDL application: %s") % SDL_GetError());
-        uninit();
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize application: %s") % SDL_GetError());
         return false;
     }
 
@@ -130,30 +130,19 @@ bool ros::SDLApplication::init(const PropertyTree& config) {
     SDL_GetVersion(&version);
     Logger::report(LogLevel_Debug, boost::format("Using SDL %d.%d.%d") % (int)version.major % (int)version.minor % (int)version.patch);
 
-    PropertyTree::const_assoc_iterator iter = config.find("Window");
-    if (iter == config.not_found()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize SDL application: Missing window configuration"));
-        uninit();
-        return false;
-    }
-
-    window = Window::create(iter->second);
-    if (!window) {
-        uninit();
-        return false;
-    }
-
     return true;
 }
 
-void ros::SDLApplication::uninit() {
-    if (window) {
-        window->uninit();
-    }
+bool ros::SDLOpenGLApplication::postInit(const PropertyTree&) {
+    return true;
+}
+
+void ros::SDLOpenGLApplication::uninit() {
+    Application::uninit();
     SDL_Quit();
 }
 
-int ros::SDLApplication::run() {
+int ros::SDLOpenGLApplication::run() {
     Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
 
     float fps = 60.0f;
@@ -180,15 +169,23 @@ int ros::SDLApplication::run() {
             accumulatedTime -= deltaTime;
         }
 
-        window->clearBuffers();
+        getWindow()->clearBuffers();
         onRender();
-        window->swapBuffers();
+        getWindow()->swapBuffers();
     }
 
     return EXIT_SUCCESS;
 }
 
-void ros::SDLApplication::onEvent(const SDL_Event& event) {
+ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& config) {
+    WindowPtr window = boost::make_shared<SDLOpenGLWindow>();
+    if (!window || !window->init(config)) {
+        return WindowPtr();
+    }
+    return window;
+}
+
+void ros::SDLOpenGLApplication::onEvent(const SDL_Event& event) {
     switch (event.type) {
         case SDL_QUIT: {
             hasQuit = true;
@@ -206,8 +203,8 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
 
         case SDL_MOUSEMOTION: {
             MouseMotionEvent ev;
-            ev.x = (float)event.motion.x / window->getWidth();
-            ev.y = (float)event.motion.y / window->getHeight();
+            ev.x = (float)event.motion.x / getWindow()->getWidth();
+            ev.y = (float)event.motion.y / getWindow()->getHeight();
 
             onMouseMotionEvent(ev);
         } break;
@@ -215,8 +212,8 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP: {
             MousePressEvent ev;
-            ev.x = (float)event.button.x / window->getWidth();
-            ev.y = (float)event.button.y / window->getHeight();
+            ev.x = (float)event.button.x / getWindow()->getWidth();
+            ev.y = (float)event.button.y / getWindow()->getHeight();
             ev.button = MouseButton_fromSDLButton(event.button.button);
             ev.state = ButtonState_fromSDLState(event.button.state);
 
@@ -229,11 +226,11 @@ void ros::SDLApplication::onEvent(const SDL_Event& event) {
 
 }
 
-void ros::SDLApplication::onUpdate(float) {
+void ros::SDLOpenGLApplication::onUpdate(float) {
 
 }
 
-void ros::SDLApplication::onRender() {
+void ros::SDLOpenGLApplication::onRender() {
 
 }
 

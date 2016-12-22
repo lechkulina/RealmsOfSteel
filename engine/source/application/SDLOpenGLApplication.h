@@ -4,25 +4,27 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_SDL_APPLICATION_H
-#define ROS_SDL_APPLICATION_H
+#ifndef ROS_SDL_OPENGL_APPLICATION_H
+#define ROS_SDL_OPENGL_APPLICATION_H
 
 #include <SDL2/SDL.h>
 #include <application/Application.h>
 
 namespace ros {
-    class ROS_API SDLApplication : public Application {
+    class ROS_API SDLOpenGLApplication : public Application {
         public:
-            SDLApplication();
-            virtual ~SDLApplication();
+            SDLOpenGLApplication();
+            virtual ~SDLOpenGLApplication();
 
-            virtual bool init(const PropertyTree& config);
             virtual void uninit();
             virtual int run();
-            virtual WindowPtr getWindow() const { return window; }
+
+        protected:
+            virtual bool preInit(const PropertyTree& config);
+            virtual bool postInit(const PropertyTree& config);
+            virtual WindowPtr createWindow(const PropertyTree& config);
 
         private:
-            WindowPtr window;
             bool hasQuit;
 
             void onEvent(const SDL_Event& event);
@@ -31,5 +33,5 @@ namespace ros {
     };
 }
 
-#endif // ROS_SDL_APPLICATION_H
+#endif // ROS_SDL_OPENGL_APPLICATION_H
 

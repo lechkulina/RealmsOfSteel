@@ -9,17 +9,10 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
-#include <core/Factory.h>
 
 namespace ros {
-    class Window;
-    typedef boost::shared_ptr<Window> WindowPtr;
-    typedef Factory<std::string, Window> WindowFactory;
-
     class ROS_API Window : public boost::noncopyable {
         public:
-            static WindowPtr create(const PropertyTree& config);
-
             virtual ~Window() {}
 
             virtual bool init(const PropertyTree& config) =0;
@@ -33,10 +26,9 @@ namespace ros {
 
             virtual void swapBuffers() =0;
             virtual void clearBuffers() =0;
-
-        private:
-            static WindowFactory factory;
     };
+
+    typedef boost::shared_ptr<Window> WindowPtr;
 }
 
 #endif // ROS_WINDOW_H

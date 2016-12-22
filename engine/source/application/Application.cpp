@@ -6,8 +6,8 @@
  */
 #include <application/Logger.h>
 #include <application/Application.h>
-#ifdef ROS_USING_SDL
-    #include "SDLApplication.h"
+#if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
+    #include "SDLOpenGLApplication.h"
 #endif
 
 ros::ApplicationFactory ros::Application::factory;
@@ -19,8 +19,8 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
     }
 
     if (factory.isEmpty()) {
-#ifdef ROS_USING_SDL
-        factory.registerClass<SDLApplication>("SDL");
+#if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
+        factory.registerClass<SDLOpenGLApplication>("SDLOpenGL");
 #endif
     }
 
@@ -35,6 +35,38 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
     }
 
     return application;
+}
+
+bool ros::Application::init(const PropertyTree& config) {
+    if (!preInit(config)) {
+        uninit();
+        return false;
+    }
+
+    PropertyTree::const_assoc_iterator iter = config.find("Window");
+    if (iter == config.not_found()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize application: Missing window configuration"));
+        uninit();
+        return false;
+    }
+    window = createWindow(config);
+    if (!window) {
+        uninit();
+        return false;
+    }
+
+    if (!postInit(config)) {
+        uninit();
+        return false;
+    }
+
+    return true;
+}
+
+void ros::Application::uninit() {
+    if (window) {
+        window->uninit();
+    }
 }
 
 void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
