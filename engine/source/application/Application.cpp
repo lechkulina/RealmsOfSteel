@@ -10,6 +10,9 @@
     #include "SDLOpenGLApplication.h"
 #endif
 
+const float ros::Application::DEFAULT_FRAMES_PER_SECOND = 60.0f;
+const float ros::Application::DEFAULT_MAX_ACCUMULATED_TICKS = 50.0f;
+
 ros::ApplicationFactory ros::Application::factory;
 ros::ApplicationPtr ros::Application::application;
 
@@ -38,11 +41,15 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
 }
 
 ros::Application::Application()
-    : isQuitRequested(false) {
-
+    : framesPerSecond(DEFAULT_FRAMES_PER_SECOND)
+    , maxAccumulatedTicks(DEFAULT_MAX_ACCUMULATED_TICKS)
+    , isQuitRequested(false) {
 }
 
 bool ros::Application::init(const PropertyTree& config) {
+    framesPerSecond = config.get("FramesPerSecond", DEFAULT_FRAMES_PER_SECOND);
+    maxAccumulatedTicks = config.get("MaxAccumulatedTicks", DEFAULT_MAX_ACCUMULATED_TICKS);
+
     if (!preInit(config)) {
         uninit();
         return false;
@@ -76,9 +83,6 @@ void ros::Application::uninit() {
 
 int ros::Application::run() {
     Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
-
-    float framesPerSecond = 60.0f;
-    float maxAccumulatedTicks = 50.0f;
 
     float frameDuration = (1 / framesPerSecond) * 1000;
     float accumulatedTicks = 0.0f;
