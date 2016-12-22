@@ -12,6 +12,7 @@
 
 const float ros::Application::DEFAULT_FRAMES_PER_SECOND = 60.0f;
 const float ros::Application::DEFAULT_MAX_ACCUMULATED_TICKS = 50.0f;
+const bool ros::Application::DEFAULT_QUIT_ON_ESCAPE = false;
 
 ros::ApplicationFactory ros::Application::factory;
 ros::ApplicationPtr ros::Application::application;
@@ -43,12 +44,14 @@ ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
 ros::Application::Application()
     : framesPerSecond(DEFAULT_FRAMES_PER_SECOND)
     , maxAccumulatedTicks(DEFAULT_MAX_ACCUMULATED_TICKS)
+    , quitOnEscape(DEFAULT_QUIT_ON_ESCAPE)
     , isQuitRequested(false) {
 }
 
 bool ros::Application::init(const PropertyTree& config) {
     framesPerSecond = config.get("FramesPerSecond", DEFAULT_FRAMES_PER_SECOND);
     maxAccumulatedTicks = config.get("MaxAccumulatedTicks", DEFAULT_MAX_ACCUMULATED_TICKS);
+    quitOnEscape = config.get("QuitOnEscape", DEFAULT_QUIT_ON_ESCAPE);
 
     if (!preInit(config)) {
         uninit();
@@ -115,6 +118,11 @@ void ros::Application::onQuitEvent() {
 }
 
 void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
+    if (quitOnEscape && event.button == KeyboardButton_Escape) {
+        onQuitEvent();
+        return;
+    }
+
     for (ViewList::iterator iter = views.begin(); iter != views.end(); ++iter) {
         ViewPtr view = *iter;
         view->onKeyboardPressEvent(event);

@@ -180,12 +180,14 @@ namespace ros {
         private:
             static const float DEFAULT_FRAMES_PER_SECOND;
             static const float DEFAULT_MAX_ACCUMULATED_TICKS;
+            static const bool DEFAULT_QUIT_ON_ESCAPE;
 
             static ApplicationFactory factory;
             static ApplicationPtr application;
             WindowPtr window;
             float framesPerSecond;
             float maxAccumulatedTicks;
+            bool quitOnEscape;
             bool isQuitRequested;
     };
 }
