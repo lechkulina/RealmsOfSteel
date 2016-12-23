@@ -43,6 +43,9 @@ if (ROS_USE_OPENGL)
         target_include_directories(Engine PRIVATE ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS})
         target_link_libraries(Engine PRIVATE ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
         target_compile_definitions(Engine PRIVATE ROS_USING_OPENGL)
+        target_sources(Engine PRIVATE
+            source/graphics/OpenGLErrors.cpp
+        )
     endif()
 endif()
 
