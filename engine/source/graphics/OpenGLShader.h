@@ -8,16 +8,17 @@
 #define ROS_OPENGL_SHADER_H
 
 #include <GL/glew.h>
-#include <graphics/Shader.h>
+#include <core/Common.h>
+#include <core/Environment.h>
 
 namespace ros {
-    class ROS_API OpenGLShader: public Shader {
+    class ROS_API OpenGLShader: public boost::noncopyable {
         public:
             OpenGLShader();
             virtual ~OpenGLShader();
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
+            bool init(const PropertyTree& config);
+            void uninit();
 
         private:
             friend class OpenGLProgram;
