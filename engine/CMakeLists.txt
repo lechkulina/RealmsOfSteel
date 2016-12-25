@@ -46,6 +46,7 @@ if (ROS_USE_OPENGL)
         target_sources(Engine PRIVATE
             source/graphics/OpenGLErrors.cpp
             source/graphics/OpenGLShader.cpp
+            source/graphics/OpenGLProgram.cpp
         )
     endif()
 endif()
