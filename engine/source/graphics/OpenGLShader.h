@@ -19,9 +19,9 @@ namespace ros {
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
 
-            virtual void* getHandle() { return &handle; }
-
         private:
+            friend class OpenGLProgram;
+
             GLuint handle;
 
             bool createHandle(const PropertyTree& config);

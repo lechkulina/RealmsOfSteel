@@ -17,8 +17,6 @@ namespace ros {
 
             virtual bool init(const PropertyTree& config) =0;
             virtual void uninit() =0;
-
-            virtual void* getHandle() =0;
     };
 
     typedef boost::shared_ptr<Shader> ShaderPtr;
