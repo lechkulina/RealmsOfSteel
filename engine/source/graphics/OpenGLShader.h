@@ -29,6 +29,9 @@ namespace ros {
             bool replaceSource(const PropertyTree& config);
             bool compile();
     };
+
+    typedef boost::shared_ptr<OpenGLShader> OpenGLShaderPtr;
+    typedef std::list<OpenGLShaderPtr> OpenGLShaderList;
 }
 
 #endif // ROS_OPENGL_SHADER_H

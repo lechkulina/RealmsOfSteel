@@ -7,7 +7,6 @@
 #include <boost/scoped_array.hpp>
 #include <Application/Logger.h>
 #include "OpenGLErrors.h"
-#include "OpenGLShader.h"
 #include "OpenGLProgram.h"
 
 ros::OpenGLProgram::OpenGLProgram()
@@ -27,6 +26,7 @@ bool ros::OpenGLProgram::init(const PropertyTree& config) {
 }
 
 void ros::OpenGLProgram::uninit() {
+    shaders.clear();
     if (handle) {
         glDeleteProgram(handle);
         handle = 0;
@@ -55,14 +55,15 @@ bool ros::OpenGLProgram::createShaders(const PropertyTree& config) {
         if (iter->first != "Shader") {
             continue;
         }
-        OpenGLShader shader;
-        if (!shader.init(iter->second)) {
+        OpenGLShaderPtr shader = boost::make_shared<OpenGLShader>();
+        if (!shader || !shader->init(iter->second)) {
             return false;
         }
-        glAttachShader(handle, shader.handle);
+        glAttachShader(handle, shader->handle);
         if (OpenGL_checkForErrors()) {
             return false;
         }
+        shaders.push_back(shader);
     }
     return true;
 }

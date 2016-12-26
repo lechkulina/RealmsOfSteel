@@ -9,6 +9,7 @@
 
 #include <GL/glew.h>
 #include <graphics/Program.h>
+#include "OpenGLShader.h"
 
 namespace ros {
     class ROS_API OpenGLProgram: public Program {
@@ -21,12 +22,16 @@ namespace ros {
             virtual bool bind();
             virtual void unbind();
 
+            const OpenGLShaderList& getShaders() const { return shaders; }
+
         private:
             GLuint handle;
+            OpenGLShaderList shaders;
 
             bool createHandle();
             bool createShaders(const PropertyTree& config);
             bool link();
+
     };
 }
 
