@@ -54,6 +54,7 @@ bool ros::OpenGLShader::init(const PropertyTree& config) {
 }
 
 void ros::OpenGLShader::uninit() {
+    filePath.clear();
     if (handle) {
         glDeleteShader(handle);
         handle = 0;
