@@ -22,6 +22,7 @@ namespace ros {
             virtual bool bind();
             virtual void unbind();
 
+            GLuint getHandle() const { return handle; }
             const OpenGLShaderList& getShaders() const { return shaders; }
 
         private:

@@ -59,7 +59,7 @@ bool ros::OpenGLProgram::createShaders(const PropertyTree& config) {
         if (!shader || !shader->init(iter->second)) {
             return false;
         }
-        glAttachShader(handle, shader->handle);
+        glAttachShader(handle, shader->getHandle());
         if (OpenGL_checkForErrors()) {
             return false;
         }

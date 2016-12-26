@@ -20,9 +20,9 @@ namespace ros {
             bool init(const PropertyTree& config);
             void uninit();
 
-        private:
-            friend class OpenGLProgram;
+            GLuint getHandle() const { return handle; }
 
+        private:
             GLuint handle;
 
             bool createHandle(const PropertyTree& config);
