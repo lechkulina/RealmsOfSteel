@@ -18,7 +18,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!createHandle() || !createShaders(config) || !link()) {
+    if (!createHandle() || !createShaders(config) || !link() || !retrieveAttributes()) {
         uninit();
         return false;
     }
@@ -26,6 +26,7 @@ bool ros::OpenGLProgram::init(const PropertyTree& config) {
 }
 
 void ros::OpenGLProgram::uninit() {
+    attributes.clear();
     shaders.clear();
     if (handle) {
         glDeleteProgram(handle);
@@ -94,6 +95,32 @@ bool ros::OpenGLProgram::link() {
 
         Logger::report(LogLevel_Debug, boost::format("Program information log: %s") % buffer.get());
         return false;
+    }
+
+    return true;
+}
+
+bool ros::OpenGLProgram::retrieveAttributes() {
+    GLint count = 0;
+    GLsizei length = 0;
+    glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &count);
+    glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &length);
+    if (length == 0 || OpenGL_checkForErrors()) {
+        return false;
+    }
+
+    boost::scoped_array<GLchar> buffer(new GLchar[length]);
+    memset(buffer.get(), 0, sizeof(GLchar) * length);
+
+    for (GLint index = 0; index < count; ++index) {
+        OpenGLAttribute attribute;
+        memset(&attribute, 0, sizeof(OpenGLAttribute));
+        attribute.index = index;
+        glGetActiveAttrib(handle, index, length, ROS_NULL, &attribute.size, &attribute.type, buffer.get());
+        if (OpenGL_checkForErrors()) {
+            return false;
+        }
+        attributes[buffer.get()] = attribute;
     }
 
     return true;

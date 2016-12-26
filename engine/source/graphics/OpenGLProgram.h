@@ -12,6 +12,13 @@
 #include "OpenGLShader.h"
 
 namespace ros {
+    struct OpenGLAttribute {
+        GLint size;
+        GLenum type;
+        GLuint index;
+    };
+    typedef std::map<std::string, OpenGLAttribute> OpenGLAttributeMap;
+
     class ROS_API OpenGLProgram: public Program {
         public:
             OpenGLProgram();
@@ -24,15 +31,17 @@ namespace ros {
 
             GLuint getHandle() const { return handle; }
             const OpenGLShaderList& getShaders() const { return shaders; }
+            const OpenGLAttributeMap& getAttributes() const { return attributes; }
 
         private:
             GLuint handle;
             OpenGLShaderList shaders;
+            OpenGLAttributeMap attributes;
 
             bool createHandle();
             bool createShaders(const PropertyTree& config);
             bool link();
-
+            bool retrieveAttributes();
     };
 }
 
