@@ -13,6 +13,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/LogsFileSink.cpp
     source/application/Logger.cpp
     source/application/Application.cpp
+    source/math/Scalar.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
