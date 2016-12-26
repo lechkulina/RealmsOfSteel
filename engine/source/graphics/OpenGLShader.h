@@ -21,9 +21,11 @@ namespace ros {
             void uninit();
 
             GLuint getHandle() const { return handle; }
+            const std::string& getFilePath() const { return filePath; }
 
         private:
             GLuint handle;
+            std::string filePath;
 
             bool createHandle(const PropertyTree& config);
             bool replaceSource(const PropertyTree& config);
