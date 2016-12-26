@@ -60,6 +60,10 @@ void ros::OpenGLShader::uninit() {
     }
 }
 
+bool ros::OpenGLShader::isValid() const {
+    return glIsShader(handle);
+}
+
 bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
     std::string typeStr = config.data();
     ShaderTypeOpt type = ShaderType_fromString(typeStr.c_str());

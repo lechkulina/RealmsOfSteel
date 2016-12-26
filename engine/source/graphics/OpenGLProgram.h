@@ -34,6 +34,8 @@ namespace ros {
 
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
+            virtual bool isValid() const;
+
             virtual bool bind();
             virtual void unbind();
 

@@ -35,6 +35,10 @@ void ros::OpenGLProgram::uninit() {
     }
 }
 
+bool ros::OpenGLProgram::isValid() const {
+    return glIsProgram(handle);
+}
+
 bool ros::OpenGLProgram::bind() {
     glUseProgram(handle);
     return !OpenGL_checkForErrors();

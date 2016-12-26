@@ -19,6 +19,7 @@ namespace ros {
 
             bool init(const PropertyTree& config);
             void uninit();
+            bool isValid() const;
 
             GLuint getHandle() const { return handle; }
             const std::string& getFilePath() const { return filePath; }
