@@ -18,7 +18,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!createHandle() || !createShaders(config) || !link() || !retrieveAttributes()) {
+    if (!createHandle() || !createShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
         uninit();
         return false;
     }
@@ -26,6 +26,7 @@ bool ros::OpenGLProgram::init(const PropertyTree& config) {
 }
 
 void ros::OpenGLProgram::uninit() {
+    uniforms.clear();
     attributes.clear();
     shaders.clear();
     if (handle) {
@@ -121,6 +122,41 @@ bool ros::OpenGLProgram::retrieveAttributes() {
             return false;
         }
         attributes[buffer.get()] = attribute;
+    }
+
+    return true;
+}
+
+bool ros::OpenGLProgram::retrieveUniforms() {
+    GLint count = 0;
+    GLint maxLength = 0;
+    glGetProgramiv(handle, GL_ACTIVE_UNIFORMS, &count);
+    glGetProgramiv(handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
+    if (maxLength == 0 || OpenGL_checkForErrors()) {
+        return false;
+    }
+
+    boost::scoped_array<GLchar> buffer(new GLchar[maxLength]);
+    memset(buffer.get(), 0, sizeof(GLchar) * maxLength);
+
+    for (GLint index = 0; index < count; ++index) {
+        GLint length = 0;
+        OpenGLUniform uniform;
+        memset(&uniform, 0, sizeof(OpenGLUniform));
+        uniform.index = index;
+        glGetActiveUniform(handle, index, maxLength, &length, &uniform.size, &uniform.type, buffer.get());
+        if (OpenGL_checkForErrors()) {
+            return false;
+        }
+        if (length == 0) {
+            Logger::report(LogLevel_Warning, boost::format("Missing uniform name at index %d") % index);
+            continue;
+        }
+        uniform.location = glGetUniformLocation(handle, buffer.get());
+        if (uniform.location == -1 || OpenGL_checkForErrors()) {
+            return false;
+        }
+        uniforms[buffer.get()] = uniform;
     }
 
     return true;

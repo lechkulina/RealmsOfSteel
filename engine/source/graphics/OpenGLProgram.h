@@ -13,11 +13,19 @@
 
 namespace ros {
     struct OpenGLAttribute {
+        GLuint index;
         GLint size;
         GLenum type;
-        GLuint index;
     };
     typedef std::map<std::string, OpenGLAttribute> OpenGLAttributeMap;
+
+    struct OpenGLUniform {
+        GLuint index;
+        GLint size;
+        GLenum type;
+        GLint location;
+    };
+    typedef std::map<std::string, OpenGLUniform> OpenGLUniformMap;
 
     class ROS_API OpenGLProgram: public Program {
         public:
@@ -32,16 +40,19 @@ namespace ros {
             GLuint getHandle() const { return handle; }
             const OpenGLShaderList& getShaders() const { return shaders; }
             const OpenGLAttributeMap& getAttributes() const { return attributes; }
+            const OpenGLUniformMap& getUniforms() const { return uniforms; }
 
         private:
             GLuint handle;
             OpenGLShaderList shaders;
             OpenGLAttributeMap attributes;
+            OpenGLUniformMap uniforms;
 
             bool createHandle();
             bool createShaders(const PropertyTree& config);
             bool link();
             bool retrieveAttributes();
+            bool retrieveUniforms();
     };
 }
 
