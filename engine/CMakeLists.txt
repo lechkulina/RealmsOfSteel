@@ -14,6 +14,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/Logger.cpp
     source/application/Application.cpp
     source/math/Scalar.cpp
+    source/math/Vector2D.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
