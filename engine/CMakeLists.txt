@@ -19,6 +19,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/math/Vector4D.cpp
     source/math/Matrix2D.cpp
     source/math/Matrix3D.cpp
+    source/math/Matrix4D.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
