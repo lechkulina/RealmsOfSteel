@@ -11,6 +11,7 @@
 #include <core/Environment.h>
 #include <math/Vector4D.h>
 #include <math/Matrix4D.h>
+#include <graphics/Shader.h>
 
 namespace ros {
     class ROS_API Program: public boost::noncopyable {
@@ -23,6 +24,8 @@ namespace ros {
 
             virtual bool bind() =0;
             virtual void unbind() =0;
+
+            virtual const ShaderList& getShaders() const =0;
 
             virtual bool setUniform(const char* name, int value) =0;
             virtual bool setUniform(const char* name, const Vector4D& value) =0;

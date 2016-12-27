@@ -9,7 +9,6 @@
 
 #include <GL/glew.h>
 #include <graphics/Program.h>
-#include "OpenGLShader.h"
 
 namespace ros {
     struct OpenGLAttribute {
@@ -39,18 +38,19 @@ namespace ros {
             virtual bool bind();
             virtual void unbind();
 
+            virtual const ShaderList& getShaders() const { return shaders; }
+
             virtual bool setUniform(const char* name, int value);
             virtual bool setUniform(const char* name, const Vector4D& value);
             virtual bool setUniform(const char* name, const Matrix4D& value);
 
             GLuint getHandle() const { return handle; }
-            const OpenGLShaderList& getShaders() const { return shaders; }
             const OpenGLAttributeMap& getAttributes() const { return attributes; }
             const OpenGLUniformMap& getUniforms() const { return uniforms; }
 
         private:
             GLuint handle;
-            OpenGLShaderList shaders;
+            ShaderList shaders;
             OpenGLAttributeMap attributes;
             OpenGLUniformMap uniforms;
 

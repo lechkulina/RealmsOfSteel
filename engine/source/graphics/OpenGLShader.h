@@ -10,19 +10,21 @@
 #include <GL/glew.h>
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <graphics/Shader.h>
 
 namespace ros {
-    class ROS_API OpenGLShader: public boost::noncopyable {
+    class ROS_API OpenGLShader: public Shader {
         public:
             OpenGLShader();
             virtual ~OpenGLShader();
 
-            bool init(const PropertyTree& config);
-            void uninit();
-            bool isValid() const;
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
+            virtual bool isValid() const;
+
+            virtual const std::string& getFilePath() const { return filePath; }
 
             GLuint getHandle() const { return handle; }
-            const std::string& getFilePath() const { return filePath; }
 
         private:
             GLuint handle;
@@ -32,9 +34,6 @@ namespace ros {
             bool replaceSource(const PropertyTree& config);
             bool compile();
     };
-
-    typedef boost::shared_ptr<OpenGLShader> OpenGLShaderPtr;
-    typedef std::list<OpenGLShaderPtr> OpenGLShaderList;
 }
 
 #endif // ROS_OPENGL_SHADER_H
