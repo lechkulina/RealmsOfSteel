@@ -165,3 +165,39 @@ bool ros::OpenGLProgram::retrieveUniforms() {
 
     return true;
 }
+
+bool ros::OpenGLProgram::setUniform(const char* name, int value) {
+    OpenGLUniformMap::const_iterator iter = uniforms.find(name);
+    if (iter == uniforms.end()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        return false;
+    }
+    glUniform1i(iter->second.location, value);
+    return OpenGL_checkForErrors();
+}
+
+bool ros::OpenGLProgram::setUniform(const char* name, const Vector4D& value) {
+    OpenGLUniformMap::const_iterator iter = uniforms.find(name);
+    if (iter == uniforms.end()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        return false;
+    }
+    glUniform4f(iter->second.location, value.x, value.y, value.z, value.w);
+    return OpenGL_checkForErrors();
+}
+
+bool ros::OpenGLProgram::setUniform(const char* name, const Matrix4D& value) {
+    OpenGLUniformMap::const_iterator iter = uniforms.find(name);
+    if (iter == uniforms.end()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        return false;
+    }
+    const GLfloat data[16] = {
+        value.m11, value.m21, value.m31, value.m41,
+        value.m12, value.m22, value.m32, value.m42,
+        value.m13, value.m23, value.m33, value.m43,
+        value.m14, value.m24, value.m34, value.m44
+    };
+    glUniformMatrix4fv(iter->second.location, 1, GL_FALSE, data);
+    return OpenGL_checkForErrors();
+}

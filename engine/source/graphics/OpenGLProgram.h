@@ -39,6 +39,10 @@ namespace ros {
             virtual bool bind();
             virtual void unbind();
 
+            virtual bool setUniform(const char* name, int value);
+            virtual bool setUniform(const char* name, const Vector4D& value);
+            virtual bool setUniform(const char* name, const Matrix4D& value);
+
             GLuint getHandle() const { return handle; }
             const OpenGLShaderList& getShaders() const { return shaders; }
             const OpenGLAttributeMap& getAttributes() const { return attributes; }
