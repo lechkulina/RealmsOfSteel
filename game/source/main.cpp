@@ -6,8 +6,10 @@
  */
 #include <cstdlib>
 #include <boost/property_tree/info_parser.hpp>
-#include <Application/Logger.h>
-#include <Application/Application.h>
+#include <application/Logger.h>
+#include <application/Application.h>
+#include <graphics/ShadersManager.h>
+#include <graphics/ProgramsManager.h>
 
 int main() {
     int exitCode = EXIT_FAILURE;
@@ -18,6 +20,15 @@ int main() {
     if (!ros::Logger::initInstance(config.get_child("Logger")) ||
         !ros::Application::initInstance(config.get_child("application"))) {
         return exitCode;
+    }
+
+    ros::PropertyTree::const_assoc_iterator iter = config.find("models");
+    if (iter != config.not_found()) {
+        ros::PropertyTree::const_iterator cast = config.to_iterator(iter);
+        if (!ros::ShadersManager::getInstance()->prepare(cast->second) ||
+            !ros::ProgramsManager::getInstance()->prepare(cast->second)) {
+            return exitCode;
+        }
     }
 
     exitCode = ros::Application::getInstance()->run();
