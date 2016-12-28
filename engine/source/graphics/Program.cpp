@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2016 Lech Kulina
+ *
+ * This file is part of the Realms Of Steel.
+ * For conditions of distribution and use, see copyright details in the LICENSE file.
+ */
+#include <boost/scoped_array.hpp>
+#include <boost/pointer_cast.hpp>
+#include <application/Logger.h>
+#include <graphics/ShadersManager.h>
+#include <graphics/Program.h>
+
+bool ros::Program::init(const PropertyTree &config) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first != "shader") {
+            continue;
+        }
+        ShaderPtr shader = ShadersManager::getInstance()->provide(iter->second);
+        if (!shader || !attachShader(shader)) {
+            uninit();
+            return false;
+        }
+        shaders.push_back(shader);
+    }
+    return true;
+}
+
+void ros::Program::uninit() {
+    shaders.clear();
+}

@@ -5,7 +5,9 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <boost/scoped_array.hpp>
-#include <Application/Logger.h>
+#include <boost/pointer_cast.hpp>
+#include <application/Logger.h>
+#include <graphics/ShadersManager.h>
 #include "OpenGLErrors.h"
 #include "OpenGLShader.h"
 #include "OpenGLProgram.h"
@@ -19,7 +21,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!createHandle() || !createShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
+    if (!createHandle() || !Program::init(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
         uninit();
         return false;
     }
@@ -29,7 +31,7 @@ bool ros::OpenGLProgram::init(const PropertyTree& config) {
 void ros::OpenGLProgram::uninit() {
     uniforms.clear();
     attributes.clear();
-    shaders.clear();
+    Program::uninit();
     if (handle) {
         glDeleteProgram(handle);
         handle = 0;
@@ -57,22 +59,14 @@ bool ros::OpenGLProgram::createHandle() {
     return true;
 }
 
-bool ros::OpenGLProgram::createShaders(const PropertyTree& config) {
-    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first != "Shader") {
-            continue;
-        }
-        boost::shared_ptr<OpenGLShader> shader = boost::make_shared<OpenGLShader>();
-        if (!shader || !shader->init(iter->second)) {
-            return false;
-        }
-        glAttachShader(handle, shader->getHandle());
-        if (OpenGL_checkForErrors()) {
-            return false;
-        }
-        shaders.push_back(shader);
+bool ros::OpenGLProgram::attachShader(ShaderPtr shader) {
+    OpenGLShaderPtr cast = boost::static_pointer_cast<OpenGLShader>(shader);
+    if (!glIsShader(cast->getHandle())) {
+        Logger::report(LogLevel_Error, boost::format("Unable to attach non-shader object"));
+        return false;
     }
-    return true;
+    glAttachShader(handle, cast->getHandle());
+    return !OpenGL_checkForErrors();
 }
 
 bool ros::OpenGLProgram::link() {

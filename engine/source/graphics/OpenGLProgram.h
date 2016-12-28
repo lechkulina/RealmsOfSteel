@@ -38,8 +38,6 @@ namespace ros {
             virtual bool bind();
             virtual void unbind();
 
-            virtual const ShaderList& getShaders() const { return shaders; }
-
             virtual bool setUniform(const char* name, int value);
             virtual bool setUniform(const char* name, const Vector4D& value);
             virtual bool setUniform(const char* name, const Matrix4D& value);
@@ -48,14 +46,15 @@ namespace ros {
             const OpenGLAttributeMap& getAttributes() const { return attributes; }
             const OpenGLUniformMap& getUniforms() const { return uniforms; }
 
+        protected:
+            virtual bool attachShader(ShaderPtr shader);
+
         private:
             GLuint handle;
-            ShaderList shaders;
             OpenGLAttributeMap attributes;
             OpenGLUniformMap uniforms;
 
             bool createHandle();
-            bool createShaders(const PropertyTree& config);
             bool link();
             bool retrieveAttributes();
             bool retrieveUniforms();

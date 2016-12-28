@@ -18,18 +18,24 @@ namespace ros {
         public:
             virtual ~Program() {}
 
-            virtual bool init(const PropertyTree& config) =0;
-            virtual void uninit() =0;
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
             virtual bool isValid() const =0;
 
             virtual bool bind() =0;
             virtual void unbind() =0;
 
-            virtual const ShaderList& getShaders() const =0;
-
             virtual bool setUniform(const char* name, int value) =0;
             virtual bool setUniform(const char* name, const Vector4D& value) =0;
             virtual bool setUniform(const char* name, const Matrix4D& value) =0;
+
+            const ShaderList& getShaders() const { return shaders; }
+
+        protected:
+            virtual bool attachShader(ShaderPtr shader) =0;
+
+        private:
+            ShaderList shaders;
     };
 
     typedef boost::shared_ptr<Program> ProgramPtr;
