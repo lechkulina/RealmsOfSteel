@@ -15,6 +15,7 @@ namespace ros {
         public:
             virtual ~SDLOpenGLApplication();
 
+            virtual bool init(const PropertyTree& config);
             virtual void uninit();
 
             virtual float getTicks() const;
@@ -24,9 +25,6 @@ namespace ros {
             virtual ProgramPtr createProgram();
 
         protected:
-            virtual bool preInit(const PropertyTree& config);
-            virtual bool postInit(const PropertyTree& config);
-
             virtual bool translateEvent();
     };
 }

@@ -45,9 +45,6 @@ namespace ros {
             typedef std::list<ViewPtr> ViewList;
             ViewList views;
 
-            virtual bool preInit(const PropertyTree& config) =0;
-            virtual bool postInit(const PropertyTree& config) =0;
-
             virtual bool translateEvent() =0;
 
             virtual void onQuitEvent();
@@ -68,7 +65,7 @@ namespace ros {
             float framesPerSecond;
             float maxAccumulatedTicks;
             bool quitOnEscape;
-            bool isQuitRequested;
+            bool quitRequested;
     };
 }
 

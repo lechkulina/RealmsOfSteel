@@ -158,22 +158,19 @@ ros::SDLOpenGLApplication::~SDLOpenGLApplication() {
     uninit();
 }
 
-bool ros::SDLOpenGLApplication::preInit(const PropertyTree&) {
+bool ros::SDLOpenGLApplication::init(const PropertyTree& config) {
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize application: %s") % SDL_GetError());
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize the application - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
     SDL_version version;
     memset(&version, 0, sizeof(version));
     SDL_GetVersion(&version);
-    Logger::report(LogLevel_Debug, boost::format("Using SDL %d.%d.%d") % (int)version.major % (int)version.minor % (int)version.patch);
+    Logger::report(LogLevel_Trace, boost::format("Application initialized successfully - using SDL %d.%d.%d")
+                        % (int)version.major % (int)version.minor % (int)version.patch);
 
-    return true;
-}
-
-bool ros::SDLOpenGLApplication::postInit(const PropertyTree&) {
-    return true;
+    return Application::init(config);
 }
 
 void ros::SDLOpenGLApplication::uninit() {
@@ -185,20 +182,16 @@ float ros::SDLOpenGLApplication::getTicks() const {
     return (float)SDL_GetTicks();
 }
 
+ros::WindowPtr ros::SDLOpenGLApplication::createWindow() {
+    return boost::make_shared<SDLOpenGLWindow>();
+}
+
 ros::ShaderPtr ros::SDLOpenGLApplication::createShader() {
     return boost::make_shared<OpenGLShader>();
 }
 
 ros::ProgramPtr ros::SDLOpenGLApplication::createProgram() {
     return boost::make_shared<OpenGLProgram>();
-}
-
-ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& config) {
-    WindowPtr window = boost::make_shared<SDLOpenGLWindow>();
-    if (!window || !window->init(config)) {
-        return WindowPtr();
-    }
-    return window;
 }
 
 bool ros::SDLOpenGLApplication::translateEvent() {

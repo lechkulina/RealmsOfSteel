@@ -45,7 +45,7 @@ ros::Application::Application()
     : framesPerSecond(DEFAULT_FRAMES_PER_SECOND)
     , maxAccumulatedTicks(DEFAULT_MAX_ACCUMULATED_TICKS)
     , quitOnEscape(DEFAULT_QUIT_ON_ESCAPE)
-    , isQuitRequested(false) {
+    , quitRequested(false) {
 }
 
 bool ros::Application::init(const PropertyTree& config) {
@@ -53,24 +53,14 @@ bool ros::Application::init(const PropertyTree& config) {
     maxAccumulatedTicks = config.get("MaxAccumulatedTicks", DEFAULT_MAX_ACCUMULATED_TICKS);
     quitOnEscape = config.get("QuitOnEscape", DEFAULT_QUIT_ON_ESCAPE);
 
-    if (!preInit(config)) {
-        uninit();
-        return false;
-    }
-
     PropertyTree::const_assoc_iterator iter = config.find("Window");
     if (iter == config.not_found()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize application: Missing window configuration"));
+        Logger::report(LogLevel_Error, boost::format("Failed to initialize the application - missing window definition"));
         uninit();
         return false;
     }
     window = createWindow();
     if (!window || !window->init(config)) {
-        uninit();
-        return false;
-    }
-
-    if (!postInit(config)) {
         uninit();
         return false;
     }
@@ -91,7 +81,7 @@ int ros::Application::run() {
     float accumulatedTicks = 0.0f;
     float previousTicks = getTicks();
 
-    while (!isQuitRequested) {
+    while (!quitRequested) {
         if (translateEvent()) {
             continue;
         }
@@ -114,7 +104,7 @@ int ros::Application::run() {
 }
 
 void ros::Application::onQuitEvent() {
-    isQuitRequested = true;
+    quitRequested = true;
 }
 
 void ros::Application::onKeyboardPressEvent(const KeyboardPressEvent& event) {
