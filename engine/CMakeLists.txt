@@ -24,6 +24,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/math/EulerAngles.cpp
     source/graphics/ShadersManager.cpp
     source/graphics/Program.cpp
+    source/graphics/ProgramsManager.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"

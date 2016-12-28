@@ -39,6 +39,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Program> ProgramPtr;
+    typedef std::map<std::string, ProgramPtr> ProgramMap;
 }
 
 #endif // ROS_PROGRAM_H
