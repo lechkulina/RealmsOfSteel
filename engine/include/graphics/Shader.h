@@ -24,6 +24,7 @@ namespace ros {
 
     typedef boost::shared_ptr<Shader> ShaderPtr;
     typedef std::list<ShaderPtr> ShaderList;
+    typedef std::map<std::string, ShaderPtr> ShaderMap;
 }
 
 #endif // ROS_SHADER_H

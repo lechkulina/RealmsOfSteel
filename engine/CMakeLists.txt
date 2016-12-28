@@ -22,6 +22,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/math/Matrix4D.cpp
     source/math/Quaternion.cpp
     source/math/EulerAngles.cpp
+    source/graphics/ShadersManager.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"
