@@ -21,7 +21,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!createHandle() || !Program::init(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
+    if (!Program::init(config) || !createHandle() || !createShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
         uninit();
         return false;
     }
@@ -31,11 +31,11 @@ bool ros::OpenGLProgram::init(const PropertyTree& config) {
 void ros::OpenGLProgram::uninit() {
     uniforms.clear();
     attributes.clear();
-    Program::uninit();
     if (handle) {
         glDeleteProgram(handle);
         handle = 0;
     }
+    Program::uninit();
 }
 
 bool ros::OpenGLProgram::isValid() const {
@@ -62,7 +62,7 @@ bool ros::OpenGLProgram::createHandle() {
 bool ros::OpenGLProgram::attachShader(ShaderPtr shader) {
     OpenGLShaderPtr cast = boost::static_pointer_cast<OpenGLShader>(shader);
     if (!glIsShader(cast->getHandle())) {
-        Logger::report(LogLevel_Error, boost::format("Unable to attach non-shader object"));
+        Logger::report(LogLevel_Error, boost::format("Unable to attach non-shader object to program %s") % getName());
         return false;
     }
     glAttachShader(handle, cast->getHandle());
@@ -78,7 +78,7 @@ bool ros::OpenGLProgram::link() {
     }
 
     if (!status) {
-        Logger::report(LogLevel_Error, boost::format("Failed to link a program"));
+        Logger::report(LogLevel_Error, boost::format("Failed to link program %s") % getName());
 
         GLint length = 0;
         glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &length);
@@ -93,10 +93,11 @@ bool ros::OpenGLProgram::link() {
             return false;
         }
 
-        Logger::report(LogLevel_Debug, boost::format("Program information log: %s") % buffer.get());
+        Logger::report(LogLevel_Debug, boost::format("Program %s information log: %s") % getName() % buffer.get());
         return false;
     }
 
+    Logger::report(LogLevel_Trace, boost::format("Program %s linked successfully") % getName());
     return true;
 }
 
@@ -148,7 +149,7 @@ bool ros::OpenGLProgram::retrieveUniforms() {
             return false;
         }
         if (length == 0) {
-            Logger::report(LogLevel_Warning, boost::format("Missing uniform name at index %d") % index);
+            Logger::report(LogLevel_Warning, boost::format("Failed to retrieve uniform name at index %d in program %s") % index % getName());
             continue;
         }
         uniform.location = glGetUniformLocation(handle, buffer.get());
@@ -164,7 +165,7 @@ bool ros::OpenGLProgram::retrieveUniforms() {
 bool ros::OpenGLProgram::setUniform(const char* name, int value) {
     OpenGLUniformMap::const_iterator iter = uniforms.find(name);
     if (iter == uniforms.end()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s in program %s") % name % getName());
         return false;
     }
     glUniform1i(iter->second.location, value);
@@ -174,7 +175,7 @@ bool ros::OpenGLProgram::setUniform(const char* name, int value) {
 bool ros::OpenGLProgram::setUniform(const char* name, const Vector4D& value) {
     OpenGLUniformMap::const_iterator iter = uniforms.find(name);
     if (iter == uniforms.end()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s in program %s") % name % getName());
         return false;
     }
     glUniform4f(iter->second.location, value.x, value.y, value.z, value.w);
@@ -184,7 +185,7 @@ bool ros::OpenGLProgram::setUniform(const char* name, const Vector4D& value) {
 bool ros::OpenGLProgram::setUniform(const char* name, const Matrix4D& value) {
     OpenGLUniformMap::const_iterator iter = uniforms.find(name);
     if (iter == uniforms.end()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to find uniform with name %s in program %s") % name % getName());
         return false;
     }
     const GLfloat data[16] = {

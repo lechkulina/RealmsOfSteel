@@ -11,6 +11,21 @@
 #include <graphics/Program.h>
 
 bool ros::Program::init(const PropertyTree &config) {
+    name = config.data();
+    if (name.empty()) {
+        Logger::report(LogLevel_Error, boost::format("Program name is missing"));
+        uninit();
+        return false;
+    }
+    return true;
+}
+
+void ros::Program::uninit() {
+    name.clear();
+    shaders.clear();
+}
+
+bool ros::Program::createShaders(const PropertyTree& config) {
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first != "shader") {
             continue;
@@ -23,8 +38,4 @@ bool ros::Program::init(const PropertyTree &config) {
         shaders.push_back(shader);
     }
     return true;
-}
-
-void ros::Program::uninit() {
-    shaders.clear();
 }

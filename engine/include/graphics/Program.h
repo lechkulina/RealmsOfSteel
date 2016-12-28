@@ -29,12 +29,15 @@ namespace ros {
             virtual bool setUniform(const char* name, const Vector4D& value) =0;
             virtual bool setUniform(const char* name, const Matrix4D& value) =0;
 
+            const std::string& getName() const { return name; }
             const ShaderList& getShaders() const { return shaders; }
 
         protected:
+            bool createShaders(const PropertyTree& config);
             virtual bool attachShader(ShaderPtr shader) =0;
 
         private:
+            std::string name;
             ShaderList shaders;
     };
 
