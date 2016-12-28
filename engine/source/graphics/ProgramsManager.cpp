@@ -32,6 +32,9 @@ ros::ProgramPtr ros::ProgramsManager::provide(const PropertyTree& config) {
 
     ProgramMap::iterator iter = programs.find(name);
     if (iter != programs.end()) {
+        if (!config.empty()) {
+            Logger::report(LogLevel_Warning, boost::format("Program %s has already been defined - ignoring redefinition") % name);
+        }
         return iter->second;
     }
 

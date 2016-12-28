@@ -32,6 +32,9 @@ ros::ShaderPtr ros::ShadersManager::provide(const PropertyTree& config) {
 
     ShaderMap::iterator iter = shaders.find(name);
     if (iter != shaders.end()) {
+        if (!config.empty()) {
+            Logger::report(LogLevel_Warning, boost::format("Shader %s has already been defined - ignoring redefinition") % name);
+        }
         return iter->second;
     }
 
