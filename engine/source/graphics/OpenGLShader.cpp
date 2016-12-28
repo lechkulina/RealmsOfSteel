@@ -46,7 +46,7 @@ ros::OpenGLShader::~OpenGLShader() {
 }
 
 bool ros::OpenGLShader::init(const PropertyTree& config) {
-    if (!createHandle(config) || !replaceSource(config) || !compile()) {
+    if (!Shader::init(config) || !createHandle(config) || !replaceSource(config) || !compile()) {
         uninit();
         return false;
     }
@@ -59,6 +59,7 @@ void ros::OpenGLShader::uninit() {
         glDeleteShader(handle);
         handle = 0;
     }
+    Shader::uninit();
 }
 
 bool ros::OpenGLShader::isValid() const {
@@ -68,12 +69,12 @@ bool ros::OpenGLShader::isValid() const {
 bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
     StringOpt typeStr = config.get_optional<std::string>("type");
     if (!typeStr) {
-        Logger::report(LogLevel_Error, boost::format("Shader type is missing"));
+        Logger::report(LogLevel_Error, boost::format("Missing type property in shader %s") % getName());
         return false;
     }
     ShaderTypeOpt type = ShaderType_fromString(typeStr->c_str());
     if (!type) {
-        Logger::report(LogLevel_Error, boost::format("Unknown shader type %s") % (*typeStr));
+        Logger::report(LogLevel_Error, boost::format("Unknown type %s property used for shader %s")  % getName() % (*typeStr));
         return false;
     }
 
@@ -88,14 +89,14 @@ bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
 bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     StringOpt filePath = config.get_optional<std::string>("file-path");
     if (!filePath) {
-        Logger::report(LogLevel_Error, boost::format("Shader file path is missing"));
+        Logger::report(LogLevel_Error, boost::format("Missing file path property in shader %s") % getName());
         return false;
     }
 
     this->filePath = *filePath;
     std::ifstream stream(filePath->c_str(), std::ios::in);
     if (!stream.good()) {
-        Logger::report(LogLevel_Error, boost::format("Shader file %s is missing") % (*filePath));
+        Logger::report(LogLevel_Error, boost::format("Unable to open source file %s for shader %s") % (*filePath) % getName());
         return false;
     }
 
@@ -103,7 +104,7 @@ bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     GLint length = stream.tellg();
     stream.seekg(0, std::ios::beg);
     if (length == 0) {
-        Logger::report(LogLevel_Error, boost::format("Shader file %s is empty") % (*filePath));
+        Logger::report(LogLevel_Error, boost::format("Source file %s used for shaders %s is empty") % (*filePath) % getName());
         return false;
     }
 
@@ -111,7 +112,8 @@ bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     memset(buffer.get(), 0, sizeof(GLchar) * length);
     stream.read(buffer.get(), length);
     if (stream.bad()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to read %d bytes from shader file %s") % length % (*filePath));
+        Logger::report(LogLevel_Error, boost::format("Failed to read %d bytes from source file %s used for shader %s")
+                            % length % (*filePath) % getName());
         return false;
     }
 
@@ -134,7 +136,7 @@ bool ros::OpenGLShader::compile() {
     }
 
     if (!status) {
-        Logger::report(LogLevel_Error, boost::format("Failed to compile a shader %s") % filePath);
+        Logger::report(LogLevel_Error, boost::format("Failed to compile shader %s using source file %s") % getName() % filePath);
 
         GLint length = 0;
         glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length);
@@ -149,9 +151,10 @@ bool ros::OpenGLShader::compile() {
             return false;
         }
 
-        Logger::report(LogLevel_Debug, boost::format("Shader %s information log: %s") % filePath % buffer.get());
+        Logger::report(LogLevel_Debug, boost::format("Shader %s information log: %s") % getName() % buffer.get());
         return false;
     }
 
+    Logger::report(LogLevel_Trace, boost::format("Shader %s compiled successfully using source file %s") % getName() % filePath);
     return true;
 }

@@ -15,11 +15,16 @@ namespace ros {
         public:
             virtual ~Shader() {}
 
-            virtual bool init(const PropertyTree& config) =0;
-            virtual void uninit() =0;
+            virtual bool init(const PropertyTree& config);
+            virtual void uninit();
             virtual bool isValid() const =0;
 
             virtual const std::string& getFilePath() const =0;
+
+            const std::string& getName() const { return name; }
+
+        private:
+            std::string name;
     };
 
     typedef boost::shared_ptr<Shader> ShaderPtr;

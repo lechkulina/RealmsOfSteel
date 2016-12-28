@@ -62,7 +62,7 @@ bool ros::OpenGLProgram::createHandle() {
 bool ros::OpenGLProgram::attachShader(ShaderPtr shader) {
     OpenGLShaderPtr cast = boost::static_pointer_cast<OpenGLShader>(shader);
     if (!glIsShader(cast->getHandle())) {
-        Logger::report(LogLevel_Error, boost::format("Unable to attach non-shader object to program %s") % getName());
+        Logger::report(LogLevel_Error, boost::format("Unable to attach non-shader object %s to program %s") % shader->getName() % getName());
         return false;
     }
     glAttachShader(handle, cast->getHandle());

@@ -4,8 +4,6 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <boost/scoped_array.hpp>
-#include <boost/pointer_cast.hpp>
 #include <application/Logger.h>
 #include <graphics/ShadersManager.h>
 #include <graphics/Program.h>
