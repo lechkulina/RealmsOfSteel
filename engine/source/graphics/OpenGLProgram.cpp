@@ -21,7 +21,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!Program::init(config) || !createHandle() || !createShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
+    if (!Program::init(config) || !createHandle() || !initShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
         uninit();
         return false;
     }

@@ -55,10 +55,6 @@ namespace ros {
             virtual void onRenderEvent();
 
         private:
-            static const float DEFAULT_FRAMES_PER_SECOND;
-            static const float DEFAULT_MAX_ACCUMULATED_TICKS;
-            static const bool DEFAULT_QUIT_ON_ESCAPE;
-
             static ApplicationFactory factory;
             static ApplicationPtr application;
             WindowPtr window;
@@ -66,6 +62,8 @@ namespace ros {
             float maxAccumulatedTicks;
             bool quitOnEscape;
             bool quitRequested;
+
+            bool initWindow(const PropertyTree& config);
     };
 }
 

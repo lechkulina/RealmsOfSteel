@@ -23,7 +23,7 @@ void ros::Program::uninit() {
     shaders.clear();
 }
 
-bool ros::Program::createShaders(const PropertyTree& config) {
+bool ros::Program::initShaders(const PropertyTree& config) {
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first != "shader") {
             continue;

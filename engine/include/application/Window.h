@@ -18,11 +18,11 @@ namespace ros {
             virtual bool init(const PropertyTree& config) =0;
             virtual void uninit() =0;
 
-            virtual int getWidth() const =0;
-            virtual int getHeight() const =0;
             virtual bool isDoubleBuffered() const =0;
             virtual bool isResizable() const =0;
             virtual bool isFullscreen() const =0;
+            virtual int getWidth() const =0;
+            virtual int getHeight() const =0;
 
             virtual void swapBuffers() =0;
             virtual void clearBuffers() =0;

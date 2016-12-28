@@ -10,9 +10,11 @@
     #include "SDLOpenGLApplication.h"
 #endif
 
-const float ros::Application::DEFAULT_FRAMES_PER_SECOND = 60.0f;
-const float ros::Application::DEFAULT_MAX_ACCUMULATED_TICKS = 50.0f;
-const bool ros::Application::DEFAULT_QUIT_ON_ESCAPE = false;
+namespace {
+    const float DEFAULT_FRAMES_PER_SECOND = 60.0f;
+    const float DEFAULT_MAX_ACCUMULATED_TICKS = 50.0f;
+    const bool DEFAULT_QUIT_ON_ESCAPE = false;
+}
 
 ros::ApplicationFactory ros::Application::factory;
 ros::ApplicationPtr ros::Application::application;
@@ -49,22 +51,14 @@ ros::Application::Application()
 }
 
 bool ros::Application::init(const PropertyTree& config) {
-    framesPerSecond = config.get("FramesPerSecond", DEFAULT_FRAMES_PER_SECOND);
-    maxAccumulatedTicks = config.get("MaxAccumulatedTicks", DEFAULT_MAX_ACCUMULATED_TICKS);
-    quitOnEscape = config.get("QuitOnEscape", DEFAULT_QUIT_ON_ESCAPE);
+    framesPerSecond = config.get("frames-per-second", DEFAULT_FRAMES_PER_SECOND);
+    maxAccumulatedTicks = config.get("max-accumulated-ticks", DEFAULT_MAX_ACCUMULATED_TICKS);
+    quitOnEscape = config.get("quit-on-escape", DEFAULT_QUIT_ON_ESCAPE);
 
-    PropertyTree::const_assoc_iterator iter = config.find("Window");
-    if (iter == config.not_found()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize the application - missing window definition"));
+    if (!initWindow(config)) {
         uninit();
         return false;
     }
-    window = createWindow();
-    if (!window || !window->init(config)) {
-        uninit();
-        return false;
-    }
-
     return true;
 }
 
@@ -139,4 +133,17 @@ void ros::Application::onUpdateEvent(float) {
 
 void ros::Application::onRenderEvent() {
 
+}
+
+bool ros::Application::initWindow(const PropertyTree& config) {
+    PropertyTree::const_assoc_iterator iter = config.find("window");
+    if (iter == config.not_found()) {
+        Logger::report(LogLevel_Error, boost::format("Missing window property in application"));
+        return false;
+    }
+    window = createWindow();
+    if (!window || !window->init(config.to_iterator(iter)->second)) {
+        return false;
+    }
+    return true;
 }

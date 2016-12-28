@@ -18,7 +18,7 @@ int main() {
     if (!ros::Logger::create(config.get_child("Logger"))) {
         return exitCode;
     }
-    if (!ros::Application::create(config.get_child("Application"))) {
+    if (!ros::Application::create(config.get_child("application"))) {
         return exitCode;
     }
 
