@@ -19,12 +19,12 @@ namespace {
         const char* str;
         GLenum type;
     } shaderTypeMappings[] = {
-        {"Compute", GL_COMPUTE_SHADER},
-        {"Vertex", GL_VERTEX_SHADER},
-        {"TessellationControl",  GL_TESS_CONTROL_SHADER},
-        {"TessellationEvaluation",  GL_TESS_EVALUATION_SHADER},
-        {"Geometry",  GL_GEOMETRY_SHADER},
-        {"Fragment",  GL_FRAGMENT_SHADER}
+        {"compute", GL_COMPUTE_SHADER},
+        {"vertex", GL_VERTEX_SHADER},
+        {"tessellation-control",  GL_TESS_CONTROL_SHADER},
+        {"tessellation-evaluation",  GL_TESS_EVALUATION_SHADER},
+        {"geometry",  GL_GEOMETRY_SHADER},
+        {"fragment",  GL_FRAGMENT_SHADER}
     };
 
     ShaderTypeOpt ShaderType_fromString(const char* str) {
@@ -66,10 +66,14 @@ bool ros::OpenGLShader::isValid() const {
 }
 
 bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
-    std::string typeStr = config.data();
-    ShaderTypeOpt type = ShaderType_fromString(typeStr.c_str());
+    StringOpt typeStr = config.get_optional<std::string>("type");
+    if (!typeStr) {
+        Logger::report(LogLevel_Error, boost::format("Shader type is missing"));
+        return false;
+    }
+    ShaderTypeOpt type = ShaderType_fromString(typeStr->c_str());
     if (!type) {
-        Logger::report(LogLevel_Error, boost::format("Unknown shader type %s") % typeStr);
+        Logger::report(LogLevel_Error, boost::format("Unknown shader type %s") % (*typeStr));
         return false;
     }
 
@@ -82,7 +86,7 @@ bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
 }
 
 bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
-    StringOpt filePath = config.get_optional<std::string>("FilePath");
+    StringOpt filePath = config.get_optional<std::string>("file-path");
     if (!filePath) {
         Logger::report(LogLevel_Error, boost::format("Shader file path is missing"));
         return false;
