@@ -103,23 +103,28 @@ bool ros::OpenGLProgram::link() {
 
 bool ros::OpenGLProgram::retrieveAttributes() {
     GLint count = 0;
-    GLsizei length = 0;
+    GLsizei maxLength = 0;
     glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &count);
-    glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &length);
-    if (length == 0 || OpenGL_checkForErrors()) {
+    glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength);
+    if (maxLength == 0 || OpenGL_checkForErrors()) {
         return false;
     }
 
-    boost::scoped_array<GLchar> buffer(new GLchar[length]);
-    memset(buffer.get(), 0, sizeof(GLchar) * length);
+    boost::scoped_array<GLchar> buffer(new GLchar[maxLength]);
+    memset(buffer.get(), 0, sizeof(GLchar) * maxLength);
 
     for (GLint index = 0; index < count; ++index) {
+        GLint length = 0;
         OpenGLAttribute attribute;
         memset(&attribute, 0, sizeof(OpenGLAttribute));
         attribute.index = index;
-        glGetActiveAttrib(handle, index, length, ROS_NULL, &attribute.size, &attribute.type, buffer.get());
+        glGetActiveAttrib(handle, index, maxLength, &length, &attribute.size, &attribute.type, buffer.get());
         if (OpenGL_checkForErrors()) {
             return false;
+        }
+        if (length == 0) {
+            Logger::report(LogLevel_Warning, boost::format("Failed to retrieve attribute name at index %d in program %s") % index % getName());
+            continue;
         }
         attributes[buffer.get()] = attribute;
     }
