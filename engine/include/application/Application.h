@@ -13,6 +13,7 @@
 #include <application/Events.h>
 #include <application/Window.h>
 #include <application/View.h>
+#include <graphics/Shader.h>
 
 namespace ros {
     class Application;
@@ -34,6 +35,7 @@ namespace ros {
             WindowPtr getWindow() const { return window; }
 
             virtual float getTicks() const =0;
+            virtual ShaderPtr createShader() =0;
 
         protected:
             typedef std::list<ViewPtr> ViewList;

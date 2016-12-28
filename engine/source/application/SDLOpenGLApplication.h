@@ -18,6 +18,7 @@ namespace ros {
             virtual void uninit();
 
             virtual float getTicks() const;
+            virtual ShaderPtr createShader();
 
         protected:
             virtual bool preInit(const PropertyTree& config);

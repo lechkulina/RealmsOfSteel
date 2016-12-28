@@ -9,6 +9,7 @@
 #include <application/Logger.h>
 #include "SDLOpenGLApplication.h"
 #include "SDLOpenGLWindow.h"
+#include "../graphics/OpenGLShader.h"
 
 namespace {
     const struct KeyboardButtonMapping {
@@ -181,6 +182,10 @@ void ros::SDLOpenGLApplication::uninit() {
 
 float ros::SDLOpenGLApplication::getTicks() const {
     return (float)SDL_GetTicks();
+}
+
+ros::ShaderPtr ros::SDLOpenGLApplication::createShader() {
+    return boost::make_shared<OpenGLShader>();
 }
 
 ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& config) {
