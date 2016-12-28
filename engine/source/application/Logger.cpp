@@ -8,7 +8,7 @@
 
 ros::LoggerPtr ros::Logger::logger;
 
-ros::LoggerPtr ros::Logger::create(const PropertyTree& config) {
+ros::LoggerPtr ros::Logger::initInstance(const PropertyTree& config) {
     if (logger) {
         return logger;
     }

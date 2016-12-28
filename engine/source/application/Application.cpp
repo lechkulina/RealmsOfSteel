@@ -19,21 +19,25 @@ namespace {
 ros::ApplicationFactory ros::Application::factory;
 ros::ApplicationPtr ros::Application::application;
 
-ros::ApplicationPtr ros::Application::create(const PropertyTree& config) {
+ros::ApplicationPtr ros::Application::initInstance(const PropertyTree& config) {
     if (application) {
         return application;
     }
 
     if (factory.isEmpty()) {
 #if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
-        factory.registerClass<SDLOpenGLApplication>("SDLOpenGL");
+        factory.registerClass<SDLOpenGLApplication>("sdl-opengl");
 #endif
     }
 
-    const std::string& type = config.data();
-    application.reset(factory.create(type));
+    StringOpt type = config.get_optional<std::string>("type");
+    if (!type) {
+        Logger::report(LogLevel_Error, boost::format("Missing type property in application"));
+        return application;
+    }
+    application.reset(factory.create(*type));
     if (!application) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create application: Unknown type %s") % type);
+        Logger::report(LogLevel_Error, boost::format("Unknown type %s property used for application") % (*type));
         return application;
     }
     if (!application->init(config)) {
@@ -63,9 +67,7 @@ bool ros::Application::init(const PropertyTree& config) {
 }
 
 void ros::Application::uninit() {
-    if (window) {
-        window->uninit();
-    }
+    window.reset();
 }
 
 int ros::Application::run() {

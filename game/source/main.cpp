@@ -15,10 +15,8 @@ int main() {
     ros::PropertyTree config;
     boost::property_tree::read_info("Config.info", config);
 
-    if (!ros::Logger::create(config.get_child("Logger"))) {
-        return exitCode;
-    }
-    if (!ros::Application::create(config.get_child("application"))) {
+    if (!ros::Logger::initInstance(config.get_child("Logger")) ||
+        !ros::Application::initInstance(config.get_child("application"))) {
         return exitCode;
     }
 

@@ -23,7 +23,7 @@ namespace ros {
 
     class ROS_API Application : public boost::noncopyable {
         public:
-            static ApplicationPtr create(const PropertyTree& config);
+            static ApplicationPtr initInstance(const PropertyTree& config);
             static ApplicationPtr getInstance() { return application; }
 
             Application();

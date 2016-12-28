@@ -18,7 +18,7 @@ namespace ros {
 
     class ROS_API Logger : public LogsSink {
         public:
-            static LoggerPtr create(const PropertyTree& config);
+            static LoggerPtr initInstance(const PropertyTree& config);
             static LoggerPtr getInstance() { return logger; }
 
             virtual bool init(const PropertyTree& config);
