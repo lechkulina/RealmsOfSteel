@@ -10,6 +10,7 @@
 #include "SDLOpenGLApplication.h"
 #include "SDLOpenGLWindow.h"
 #include "../graphics/OpenGLShader.h"
+#include "../graphics/OpenGLProgram.h"
 
 namespace {
     const struct KeyboardButtonMapping {
@@ -186,6 +187,10 @@ float ros::SDLOpenGLApplication::getTicks() const {
 
 ros::ShaderPtr ros::SDLOpenGLApplication::createShader() {
     return boost::make_shared<OpenGLShader>();
+}
+
+ros::ProgramPtr ros::SDLOpenGLApplication::createProgram() {
+    return boost::make_shared<OpenGLProgram>();
 }
 
 ros::WindowPtr ros::SDLOpenGLApplication::createWindow(const PropertyTree& config) {
