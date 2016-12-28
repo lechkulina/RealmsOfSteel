@@ -64,8 +64,8 @@ bool ros::Application::init(const PropertyTree& config) {
         uninit();
         return false;
     }
-    window = createWindow(config);
-    if (!window) {
+    window = createWindow();
+    if (!window || !window->init(config)) {
         uninit();
         return false;
     }

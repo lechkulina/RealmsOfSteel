@@ -36,6 +36,8 @@ namespace ros {
             WindowPtr getWindow() const { return window; }
 
             virtual float getTicks() const =0;
+
+            virtual WindowPtr createWindow() =0;
             virtual ShaderPtr createShader() =0;
             virtual ProgramPtr createProgram() =0;
 
@@ -45,7 +47,6 @@ namespace ros {
 
             virtual bool preInit(const PropertyTree& config) =0;
             virtual bool postInit(const PropertyTree& config) =0;
-            virtual WindowPtr createWindow(const PropertyTree& config) =0;
 
             virtual bool translateEvent() =0;
 

@@ -18,13 +18,14 @@ namespace ros {
             virtual void uninit();
 
             virtual float getTicks() const;
+
+            virtual WindowPtr createWindow();
             virtual ShaderPtr createShader();
             virtual ProgramPtr createProgram();
 
         protected:
             virtual bool preInit(const PropertyTree& config);
             virtual bool postInit(const PropertyTree& config);
-            virtual WindowPtr createWindow(const PropertyTree& config);
 
             virtual bool translateEvent();
     };
