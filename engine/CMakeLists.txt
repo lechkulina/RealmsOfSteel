@@ -5,6 +5,7 @@
 # For conditions of distribution and use, see copyright details in the LICENSE file.
 #
 add_library(Engine ${ROS_LINKAGE_TYPE}
+    source/core/RawBuffer.cpp
     source/application/LogMessage.cpp
     source/application/LogsFilter.cpp
     source/application/LogsLevelFilter.cpp
