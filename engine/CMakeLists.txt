@@ -6,6 +6,7 @@
 #
 add_library(Engine ${ROS_LINKAGE_TYPE}
     source/core/RawBuffer.cpp
+    source/core/RawFile.cpp
     source/application/LogMessage.cpp
     source/application/LogsFilter.cpp
     source/application/LogsLevelFilter.cpp
