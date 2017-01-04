@@ -7,6 +7,7 @@
 #ifndef ROS_RAW_FILE_H
 #define ROS_RAW_FILE_H
 
+#include <boost/endian/conversion.hpp>
 #include <core/File.h>
 
 namespace ros {
@@ -37,8 +38,48 @@ namespace ros {
             bool hasEnded() const;
 
             bool read(void* dst, U32 size) const;
+
+            template<class Type>
+            inline bool read(Type& dst) const {
+                return this->read(&dst, sizeof(dst));
+            }
+
+            template<class Type>
+            bool readLittle(Type& dst) const {
+                if (!read<Type>(dst)) {
+                    return false;
+                }
+                boost::endian::little_to_native_inplace(dst);
+                return true;
+            }
+
+            template<class Type>
+            bool readBig(Type& dst) const {
+                if (!read(&dst, sizeof(dst))) {
+                    return false;
+                }
+                boost::endian::big_to_native_inplace(dst);
+                return true;
+            }
+
             bool flush();
             bool write(const void* src, U32 size);
+
+
+            template<class Type>
+            inline bool write(const Type& src) {
+                return this->write(&src, sizeof(src));
+            }
+
+            template<class Type>
+            inline bool writeLittle(const Type& src) {
+                return write(boost::endian::native_to_little(src));
+            }
+
+            template<class Type>
+            inline bool writeBig(const Type& src) {
+                return write(boost::endian::native_to_big(src));
+            }
 
         private:
             FILE* stream;
