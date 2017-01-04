@@ -36,18 +36,16 @@ ros::RawBuffer& ros::RawBuffer::operator=(const RawBuffer& src) {
 }
 
 bool ros::RawBuffer::allocate(U32 size) {
+    free();
     if (size == 0) {
         return false;
     }
 
-    U8* data = new (std::nothrow) U8[size];
+    data = new (std::nothrow) U8[size];
     if (!data) {
         return false;
     }
     memset(data, 0, size);
-
-    free();
-    this->data = data;
     this->size = size;
 
     return true;
@@ -77,6 +75,7 @@ bool ros::RawBuffer::resize(U32 size) {
     if (!this->data) {
         return allocate(size);
     }
+
     if (size == 0) {
         return false;
     }
