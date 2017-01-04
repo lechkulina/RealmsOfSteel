@@ -55,22 +55,26 @@ namespace ros {
             bool read(void* dst, U32 size) const;
 
             template<class Type>
-            Type read() const {
-                Type dst;
-                if (!read(&dst, sizeof(Type))) {
-                    return Type();
+            inline bool read(Type& dst) const {
+                return this->read(&dst, sizeof(Type));
+            }
+
+            template<class Type>
+            bool readLittle(Type& dst) const {
+                if (!read<Type>(dst)) {
+                    return false;
                 }
-                return dst;
+                boost::endian::little_to_native_inplace(dst);
+                return true;
             }
 
             template<class Type>
-            inline Type readLittle() const {
-                return boost::endian::little_to_native(read<Type>());
-            }
-
-            template<class Type>
-            inline bool readBig(Type& dst) const {
-                return boost::endian::big_to_native(read<Type>());
+            bool readBig(Type& dst) const {
+                if (!read(&dst, sizeof(dst))) {
+                    return false;
+                }
+                boost::endian::big_to_native_inplace(dst);
+                return true;
             }
 
             bool write(const void* src, U32 size);
