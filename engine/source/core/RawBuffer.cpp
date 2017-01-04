@@ -116,7 +116,7 @@ bool ros::RawBuffer::seek(S64 offset, BufferOrigin origin) const {
             position = offset;
             break;
         case BufferOrigin_Current:
-            if (position + offset >= static_cast<S64>(size) || position + offset < 0) {
+            if (position + offset > static_cast<S64>(size) || position + offset < 0) {
                 return false;
             }
             position += offset;
