@@ -48,6 +48,10 @@ if (ROS_USE_ZIP)
         target_include_directories(Engine PRIVATE ${ZLIB_INCLUDE_DIRS})
         target_link_libraries(Engine PRIVATE ${ZLIB_LIBRARIES})
         target_compile_definitions(Engine PRIVATE ROS_USING_ZIP)
+        target_sources(Engine PRIVATE
+            source/resources/ZIPArchiveFile.cpp
+            source/resources/ZIPArchiveEntry.cpp
+        )
     endif()
 endif()
 

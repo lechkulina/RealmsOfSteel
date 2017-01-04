@@ -92,6 +92,8 @@ namespace ros {
             bool openStream(const char* path, FileType type, FileOpenMode mode);
             bool setBuffering(FileBufferMode mode, U32 size);
     };
+
+    typedef boost::shared_ptr<RawFile> RawFilePtr;
 }
 
 #endif // ROS_RAW_FILE_H

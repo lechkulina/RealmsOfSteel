@@ -99,6 +99,8 @@ namespace ros {
             U32 size;
             mutable S64 position;
     };
+
+    typedef boost::shared_ptr<RawBuffer> RawBufferPtr;
 }
 
 #endif // ROS_RAW_BUFFER_H
