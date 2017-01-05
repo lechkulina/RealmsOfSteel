@@ -66,8 +66,8 @@ bool ros::ZIPArchiveEntry::readFileHeader() {
 ros::RawBufferPtr ros::ZIPArchiveEntry::readUncompressedData() {
     RawBufferPtr dst = boost::make_shared<RawBuffer>(directoryHeader.uncompressedSize);
     if (!dst || dst->isNull()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create destination buffer of size %d bytes for entry %s")
-                            % directoryHeader.uncompressedSize % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to create destination buffer of size %d bytes for entry %s from file %s")
+                            % directoryHeader.uncompressedSize % name % file->getPath());
         return RawBufferPtr();
     }
 
@@ -84,8 +84,8 @@ ros::RawBufferPtr ros::ZIPArchiveEntry::readUncompressedData() {
 ros::RawBufferPtr ros::ZIPArchiveEntry::inflateCompressedData() {
     RawBufferPtr dst = boost::make_shared<RawBuffer>(directoryHeader.uncompressedSize);
     if (!dst || dst->isNull()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create destination buffer of size %d bytes for entry %s")
-                            % directoryHeader.uncompressedSize % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to create destination buffer of size %d bytes for entry %s from file %s")
+                            % directoryHeader.uncompressedSize % name % file->getPath());
         return RawBufferPtr();
     }
 

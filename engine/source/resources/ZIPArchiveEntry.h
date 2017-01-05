@@ -34,7 +34,7 @@ namespace ros {
         public:
             ZIPArchiveEntry(const char* name, RawFilePtr file, const ZIPDirectoryHeader& directoryHeader);
 
-            virtual const std::string& getName() const { return name;}
+            virtual const std::string& getName() const { return name; }
             virtual U32 getCompressedSize() const { return directoryHeader.compressedSize; }
             virtual U32 getUncompressedSize() const { return directoryHeader.uncompressedSize; }
             virtual RawBufferPtr decompress();
