@@ -43,7 +43,6 @@ namespace ros {
 
     class ROS_API File : public boost::noncopyable {
         public:
-            File() {}
             virtual ~File() {}
 
             virtual bool isOpen() const =0;

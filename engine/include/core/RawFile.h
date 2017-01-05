@@ -65,7 +65,6 @@ namespace ros {
             bool flush();
             bool write(const void* src, U32 size);
 
-
             template<class Type>
             inline bool write(const Type& src) {
                 return this->write(&src, sizeof(src));
