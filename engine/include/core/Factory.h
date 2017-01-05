@@ -7,6 +7,7 @@
 #ifndef ROS_FACTORY_H
 #define ROS_FACTORY_H
 
+#include <boost/regex.hpp>
 #include <core/Common.h>
 
 namespace ros {
@@ -23,32 +24,36 @@ namespace ros {
             }
     };
 
-    template<class Id, class Base, class Traits = FactoryTraits<Base> >
+    template<class Base, class Traits = FactoryTraits<Base> >
     class Factory {
         public:
             template<class Derived>
-            bool registerClass(const Id& id) {
-                if (isClassRegistered(id))
+            bool registerClass(const boost::regex& pattern) {
+                if (pattern.empty() || creators.find(pattern) != creators.end()) {
                     return false;
-                creators[id] = &Traits::template create<Derived>;
+                }
+                creators[pattern] = &Traits::template create<Derived>;
                 return true;
             }
 
-            void unregisterClass(const Id& id) {
-                typename CreatorMap::const_iterator iter = creators.find(id);
-                if (iter != creators.end())
+            void unregisterClass(const boost::regex& pattern) {
+                typename CreatorMap::const_iterator iter = creators.find(pattern);
+                if (iter != creators.end()) {
                     creators.erase(iter);
+                }
             }
 
-            inline bool isClassRegistered(const Id& id) const {
-                return creators.find(id) != creators.end();
+            inline bool isClassRegistered(const boost::regex& pattern) const {
+                return creators.find(pattern) != creators.end();
             }
 
-            Base* create(const Id& id) const {
-                typename CreatorMap::const_iterator iter = creators.find(id);
-                if (iter == creators.end())
-                    return ROS_NULL;
-                return (*(iter->second))();
+            Base* create(const char* str) const {
+                for (typename CreatorMap::const_iterator iter = creators.begin(); iter != creators.end(); ++iter) {
+                    if (boost::regex_match(str, iter->first)) {
+                        return (*(iter->second))();
+                    }
+                }
+                return ROS_NULL;
             }
 
             inline void destroy(Base* instance) const {
@@ -60,8 +65,8 @@ namespace ros {
             }
 
         private:
-            typedef Base* (*Creator)();
-            typedef std::map<Id, Creator> CreatorMap;
+            typedef Base* (*CreatorCallback)();
+            typedef std::map<boost::regex, CreatorCallback> CreatorMap;
 
             CreatorMap creators;
     };

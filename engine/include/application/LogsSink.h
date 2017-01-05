@@ -16,7 +16,7 @@
 namespace ros {
     class LogsSink;
     typedef boost::shared_ptr<LogsSink> LogsSinkPtr;
-    typedef Factory<std::string, LogsSink> LogsSinkFactory;
+    typedef Factory<LogsSink> LogsSinkFactory;
 
     class ROS_API LogsSink : public LogsFilter {
         public:
@@ -32,7 +32,7 @@ namespace ros {
         private:
             typedef std::list<LogsFilterPtr> LogsFilterList;
 
-            static Factory<std::string, LogsSink> factory;
+            static LogsSinkFactory factory;
             LogsFilterList filters;
     };
 }

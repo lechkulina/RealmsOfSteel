@@ -26,7 +26,7 @@ ros::ApplicationPtr ros::Application::initInstance(const PropertyTree& config) {
 
     if (factory.isEmpty()) {
 #if defined(ROS_USING_SDL) && defined(ROS_USING_OPENGL)
-        factory.registerClass<SDLOpenGLApplication>("sdl-opengl");
+        factory.registerClass<SDLOpenGLApplication>(boost::regex("sdl-opengl"));
 #endif
     }
 
@@ -35,7 +35,7 @@ ros::ApplicationPtr ros::Application::initInstance(const PropertyTree& config) {
         Logger::report(LogLevel_Error, boost::format("Missing type property in application"));
         return application;
     }
-    application.reset(factory.create(*type));
+    application.reset(factory.create(type->c_str()));
     if (!application) {
         Logger::report(LogLevel_Error, boost::format("Unknown type %s property used for application") % (*type));
         return application;

@@ -12,12 +12,12 @@ ros::LogsSinkFactory ros::LogsSink::factory;
 
 ros::LogsSinkPtr ros::LogsSink::create(const PropertyTree& config) {
     if (factory.isEmpty()) {
-        factory.registerClass<LogsConsoleSink>("Console");
-        factory.registerClass<LogsFileSink>("File");
+        factory.registerClass<LogsConsoleSink>(boost::regex("Console"));
+        factory.registerClass<LogsFileSink>(boost::regex("File"));
     }
 
     const std::string& type = config.data();
-    LogsSinkPtr sink(factory.create(type));
+    LogsSinkPtr sink(factory.create(type.c_str()));
     if (!sink) {
         std::cerr << "Failed to create sink: Unknown type " << type << std::endl;
         return LogsSinkPtr();

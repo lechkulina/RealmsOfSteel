@@ -36,7 +36,7 @@ target_compile_definitions(Engine
 target_compile_options(Engine PUBLIC -Wall -Wextra -Wpedantic -Wno-long-long $<$<CONFIG:RELEASE>:-Winline> $<$<CONFIG:RELEASE>:-Wdisabled-optimization>)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-find_package(Boost REQUIRED COMPONENTS system thread filesystem chrono)
+find_package(Boost REQUIRED COMPONENTS system thread filesystem chrono regex)
 if (Boost_FOUND)
     target_include_directories(Engine PUBLIC ${Boost_INCLUDE_DIRS})
     target_link_libraries(Engine PUBLIC ${Boost_LIBRARIES})

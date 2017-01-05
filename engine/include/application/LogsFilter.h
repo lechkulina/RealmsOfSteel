@@ -15,7 +15,7 @@
 namespace ros {
     class LogsFilter;
     typedef boost::shared_ptr<LogsFilter> LogsFilterPtr;
-    typedef Factory<std::string, LogsFilter> LogsFilterFactory;
+    typedef Factory<LogsFilter> LogsFilterFactory;
 
     class ROS_API LogsFilter : public boost::noncopyable {
         public:

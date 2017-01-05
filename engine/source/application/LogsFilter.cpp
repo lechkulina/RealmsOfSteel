@@ -11,11 +11,11 @@ ros::LogsFilterFactory ros::LogsFilter::factory;
 
 boost::shared_ptr<ros::LogsFilter> ros::LogsFilter::create(const PropertyTree& config) {
     if (factory.isEmpty()) {
-        factory.registerClass<LogsLevelFilter>("Level");
+        factory.registerClass<LogsLevelFilter>(boost::regex("Level"));
     }
 
     const std::string& type = config.data();
-    LogsFilterPtr filter(factory.create(type));
+    LogsFilterPtr filter(factory.create(type.c_str()));
     if (!filter) {
         std::cerr << "Failed to create filter: Unknown type " << type << std::endl;
         return LogsFilterPtr();
