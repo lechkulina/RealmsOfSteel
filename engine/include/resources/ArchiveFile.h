@@ -9,20 +9,19 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <core/File.h>
 #include <resources/ArchiveEntry.h>
 
 namespace ros {
     class ArchiveFile;
     typedef boost::shared_ptr<ArchiveFile> ArchiveFilePtr;
 
-    class ROS_API ArchiveFile {
+    class ROS_API ArchiveFile: public File {
         public:
             virtual ~ArchiveFile() {}
 
             virtual bool open(const char* path) =0;
             virtual void close() =0;
-            virtual bool isOpen() const =0;
-            virtual const std::string& getPath() const =0;
 
             virtual const ArchiveEntryMap& getEntries() const =0;
     };
