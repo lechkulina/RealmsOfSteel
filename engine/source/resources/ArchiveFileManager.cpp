@@ -66,9 +66,9 @@ ros::ArchiveFilePtr ros::ArchiveFileManager::openArchive(const PropertyTree& con
         return iter->second;
     }
 
-    StringOpt path = config.get_optional<std::string>("file-path");
+    StringOpt path = config.get_optional<std::string>("path");
     if (!path) {
-        Logger::report(LogLevel_Error, boost::format("Missing file path property in archive %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Missing path property in archive %s") % name);
         return ArchiveFilePtr();
     }
     ArchiveFilePtr archive(factory.create(path->c_str()));
@@ -76,7 +76,7 @@ ros::ArchiveFilePtr ros::ArchiveFileManager::openArchive(const PropertyTree& con
         Logger::report(LogLevel_Error, boost::format("Unsupported file format %s used for archive %s") % path % name);
         return ArchiveFilePtr();
     }
-    if (!archive->open(path->c_str())) {
+    if (!archive->open(config)) {
         return ArchiveFilePtr();
     }
 

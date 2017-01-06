@@ -48,10 +48,10 @@ namespace ros {
     class ZIPArchiveFile : public ArchiveFile {
         public:
             ZIPArchiveFile() {}
-            explicit ZIPArchiveFile(const char* path);
+            explicit ZIPArchiveFile(const PropertyTree& config);
             virtual ~ZIPArchiveFile();
 
-            virtual bool open(const char* path);
+            virtual bool open(const PropertyTree& config);
             virtual void close();
             virtual bool isOpen() const;
             virtual const std::string& getPath() const { return path; }
@@ -63,7 +63,7 @@ namespace ros {
             std::string path;
             ArchiveEntryMap entries;
 
-            bool initFile(const char* path);
+            bool initFile(const PropertyTree& config);
             bool readEntries();
     };
 }

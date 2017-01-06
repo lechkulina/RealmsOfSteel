@@ -18,10 +18,15 @@ namespace ros {
         public:
             virtual ~ArchiveFile() {}
 
-            virtual bool open(const char* path) =0;
-            virtual void close() =0;
+            virtual bool open(const PropertyTree& config);
+            virtual void close();
 
             virtual const ArchiveEntryMap& getEntries() const =0;
+
+            const std::string& getName() const { return name; }
+
+        private:
+            std::string name;
     };
 
     typedef boost::shared_ptr<ArchiveFile> ArchiveFilePtr;
