@@ -47,6 +47,14 @@ namespace ros {
                 return creators.find(pattern) != creators.end();
             }
 
+            inline void clear() {
+                creators.clear();
+            }
+
+            inline bool isEmpty() const {
+                return creators.empty();
+            }
+
             Base* create(const char* str) const {
                 for (typename CreatorMap::const_iterator iter = creators.begin(); iter != creators.end(); ++iter) {
                     if (boost::regex_match(str, iter->first)) {
@@ -58,10 +66,6 @@ namespace ros {
 
             inline void destroy(Base* instance) const {
                 Traits::destroy(instance);
-            }
-
-            inline bool isEmpty() const {
-                return creators.empty();
             }
 
         private:

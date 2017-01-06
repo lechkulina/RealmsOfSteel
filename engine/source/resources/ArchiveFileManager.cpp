@@ -48,6 +48,7 @@ bool ros::ArchiveFileManager::init(const PropertyTree& config) {
 
 void ros::ArchiveFileManager::uninit() {
     archives.clear();
+    factory.clear();
 }
 
 ros::ArchiveFilePtr ros::ArchiveFileManager::openArchive(const PropertyTree& config) {
