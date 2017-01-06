@@ -39,6 +39,7 @@ bool ros::ZIPArchiveFile::isOpen() const {
 bool ros::ZIPArchiveFile::initFile(const char* path) {
     file = boost::make_shared<RawFile>(path, FileType_Binary, FileOpenMode_Read);
     if (!file || !file->isOpen()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to open file %s for reading") % path);
         return false;
     }
     this->path = path;
@@ -132,5 +133,6 @@ bool ros::ZIPArchiveFile::readEntries() {
         }
     }
 
+    Logger::report(LogLevel_Trace, boost::format("Found %d entries in file %s") % entries.size() % file->getPath());
     return true;
 }
