@@ -83,3 +83,17 @@ ros::ArchiveFilePtr ros::ArchiveFileManager::openArchive(const PropertyTree& con
     archives[name] = archive;
     return archive;
 }
+
+bool ros::ArchiveFileManager::openArchives(const PropertyTree& config, ArchiveFileList& dst) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first != "archive") {
+            continue;
+        }
+        ArchiveFilePtr archive = openArchive(iter->second);
+        if (!archive || !archive->isOpen()) {
+            return false;
+        }
+        dst.push_back(archive);
+    }
+    return true;
+}

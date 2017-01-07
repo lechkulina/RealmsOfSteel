@@ -28,8 +28,6 @@ namespace ros {
             ResourceLoaderList& getLoaders() { return loaders; }
 
         protected:
-            bool initArchives(const PropertyTree& config);
-            bool initLoaders(const PropertyTree& config);
             BufferPtr loadBuffer(const std::string& name);
 
         private:

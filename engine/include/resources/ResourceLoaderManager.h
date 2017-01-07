@@ -26,6 +26,7 @@ namespace ros {
             void uninit();
 
             ResourceLoaderPtr initLoader(const PropertyTree& config);
+            bool initLoaders(const PropertyTree& config, ResourceLoaderList& dst);
 
         private:
             static ResourceLoaderManagerPtr manager;

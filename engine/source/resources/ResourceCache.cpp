@@ -16,6 +16,13 @@ bool ros::ResourceCache::init(const PropertyTree &config) {
         uninit();
         return false;
     }
+
+    if (!ArchiveFileManager::getInstance()->openArchives(config, archives) ||
+        !ResourceLoaderManager::getInstance()->initLoaders(config, loaders)) {
+        uninit();
+        return false;
+    }
+
     return true;
 }
 
@@ -23,36 +30,6 @@ void ros::ResourceCache::uninit() {
     name.clear();
     archives.clear();
     loaders.clear();
-}
-
-bool ros::ResourceCache::initArchives(const PropertyTree& config) {
-    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first != "archive") {
-            continue;
-        }
-        ArchiveFilePtr archive = ArchiveFileManager::getInstance()->openArchive(iter->second);
-        if (!archive || !archive->isOpen()) {
-            uninit();
-            return false;
-        }
-        archives.push_back(archive);
-    }
-    return true;
-}
-
-bool ros::ResourceCache::initLoaders(const PropertyTree& config) {
-    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first != "loader") {
-            continue;
-        }
-        ResourceLoaderPtr loader = ResourceLoaderManager::getInstance()->initLoader(iter->second);
-        if (!loader) {
-            uninit();
-            return false;
-        }
-        loaders.push_back(loader);
-    }
-    return true;
 }
 
 ros::BufferPtr ros::ResourceCache::loadBuffer(const std::string& name) {

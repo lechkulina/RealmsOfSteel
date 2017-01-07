@@ -76,3 +76,17 @@ ros::ResourceLoaderPtr ros::ResourceLoaderManager::initLoader(const PropertyTree
     loaders[name] = loader;
     return loader;
 }
+
+bool ros::ResourceLoaderManager::initLoaders(const PropertyTree& config, ResourceLoaderList& dst) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first != "loader") {
+            continue;
+        }
+        ResourceLoaderPtr loader = initLoader(iter->second);
+        if (!loader) {
+            return false;
+        }
+        dst.push_back(loader);
+    }
+    return true;
+}

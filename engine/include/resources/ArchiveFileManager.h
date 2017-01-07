@@ -26,6 +26,7 @@ namespace ros {
             void uninit();
 
             ArchiveFilePtr openArchive(const PropertyTree& config);
+            bool openArchives(const PropertyTree& config, ArchiveFileList& dst);
 
         private:
             static ArchiveFileManagerPtr manager;
