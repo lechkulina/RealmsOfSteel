@@ -61,7 +61,7 @@ ros::ResourceLoaderPtr ros::ResourceLoaderManager::initLoader(const PropertyTree
 
     StringOpt type = config.get_optional<std::string>("type");
     if (!type) {
-        Logger::report(LogLevel_Error, boost::format("Missing path property in loader %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Missing type property in loader %s") % name);
         return ResourceLoaderPtr();
     }
     ResourceLoaderPtr loader(factory.create(type->c_str()));
