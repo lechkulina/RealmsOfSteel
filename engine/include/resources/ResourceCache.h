@@ -22,6 +22,7 @@ namespace ros {
 
             virtual BufferPtr acquireBuffer(const std::string& name) =0;
             virtual void releaseBuffer(BufferPtr buffer) =0;
+            virtual U32 computeUsedSize() const =0;
 
             const std::string& getName() const { return name; }
             ArchiveFileList& getArchives() { return archives; }
