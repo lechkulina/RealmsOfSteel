@@ -17,6 +17,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/Application.cpp
     source/resources/ArchiveFile.cpp
     source/resources/ArchiveFileManager.cpp
+    source/resources/ResourceLoader.cpp
     source/math/Scalar.cpp
     source/math/Vector2D.cpp
     source/math/Vector3D.cpp
