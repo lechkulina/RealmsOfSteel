@@ -20,7 +20,8 @@ namespace ros {
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
 
-            virtual BufferPtr load(RawBufferPtr src) =0;
+            virtual bool isLoadable(const std::string& name) const =0;
+            virtual BufferPtr loadBuffer(RawBufferPtr src) =0;
 
             const std::string& getName() const { return name; }
 
