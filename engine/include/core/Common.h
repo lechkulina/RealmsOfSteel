@@ -52,6 +52,15 @@ namespace ros {
     typedef boost::property_tree::ptree PropertyTree;
     typedef boost::chrono::system_clock SystemClock;
 
+    typedef boost::optional<S8> S8Opt;
+    typedef boost::optional<S16> S16Opt;
+    typedef boost::optional<S32> S32Opt;
+    typedef boost::optional<S64> S64Opt;
+    typedef boost::optional<U8> U8Opt;
+    typedef boost::optional<U16> U16Opt;
+    typedef boost::optional<U32> U32Opt;
+    typedef boost::optional<U64> U64Opt;
+
     typedef boost::optional<std::string> StringOpt;
 
     const size_t KB = 1024;
