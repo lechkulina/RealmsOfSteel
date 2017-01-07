@@ -6,6 +6,7 @@
  */
 #include <application/Logger.h>
 #include <resources/ResourceCacheManager.h>
+#include "StaticResourceCache.h"
 
 ros::ResourceCacheManagerPtr ros::ResourceCacheManager::manager;
 
@@ -28,6 +29,8 @@ ros::ResourceCacheManager::~ResourceCacheManager() {
 
 bool ros::ResourceCacheManager::init(const PropertyTree& config) {
     uninit();
+
+    factory.registerClass<StaticResourceCache>(boost::regex("static"));
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "cache" && !initCache(iter->second)) {

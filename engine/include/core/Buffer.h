@@ -26,6 +26,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Buffer> BufferPtr;
+    typedef std::map<std::string, BufferPtr> BufferMap;
 }
 
 #endif // ROS_BUFFER_H

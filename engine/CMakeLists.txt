@@ -21,6 +21,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/resources/ResourceLoaderManager.cpp
     source/resources/ResourceCache.cpp
     source/resources/ResourceCacheManager.cpp
+    source/resources/StaticResourceCache.cpp
     source/math/Scalar.cpp
     source/math/Vector2D.cpp
     source/math/Vector3D.cpp
