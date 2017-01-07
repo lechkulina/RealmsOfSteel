@@ -38,6 +38,11 @@ namespace ros {
             ArchiveEntryPtr findEntry(const std::string& name);
             ResourceLoaderPtr findLoader(const std::string& name);
     };
+
+    typedef boost::shared_ptr<ResourceCache> ResourceCachePtr;
+    typedef Factory<ResourceCache> ResourceCacheFactory;
+    typedef std::list<ResourceCachePtr> ResourceCacheList;
+    typedef std::map<std::string, ResourceCachePtr> ResourceCacheMap;
 }
 
 #endif // ROS_RESOURCE_CACHE_H
