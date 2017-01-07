@@ -21,7 +21,7 @@ namespace ros {
             virtual bool open(const PropertyTree& config);
             virtual void close();
 
-            virtual const ArchiveEntryMap& getEntries() const =0;
+            virtual ArchiveEntryMap& getEntries() =0;
 
             const std::string& getName() const { return name; }
 
@@ -31,6 +31,7 @@ namespace ros {
 
     typedef boost::shared_ptr<ArchiveFile> ArchiveFilePtr;
     typedef Factory<ArchiveFile> ArchiveFileFactory;
+    typedef std::list<ArchiveFilePtr> ArchiveFileList;
     typedef std::map<std::string, ArchiveFilePtr> ArchiveFileMap;
 }
 
