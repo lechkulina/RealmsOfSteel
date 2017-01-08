@@ -19,6 +19,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/resources/ArchiveFileManager.cpp
     source/resources/BufferLoader.cpp
     source/resources/BufferLoaderManager.cpp
+    source/resources/RawBufferLoader.cpp
     source/resources/BufferCache.cpp
     source/resources/BufferCacheManager.cpp
     source/resources/StaticBufferCache.cpp

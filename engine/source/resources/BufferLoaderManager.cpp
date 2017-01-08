@@ -6,6 +6,7 @@
  */
 #include <application/Logger.h>
 #include <resources/BufferLoaderManager.h>
+#include "RawBufferLoader.h"
 
 ros::BufferLoaderManagerPtr ros::BufferLoaderManager::manager;
 
@@ -28,6 +29,8 @@ ros::BufferLoaderManager::~BufferLoaderManager() {
 
 bool ros::BufferLoaderManager::init(const PropertyTree& config) {
     uninit();
+
+    factory.registerClass<RawBufferLoader>(boost::regex("raw"));
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "loader" && !initLoader(iter->second)) {
