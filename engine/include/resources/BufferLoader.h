@@ -4,8 +4,8 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_RESOURCE_LOADER_H
-#define ROS_RESOURCE_LOADER_H
+#ifndef ROS_BUFFER_LOADER_H
+#define ROS_BUFFER_LOADER_H
 
 #include <core/Common.h>
 #include <core/Environment.h>
@@ -13,9 +13,9 @@
 #include <core/RawBuffer.h>
 
 namespace ros {
-    class ROS_API ResourceLoader : public boost::noncopyable {
+    class ROS_API BufferLoader : public boost::noncopyable {
         public:
-            virtual ~ResourceLoader() {}
+            virtual ~BufferLoader() {}
 
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
@@ -29,11 +29,11 @@ namespace ros {
             std::string name;
     };
 
-    typedef boost::shared_ptr<ResourceLoader> ResourceLoaderPtr;
-    typedef Factory<ResourceLoader> ResourceLoaderFactory;
-    typedef std::list<ResourceLoaderPtr> ResourceLoaderList;
-    typedef std::map<std::string, ResourceLoaderPtr> ResourceLoaderMap;
+    typedef boost::shared_ptr<BufferLoader> BufferLoaderPtr;
+    typedef Factory<BufferLoader> BufferLoaderFactory;
+    typedef std::list<BufferLoaderPtr> BufferLoaderList;
+    typedef std::map<std::string, BufferLoaderPtr> BufferLoaderMap;
 }
 
-#endif // ROS_RESOURCE_LOADER_H
+#endif // ROS_BUFFER_LOADER_H
 

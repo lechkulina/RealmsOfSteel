@@ -5,17 +5,17 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include <resources/ResourceCacheManager.h>
-#include "StaticResourceCache.h"
+#include <resources/BufferCacheManager.h>
+#include "StaticBufferCache.h"
 
-ros::ResourceCacheManagerPtr ros::ResourceCacheManager::manager;
+ros::BufferCacheManagerPtr ros::BufferCacheManager::manager;
 
-ros::ResourceCacheManagerPtr ros::ResourceCacheManager::initInstance(const PropertyTree& config) {
+ros::BufferCacheManagerPtr ros::BufferCacheManager::initInstance(const PropertyTree& config) {
     if (manager) {
         return manager;
     }
 
-    manager.reset(new ResourceCacheManager());
+    manager.reset(new BufferCacheManager());
     if (manager && !manager->init(config)) {
         manager.reset();
     }
@@ -23,14 +23,14 @@ ros::ResourceCacheManagerPtr ros::ResourceCacheManager::initInstance(const Prope
     return manager;
 }
 
-ros::ResourceCacheManager::~ResourceCacheManager() {
+ros::BufferCacheManager::~BufferCacheManager() {
     uninit();
 }
 
-bool ros::ResourceCacheManager::init(const PropertyTree& config) {
+bool ros::BufferCacheManager::init(const PropertyTree& config) {
     uninit();
 
-    factory.registerClass<StaticResourceCache>(boost::regex("static"));
+    factory.registerClass<StaticBufferCache>(boost::regex("static"));
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "cache" && !initCache(iter->second)) {
@@ -42,19 +42,19 @@ bool ros::ResourceCacheManager::init(const PropertyTree& config) {
     return true;
 }
 
-void ros::ResourceCacheManager::uninit() {
+void ros::BufferCacheManager::uninit() {
     caches.clear();
     factory.clear();
 }
 
-ros::ResourceCachePtr ros::ResourceCacheManager::initCache(const PropertyTree& config) {
+ros::BufferCachePtr ros::BufferCacheManager::initCache(const PropertyTree& config) {
     std::string name = config.data();
     if (name.empty()) {
         Logger::report(LogLevel_Error, boost::format("Cache name is missing"));
-        return ResourceCachePtr();
+        return BufferCachePtr();
     }
 
-    ResourceCacheMap::iterator iter = caches.find(name);
+    BufferCacheMap::iterator iter = caches.find(name);
     if (iter != caches.end()) {
         if (!config.empty()) {
             Logger::report(LogLevel_Warning, boost::format("Cache %s has already been defined - ignoring redefinition") % name);
@@ -65,27 +65,27 @@ ros::ResourceCachePtr ros::ResourceCacheManager::initCache(const PropertyTree& c
     StringOpt type = config.get_optional<std::string>("type");
     if (!type) {
         Logger::report(LogLevel_Error, boost::format("Missing type property in cache %s") % name);
-        return ResourceCachePtr();
+        return BufferCachePtr();
     }
-    ResourceCachePtr cache(factory.create(type->c_str()));
+    BufferCachePtr cache(factory.create(type->c_str()));
     if (!cache) {
         Logger::report(LogLevel_Error, boost::format("Unsupported type %s used for cache %s") % type % name);
-        return ResourceCachePtr();
+        return BufferCachePtr();
     }
     if (!cache->init(config)) {
-        return ResourceCachePtr();
+        return BufferCachePtr();
     }
 
     caches[name] = cache;
     return cache;
 }
 
-bool ros::ResourceCacheManager::initCaches(const PropertyTree& config, ResourceCacheList& dst) {
+bool ros::BufferCacheManager::initCaches(const PropertyTree& config, BufferCacheList& dst) {
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first != "cache") {
             continue;
         }
-        ResourceCachePtr cache = initCache(iter->second);
+        BufferCachePtr cache = initCache(iter->second);
         if (!cache) {
             return false;
         }

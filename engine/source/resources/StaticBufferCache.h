@@ -4,15 +4,15 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_STATIC_RESOURCE_CACHE_H
-#define ROS_STATIC_RESOURCE_CACHE_H
+#ifndef ROS_STATIC_BUFFER_CACHE_H
+#define ROS_STATIC_BUFFER_CACHE_H
 
-#include <resources/ResourceCache.h>
+#include <resources/BufferCache.h>
 
 namespace ros {
-    class StaticResourceCache : public ResourceCache {
+    class StaticBufferCache : public BufferCache {
         public:
-            virtual ~StaticResourceCache();
+            virtual ~StaticBufferCache();
 
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
@@ -26,5 +26,5 @@ namespace ros {
             BufferMap buffers;
     };
 }
-#endif // ROS_STATIC_RESOURCE_CACHE_H
+#endif // ROS_STATIC_BUFFER_CACHE_H
 

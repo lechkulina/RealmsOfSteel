@@ -5,9 +5,9 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include <resources/ResourceLoader.h>
+#include <resources/BufferLoader.h>
 
-bool ros::ResourceLoader::init(const PropertyTree &config) {
+bool ros::BufferLoader::init(const PropertyTree &config) {
     name = config.data();
     if (name.empty()) {
         Logger::report(LogLevel_Error, boost::format("Loader name is missing"));
@@ -17,6 +17,6 @@ bool ros::ResourceLoader::init(const PropertyTree &config) {
     return true;
 }
 
-void ros::ResourceLoader::uninit() {
+void ros::BufferLoader::uninit() {
     name.clear();
 }

@@ -5,14 +5,14 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include "StaticResourceCache.h"
+#include "StaticBufferCache.h"
 
-ros::StaticResourceCache::~StaticResourceCache() {
+ros::StaticBufferCache::~StaticBufferCache() {
     uninit();
 }
 
-bool ros::StaticResourceCache::init(const PropertyTree& config) {
-    if (!ResourceCache::init(config)) {
+bool ros::StaticBufferCache::init(const PropertyTree& config) {
+    if (!BufferCache::init(config)) {
         return false;
     }
 
@@ -24,13 +24,13 @@ bool ros::StaticResourceCache::init(const PropertyTree& config) {
     return true;
 }
 
-void ros::StaticResourceCache::uninit() {
+void ros::StaticBufferCache::uninit() {
     capacity.reset();
     buffers.clear();
-    ResourceCache::uninit();
+    BufferCache::uninit();
 }
 
-ros::BufferPtr ros::StaticResourceCache::acquireBuffer(const std::string& name) {
+ros::BufferPtr ros::StaticBufferCache::acquireBuffer(const std::string& name) {
     BufferMap::iterator found = buffers.find(name);
     if (found != buffers.end()) {
         return found->second;
@@ -55,7 +55,7 @@ ros::BufferPtr ros::StaticResourceCache::acquireBuffer(const std::string& name) 
 
 }
 
-ros::U32 ros::StaticResourceCache::computeUsedSize() const {
+ros::U32 ros::StaticBufferCache::computeUsedSize() const {
     U32 size = 0;
     for (BufferMap::const_iterator iter = buffers.begin(); iter != buffers.end(); ++iter) {
         size += iter->second->getSize();

@@ -17,11 +17,11 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/Application.cpp
     source/resources/ArchiveFile.cpp
     source/resources/ArchiveFileManager.cpp
-    source/resources/ResourceLoader.cpp
-    source/resources/ResourceLoaderManager.cpp
-    source/resources/ResourceCache.cpp
-    source/resources/ResourceCacheManager.cpp
-    source/resources/StaticResourceCache.cpp
+    source/resources/BufferLoader.cpp
+    source/resources/BufferLoaderManager.cpp
+    source/resources/BufferCache.cpp
+    source/resources/BufferCacheManager.cpp
+    source/resources/StaticBufferCache.cpp
     source/math/Scalar.cpp
     source/math/Vector2D.cpp
     source/math/Vector3D.cpp

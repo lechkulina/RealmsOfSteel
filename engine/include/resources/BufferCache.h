@@ -4,18 +4,18 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_RESOURCE_CACHE_H
-#define ROS_RESOURCE_CACHE_H
+#ifndef ROS_BUFFER_CACHE_H
+#define ROS_BUFFER_CACHE_H
 
 #include <core/Common.h>
 #include <core/Environment.h>
 #include <resources/ArchiveFile.h>
-#include <resources/ResourceLoader.h>
+#include <resources/BufferLoader.h>
 
 namespace ros {
-    class ROS_API ResourceCache : public boost::noncopyable {
+    class ROS_API BufferCache : public boost::noncopyable {
         public:
-            virtual ~ResourceCache() {}
+            virtual ~BufferCache() {}
 
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
@@ -26,7 +26,7 @@ namespace ros {
 
             const std::string& getName() const { return name; }
             ArchiveFileList& getArchives() { return archives; }
-            ResourceLoaderList& getLoaders() { return loaders; }
+            BufferLoaderList& getLoaders() { return loaders; }
 
         protected:
             BufferPtr loadBuffer(const std::string& name);
@@ -34,17 +34,17 @@ namespace ros {
         private:
             std::string name;
             ArchiveFileList archives;
-            ResourceLoaderList loaders;
+            BufferLoaderList loaders;
 
             ArchiveEntryPtr findEntry(const std::string& name);
-            ResourceLoaderPtr findLoader(const std::string& name);
+            BufferLoaderPtr findLoader(const std::string& name);
     };
 
-    typedef boost::shared_ptr<ResourceCache> ResourceCachePtr;
-    typedef Factory<ResourceCache> ResourceCacheFactory;
-    typedef std::list<ResourceCachePtr> ResourceCacheList;
-    typedef std::map<std::string, ResourceCachePtr> ResourceCacheMap;
+    typedef boost::shared_ptr<BufferCache> BufferCachePtr;
+    typedef Factory<BufferCache> BufferCacheFactory;
+    typedef std::list<BufferCachePtr> BufferCacheList;
+    typedef std::map<std::string, BufferCachePtr> BufferCacheMap;
 }
 
-#endif // ROS_RESOURCE_CACHE_H
+#endif // ROS_BUFFER_CACHE_H
 

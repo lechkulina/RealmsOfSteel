@@ -6,10 +6,10 @@
  */
 #include <application/Logger.h>
 #include <resources/ArchiveFileManager.h>
-#include <resources/ResourceLoaderManager.h>
-#include <resources/ResourceCache.h>
+#include <resources/BufferLoaderManager.h>
+#include <resources/BufferCache.h>
 
-bool ros::ResourceCache::init(const PropertyTree &config) {
+bool ros::BufferCache::init(const PropertyTree &config) {
     name = config.data();
     if (name.empty()) {
         Logger::report(LogLevel_Error, boost::format("Cache name is missing"));
@@ -18,7 +18,7 @@ bool ros::ResourceCache::init(const PropertyTree &config) {
     }
 
     if (!ArchiveFileManager::getInstance()->openArchives(config, archives) ||
-        !ResourceLoaderManager::getInstance()->initLoaders(config, loaders)) {
+        !BufferLoaderManager::getInstance()->initLoaders(config, loaders)) {
         uninit();
         return false;
     }
@@ -26,16 +26,16 @@ bool ros::ResourceCache::init(const PropertyTree &config) {
     return true;
 }
 
-void ros::ResourceCache::uninit() {
+void ros::BufferCache::uninit() {
     name.clear();
     archives.clear();
     loaders.clear();
 }
 
-ros::BufferPtr ros::ResourceCache::loadBuffer(const std::string& name) {
+ros::BufferPtr ros::BufferCache::loadBuffer(const std::string& name) {
     ArchiveEntryPtr entry = findEntry(name);
     if (!entry) {
-        Logger::report(LogLevel_Error, boost::format("Failed to find archive entry for resource %s") % name);
+        Logger::report(LogLevel_Error, boost::format("Failed to find entry for resource %s") % name);
         return BufferPtr();
     }
 
@@ -44,7 +44,7 @@ ros::BufferPtr ros::ResourceCache::loadBuffer(const std::string& name) {
         return BufferPtr();
     }
 
-    ResourceLoaderPtr loader = findLoader(name);
+    BufferLoaderPtr loader = findLoader(name);
     if (!loader) {
         Logger::report(LogLevel_Error, boost::format("Failed to find loader that could handle resource %s") % name);
         return BufferPtr();
@@ -53,7 +53,7 @@ ros::BufferPtr ros::ResourceCache::loadBuffer(const std::string& name) {
     return loader->loadBuffer(src);
 }
 
-ros::ArchiveEntryPtr ros::ResourceCache::findEntry(const std::string& name) {
+ros::ArchiveEntryPtr ros::BufferCache::findEntry(const std::string& name) {
     for (ArchiveFileList::iterator iter = archives.begin(); iter != archives.end(); ++iter) {
         ArchiveEntryMap& entries = (*iter)->getEntries();
         ArchiveEntryMap::iterator found = entries.find(name);
@@ -64,12 +64,12 @@ ros::ArchiveEntryPtr ros::ResourceCache::findEntry(const std::string& name) {
     return ArchiveEntryPtr();
 }
 
-ros::ResourceLoaderPtr ros::ResourceCache::findLoader(const std::string& name) {
-    for (ResourceLoaderList::iterator iter = loaders.begin(); iter != loaders.end(); ++iter) {
+ros::BufferLoaderPtr ros::BufferCache::findLoader(const std::string& name) {
+    for (BufferLoaderList::iterator iter = loaders.begin(); iter != loaders.end(); ++iter) {
         if ((*iter)->isLoadable(name)) {
             return *iter;
         }
     }
-    return ResourceLoaderPtr();
+    return BufferLoaderPtr();
 }
 
