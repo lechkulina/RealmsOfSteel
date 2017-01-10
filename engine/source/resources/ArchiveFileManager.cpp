@@ -10,21 +10,6 @@
     #include "ZIPArchiveFile.h"
 #endif
 
-ros::ArchiveFileManagerPtr ros::ArchiveFileManager::manager;
-
-ros::ArchiveFileManagerPtr ros::ArchiveFileManager::initInstance(const PropertyTree& config) {
-    if (manager) {
-        return manager;
-    }
-
-    manager.reset(new ArchiveFileManager());
-    if (manager && !manager->init(config)) {
-        manager.reset();
-    }
-
-    return manager;
-}
-
 ros::ArchiveFileManager::~ArchiveFileManager() {
     uninit();
 }

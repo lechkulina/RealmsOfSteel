@@ -29,15 +29,21 @@ ros::ResourceCache::~ResourceCache() {
 
 bool ros::ResourceCache::init(const PropertyTree& config) {
     uninit();
-    if (!BufferCacheManager::getInstance()->initCaches(config, caches)) {
+
+    if (!archiveManager.init(config) || !loaderManager.init(config) || !cacheManager.init(config) ||
+        !cacheManager.initCaches(config, caches)) {
         uninit();
         return false;
     }
+
     return true;
 }
 
 void ros::ResourceCache::uninit() {
     caches.clear();
+    cacheManager.uninit();
+    loaderManager.uninit();
+    archiveManager.uninit();
 }
 
 ros::BufferPtr ros::ResourceCache::acquireBuffer(const std::string& name) {

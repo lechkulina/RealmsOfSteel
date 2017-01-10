@@ -8,21 +8,6 @@
 #include <resources/BufferCacheManager.h>
 #include "StaticBufferCache.h"
 
-ros::BufferCacheManagerPtr ros::BufferCacheManager::manager;
-
-ros::BufferCacheManagerPtr ros::BufferCacheManager::initInstance(const PropertyTree& config) {
-    if (manager) {
-        return manager;
-    }
-
-    manager.reset(new BufferCacheManager());
-    if (manager && !manager->init(config)) {
-        manager.reset();
-    }
-
-    return manager;
-}
-
 ros::BufferCacheManager::~BufferCacheManager() {
     uninit();
 }

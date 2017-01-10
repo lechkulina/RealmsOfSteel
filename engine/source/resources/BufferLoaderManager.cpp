@@ -8,21 +8,6 @@
 #include <resources/BufferLoaderManager.h>
 #include "RawBufferLoader.h"
 
-ros::BufferLoaderManagerPtr ros::BufferLoaderManager::manager;
-
-ros::BufferLoaderManagerPtr ros::BufferLoaderManager::initInstance(const PropertyTree& config) {
-    if (manager) {
-        return manager;
-    }
-
-    manager.reset(new BufferLoaderManager());
-    if (manager && !manager->init(config)) {
-        manager.reset();
-    }
-
-    return manager;
-}
-
 ros::BufferLoaderManager::~BufferLoaderManager() {
     uninit();
 }

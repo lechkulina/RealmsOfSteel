@@ -12,14 +12,8 @@
 #include <resources/BufferLoader.h>
 
 namespace ros {
-    class BufferLoaderManager;
-    typedef boost::shared_ptr<BufferLoaderManager> BufferLoaderManagerPtr;
-
     class ROS_API BufferLoaderManager: public boost::noncopyable {
         public:
-            static BufferLoaderManagerPtr initInstance(const PropertyTree& config);
-            static BufferLoaderManagerPtr getInstance() { return manager; }
-
             ~BufferLoaderManager();
 
             bool init(const PropertyTree& config);
@@ -29,7 +23,6 @@ namespace ros {
             bool initLoaders(const PropertyTree& config, BufferLoaderList& dst);
 
         private:
-            static BufferLoaderManagerPtr manager;
             BufferLoaderFactory factory;
             BufferLoaderMap loaders;
     };

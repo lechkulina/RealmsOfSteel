@@ -9,6 +9,9 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <resources/ArchiveFileManager.h>
+#include <resources/BufferLoaderManager.h>
+#include <resources/BufferCacheManager.h>
 #include <resources/BufferCache.h>
 
 namespace ros {
@@ -28,10 +31,16 @@ namespace ros {
             BufferPtr acquireBuffer(const std::string& name);
             void releaseBuffer(BufferPtr buffer);
 
+            ArchiveFileManager& getArchiveManager() { return archiveManager; }
+            BufferLoaderManager& getLoaderManager() { return loaderManager; }
+            BufferCacheManager& getCacheManager() { return cacheManager; }
             BufferCacheList& getCaches() { return caches; }
 
         private:
             static ResourceCachePtr instance;
+            ArchiveFileManager archiveManager;
+            BufferLoaderManager loaderManager;
+            BufferCacheManager cacheManager;
             BufferCacheList caches;
     };
 }

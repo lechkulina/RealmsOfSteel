@@ -5,8 +5,7 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include <resources/ArchiveFileManager.h>
-#include <resources/BufferLoaderManager.h>
+#include <resources/ResourceCache.h>
 #include <resources/BufferCache.h>
 
 bool ros::BufferCache::init(const PropertyTree &config) {
@@ -17,8 +16,8 @@ bool ros::BufferCache::init(const PropertyTree &config) {
         return false;
     }
 
-    if (!ArchiveFileManager::getInstance()->openArchives(config, archives) ||
-        !BufferLoaderManager::getInstance()->initLoaders(config, loaders)) {
+    if (!ResourceCache::getInstance()->getArchiveManager().openArchives(config, archives) ||
+        !ResourceCache::getInstance()->getLoaderManager().initLoaders(config, loaders)) {
         uninit();
         return false;
     }

@@ -12,14 +12,8 @@
 #include <resources/ArchiveFile.h>
 
 namespace ros {
-    class ArchiveFileManager;
-    typedef boost::shared_ptr<ArchiveFileManager> ArchiveFileManagerPtr;
-
     class ROS_API ArchiveFileManager: public boost::noncopyable {
         public:
-            static ArchiveFileManagerPtr initInstance(const PropertyTree& config);
-            static ArchiveFileManagerPtr getInstance() { return manager; }
-
             ~ArchiveFileManager();
 
             bool init(const PropertyTree& config);
@@ -29,7 +23,6 @@ namespace ros {
             bool openArchives(const PropertyTree& config, ArchiveFileList& dst);
 
         private:
-            static ArchiveFileManagerPtr manager;
             ArchiveFileFactory factory;
             ArchiveFileMap archives;
     };
