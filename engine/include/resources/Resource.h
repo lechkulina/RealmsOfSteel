@@ -63,6 +63,8 @@ namespace ros {
         private:
             DerivedBufferPtr buffer;
     };
+
+    typedef Resource<RawBuffer> RawResource;
 }
 
 #endif // ROS_RESOURCE_H
