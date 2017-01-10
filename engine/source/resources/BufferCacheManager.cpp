@@ -15,7 +15,10 @@ ros::BufferCacheManager::~BufferCacheManager() {
 bool ros::BufferCacheManager::init(const PropertyTree& config) {
     uninit();
 
-    factory.registerClass<StaticBufferCache>(boost::regex("static"));
+    if (!factory.registerClass<StaticBufferCache>(boost::regex("static"))) {
+        Logger::report(LogLevel_Critical, boost::format("Failed to register a static cache"));
+        return false;
+    }
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "cache" && !initCache(iter->second)) {

@@ -18,7 +18,10 @@ bool ros::ArchiveFileManager::init(const PropertyTree& config) {
     uninit();
 
 #if defined(ROS_USING_ZIP)
-    factory.registerClass<ZIPArchiveFile>(boost::regex(".*zip$"));
+    if (!factory.registerClass<ZIPArchiveFile>(boost::regex(".*zip$"))) {
+        Logger::report(LogLevel_Critical, boost::format("Failed to register a zip archive"));
+        return false;
+    }
 #endif
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {

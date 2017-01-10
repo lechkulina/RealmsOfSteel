@@ -15,7 +15,10 @@ ros::BufferLoaderManager::~BufferLoaderManager() {
 bool ros::BufferLoaderManager::init(const PropertyTree& config) {
     uninit();
 
-    factory.registerClass<RawBufferLoader>(boost::regex("raw"));
+    if (!factory.registerClass<RawBufferLoader>(boost::regex("raw"))) {
+        Logger::report(LogLevel_Critical, boost::format("Failed to register a raw loader"));
+        return false;
+    }
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "loader" && !initLoader(iter->second)) {
