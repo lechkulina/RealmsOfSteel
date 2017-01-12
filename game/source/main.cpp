@@ -19,12 +19,14 @@ int main() {
     if (!ros::Logger::initInstance(config.get_child("Logger")) ||
         !ros::Application::initInstance(config.get_child("application")) ||
         !ros::ResourceCache::initInstance(config.get_child("resources"))) {
-        ros::Application::getInstance()->uninit();
         return exitCode;
     }
 
-    exitCode = ros::Application::getInstance()->run();
-    ros::Application::getInstance()->uninit();
+    ros::ApplicationPtr application = ros::Application::getInstance();
+    if (application) {
+        exitCode = application->run();
+        application->uninit();
+    }
 
     return exitCode;
 }
