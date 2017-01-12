@@ -8,6 +8,7 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <application/Logger.h>
 #include <application/Application.h>
+#include <resources/ResourceCache.h>
 #include <graphics/ShadersManager.h>
 #include <graphics/ProgramsManager.h>
 
@@ -18,7 +19,9 @@ int main() {
     boost::property_tree::read_info("Config.info", config);
 
     if (!ros::Logger::initInstance(config.get_child("Logger")) ||
-        !ros::Application::initInstance(config.get_child("application"))) {
+        !ros::Application::initInstance(config.get_child("application")) ||
+        !ros::ResourceCache::initInstance(config.get_child("resources"))) {
+        ros::Application::getInstance()->uninit();
         return exitCode;
     }
 
@@ -27,6 +30,7 @@ int main() {
         ros::PropertyTree::const_iterator cast = config.to_iterator(iter);
         if (!ros::ShadersManager::getInstance()->prepare(cast->second) ||
             !ros::ProgramsManager::getInstance()->prepare(cast->second)) {
+            ros::Application::getInstance()->uninit();
             return exitCode;
         }
     }
