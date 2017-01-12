@@ -22,13 +22,13 @@ namespace ros {
             virtual void uninit();
             virtual bool isValid() const;
 
-            virtual const std::string& getFilePath() const { return filePath; }
+            virtual const std::string& getPath() const { return path; }
 
             GLuint getHandle() const { return handle; }
 
         private:
             GLuint handle;
-            std::string filePath;
+            std::string path;
 
             bool createHandle(const PropertyTree& config);
             bool replaceSource(const PropertyTree& config);

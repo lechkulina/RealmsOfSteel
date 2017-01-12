@@ -19,7 +19,7 @@ namespace ros {
             virtual void uninit();
             virtual bool isValid() const =0;
 
-            virtual const std::string& getFilePath() const =0;
+            virtual const std::string& getPath() const =0;
 
             const std::string& getName() const { return name; }
 
