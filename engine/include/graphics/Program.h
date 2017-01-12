@@ -42,6 +42,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Program> ProgramPtr;
+    typedef std::list<ProgramPtr> ProgramList;
     typedef std::map<std::string, ProgramPtr> ProgramMap;
 }
 

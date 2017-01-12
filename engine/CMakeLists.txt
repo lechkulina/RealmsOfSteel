@@ -36,7 +36,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/graphics/Shader.cpp
     source/graphics/ShaderManager.cpp
     source/graphics/Program.cpp
-    source/graphics/ProgramsManager.cpp
+    source/graphics/ProgramManager.cpp
 )
 target_compile_definitions(Engine
     PUBLIC ROS_VERSION="${PROJECT_VERSION}"

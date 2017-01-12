@@ -9,7 +9,6 @@
 #include <application/Logger.h>
 #include <application/Application.h>
 #include <resources/ResourceCache.h>
-#include <graphics/ProgramsManager.h>
 
 int main() {
     int exitCode = EXIT_FAILURE;
@@ -22,15 +21,6 @@ int main() {
         !ros::ResourceCache::initInstance(config.get_child("resources"))) {
         ros::Application::getInstance()->uninit();
         return exitCode;
-    }
-
-    ros::PropertyTree::const_assoc_iterator iter = config.find("models");
-    if (iter != config.not_found()) {
-        ros::PropertyTree::const_iterator cast = config.to_iterator(iter);
-        if (!ros::ProgramsManager::getInstance()->prepare(cast->second)) {
-            ros::Application::getInstance()->uninit();
-            return exitCode;
-        }
     }
 
     exitCode = ros::Application::getInstance()->run();

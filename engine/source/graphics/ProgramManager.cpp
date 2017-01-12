@@ -6,24 +6,30 @@
  */
 #include <application/Logger.h>
 #include <application/Application.h>
-#include <graphics/ProgramsManager.h>
+#include <graphics/ProgramManager.h>
 
-ros::ProgramsManager* ros::ProgramsManager::getInstance() {
-    static ProgramsManager instance;
-    return &instance;
+ros::ProgramManager::~ProgramManager() {
+    uninit();
 }
 
-bool ros::ProgramsManager::prepare(const PropertyTree& config) {
+bool ros::ProgramManager::init(const PropertyTree& config) {
+    uninit();
+
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first == "program" && !provide(iter->second)) {
-            clear();
+        if (iter->first == "program" && !initProgram(iter->second)) {
+            uninit();
             return false;
         }
     }
+
     return true;
 }
 
-ros::ProgramPtr ros::ProgramsManager::provide(const PropertyTree& config) {
+void ros::ProgramManager::uninit() {
+    programs.clear();
+}
+
+ros::ProgramPtr ros::ProgramManager::initProgram(const PropertyTree& config) {
     std::string name = config.data();
     if (name.empty()) {
         Logger::report(LogLevel_Error, boost::format("Program name is missing"));
@@ -42,11 +48,21 @@ ros::ProgramPtr ros::ProgramsManager::provide(const PropertyTree& config) {
     if (!program || !program->init(config)) {
         return ProgramPtr();
     }
+
     programs[name] = program;
     return program;
 }
 
-void ros::ProgramsManager::clear() {
-    programs.empty();
+bool ros::ProgramManager::initPrograms(const PropertyTree& config, ProgramList& dst) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first != "program") {
+            continue;
+        }
+        ProgramPtr program = initProgram(iter->second);
+        if (!program) {
+            return false;
+        }
+        dst.push_back(program);
+    }
+    return true;
 }
-

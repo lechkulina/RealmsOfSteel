@@ -14,8 +14,9 @@
 #include <application/Window.h>
 #include <application/View.h>
 #include <graphics/Shader.h>
-#include <graphics/ShaderManager.h>
 #include <graphics/Program.h>
+#include <graphics/ShaderManager.h>
+#include <graphics/ProgramManager.h>
 
 namespace ros {
     class Application;
@@ -36,6 +37,7 @@ namespace ros {
 
             WindowPtr getWindow() const { return window; }
             ShaderManager& getShaderManager() { return shaderManager; }
+            ProgramManager& getProgramManager() { return programManager; }
 
             virtual float getTicks() const =0;
 
@@ -61,6 +63,7 @@ namespace ros {
             static ApplicationPtr application;
             WindowPtr window;
             ShaderManager shaderManager;
+            ProgramManager programManager;
             float framesPerSecond;
             float maxAccumulatedTicks;
             bool quitOnEscape;
