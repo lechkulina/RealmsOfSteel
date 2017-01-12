@@ -7,7 +7,6 @@
 #include <boost/scoped_array.hpp>
 #include <boost/pointer_cast.hpp>
 #include <application/Logger.h>
-#include <graphics/ShadersManager.h>
 #include "OpenGLErrors.h"
 #include "OpenGLShader.h"
 #include "OpenGLProgram.h"
@@ -21,7 +20,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::init(const PropertyTree& config) {
-    if (!Program::init(config) || !createHandle() || !initShaders(config) || !link() || !retrieveAttributes() || !retrieveUniforms()) {
+    if (!Program::init(config) || !createHandle() || !attachShaders() || !link() || !retrieveAttributes() || !retrieveUniforms()) {
         uninit();
         return false;
     }

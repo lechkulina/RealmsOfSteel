@@ -34,7 +34,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/math/Quaternion.cpp
     source/math/EulerAngles.cpp
     source/graphics/Shader.cpp
-    source/graphics/ShadersManager.cpp
+    source/graphics/ShaderManager.cpp
     source/graphics/Program.cpp
     source/graphics/ProgramsManager.cpp
 )

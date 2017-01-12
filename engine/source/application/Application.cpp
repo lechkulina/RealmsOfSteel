@@ -59,15 +59,17 @@ bool ros::Application::init(const PropertyTree& config) {
     maxAccumulatedTicks = config.get("max-accumulated-ticks", DEFAULT_MAX_ACCUMULATED_TICKS);
     quitOnEscape = config.get("quit-on-escape", DEFAULT_QUIT_ON_ESCAPE);
 
-    if (!initWindow(config)) {
+    if (!initWindow(config) || !shaderManager.init(config)) {
         uninit();
         return false;
     }
+
     return true;
 }
 
 void ros::Application::uninit() {
     window.reset();
+    shaderManager.uninit();
 }
 
 int ros::Application::run() {

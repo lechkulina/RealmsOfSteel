@@ -33,7 +33,7 @@ namespace ros {
             const ShaderList& getShaders() const { return shaders; }
 
         protected:
-            bool initShaders(const PropertyTree& config);
+            bool attachShaders();
             virtual bool attachShader(ShaderPtr shader) =0;
 
         private:

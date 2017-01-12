@@ -6,24 +6,30 @@
  */
 #include <application/Logger.h>
 #include <application/Application.h>
-#include <graphics/ShadersManager.h>
+#include <graphics/ShaderManager.h>
 
-ros::ShadersManager* ros::ShadersManager::getInstance() {
-    static ShadersManager instance;
-    return &instance;
+ros::ShaderManager::~ShaderManager() {
+    uninit();
 }
 
-bool ros::ShadersManager::prepare(const PropertyTree& config) {
+bool ros::ShaderManager::init(const PropertyTree& config) {
+    uninit();
+
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first == "shader" && !provide(iter->second)) {
-            clear();
+        if (iter->first == "shader" && !initShader(iter->second)) {
+            uninit();
             return false;
         }
     }
+
     return true;
 }
 
-ros::ShaderPtr ros::ShadersManager::provide(const PropertyTree& config) {
+void ros::ShaderManager::uninit() {
+    shaders.clear();
+}
+
+ros::ShaderPtr ros::ShaderManager::initShader(const PropertyTree& config) {
     std::string name = config.data();
     if (name.empty()) {
         Logger::report(LogLevel_Error, boost::format("Shader name is missing"));
@@ -42,11 +48,21 @@ ros::ShaderPtr ros::ShadersManager::provide(const PropertyTree& config) {
     if (!shader || !shader->init(config)) {
         return ShaderPtr();
     }
+
     shaders[name] = shader;
     return shader;
 }
 
-void ros::ShadersManager::clear() {
-    shaders.empty();
+bool ros::ShaderManager::initShaders(const PropertyTree& config, ShaderList& dst) {
+    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first != "shader") {
+            continue;
+        }
+        ShaderPtr shader = initShader(iter->second);
+        if (!shader) {
+            return false;
+        }
+        dst.push_back(shader);
+    }
+    return true;
 }
-

@@ -5,7 +5,7 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include <graphics/ShadersManager.h>
+#include <application/Application.h>
 #include <graphics/Program.h>
 
 bool ros::Program::init(const PropertyTree &config) {
@@ -15,6 +15,12 @@ bool ros::Program::init(const PropertyTree &config) {
         uninit();
         return false;
     }
+
+    if (!Application::getInstance()->getShaderManager().initShaders(config, shaders)) {
+        uninit();
+        return false;
+    }
+
     return true;
 }
 
@@ -23,17 +29,11 @@ void ros::Program::uninit() {
     shaders.clear();
 }
 
-bool ros::Program::initShaders(const PropertyTree& config) {
-    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first != "shader") {
-            continue;
-        }
-        ShaderPtr shader = ShadersManager::getInstance()->provide(iter->second);
-        if (!shader || !attachShader(shader)) {
-            uninit();
-            return false;
-        }
-        shaders.push_back(shader);
-    }
-    return true;
-}
+ bool ros::Program::attachShaders() {
+     for (ShaderList::iterator iter = shaders.begin(); iter != shaders.end(); ++iter) {
+         if (!attachShader(*iter)) {
+             return false;
+         }
+     }
+     return true;
+ }
