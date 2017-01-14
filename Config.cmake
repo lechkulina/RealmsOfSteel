@@ -14,5 +14,6 @@ set(ROS_IDE_INCLUDES *.h *.hpp *.c *.cpp *.glsl *.lua *.xml *.md *.txt *.cmake*)
 set(ROS_IDE_EXCLUDES build)
 
 set(ROS_USE_SDL YES)
+set(ROS_USE_SDL_IMAGE YES)
 set(ROS_USE_OPENGL YES)
 set(ROS_USE_ZIP YES)
