@@ -53,6 +53,16 @@ ros::SDLImageBuffer::~SDLImageBuffer() {
     free();
 }
 
+ros::SDLImageBuffer::SDLImageBuffer(const SDLImageBuffer& src)
+    : surface(ROS_NULL){
+    assign(src);
+}
+
+ros::SDLImageBuffer& ros::SDLImageBuffer::operator=(const SDLImageBuffer& src) {
+    assign(src);
+    return *this;
+}
+
 bool ros::SDLImageBuffer::allocate(U32 width, U32 height, PixelFormat format) {
     free();
 

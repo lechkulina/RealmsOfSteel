@@ -19,6 +19,9 @@ namespace ros {
             SDLImageBuffer();
             virtual ~SDLImageBuffer();
 
+            SDLImageBuffer(const SDLImageBuffer& src);
+            SDLImageBuffer& operator=(const SDLImageBuffer& src);
+
             virtual bool allocate(U32 width, U32 height, PixelFormat format);
             virtual bool assign(const ImageBuffer& src);
             virtual bool resize(U32 width, U32 height, BlitMode mode);
