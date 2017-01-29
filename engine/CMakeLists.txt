@@ -85,6 +85,9 @@ if (ROS_USE_SDL)
         target_include_directories(Engine PRIVATE ${SDL2_INCLUDE_DIR})
         target_link_libraries(Engine PRIVATE ${SDL2_LIBRARY})
         target_compile_definitions(Engine PRIVATE ROS_USING_SDL SDL_MAIN_HANDLED)
+        target_sources(Engine PRIVATE
+            source/graphics/SDLImageBuffer.cpp
+        )
         if (OPENGL_FOUND AND GLEW_FOUND)
             target_sources(Engine PRIVATE
                 source/application/SDLOpenGLApplication.cpp
