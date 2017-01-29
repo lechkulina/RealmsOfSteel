@@ -26,7 +26,7 @@ namespace ros {
             bool assign(const RawBuffer& src);
             bool resize(U32 size);
             void free();
-            void clear();
+            bool clear();
 
             virtual bool isNull() const { return !data; }
             virtual U32 getSize() const { return size; }

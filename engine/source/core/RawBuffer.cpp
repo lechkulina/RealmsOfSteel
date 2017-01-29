@@ -94,10 +94,12 @@ bool ros::RawBuffer::resize(U32 size) {
     return true;
 }
 
-void ros::RawBuffer::clear() {
+bool ros::RawBuffer::clear() {
     if (data) {
         memset(data, 0, size);
+        return true;
     }
+    return false;
 }
 
 bool ros::RawBuffer::seek(S64 offset, BufferOrigin origin) const {
