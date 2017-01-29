@@ -49,6 +49,8 @@ namespace ros {
             virtual const void* lock() const =0;
             virtual void unlock() const =0;
     };
+
+    typedef boost::shared_ptr<ImageBuffer> ImageBufferPtr;
 }
 
 #endif // ROS_IMAGE_BUFFER_H
