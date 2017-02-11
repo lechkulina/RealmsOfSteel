@@ -53,7 +53,7 @@ namespace ros {
             }
 
             inline bool isNull() const { return !buffer; }
-            inline operator bool() const { return !buffer; }
+            inline operator bool() const { return buffer; }
 
             inline DerivedBuffer& operator*() { return *buffer; }
             inline const DerivedBuffer& operator*() const { return *buffer; }
