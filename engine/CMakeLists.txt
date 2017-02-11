@@ -100,6 +100,10 @@ if (ROS_USE_SDL)
         if (SDL2_IMAGE_FOUND)
             target_include_directories(Engine PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
             target_link_libraries(Engine PRIVATE ${SDL2_IMAGE_LIBRARIES})
+            target_compile_definitions(Engine PRIVATE ROS_USING_SDL_IMAGE)
+            target_sources(Engine PRIVATE
+                source/resources/SDLImageBufferLoader.cpp
+            )
         endif()
     endif()
 endif()
