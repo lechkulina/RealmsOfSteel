@@ -49,6 +49,11 @@ ros::SDLImageBuffer::SDLImageBuffer()
     : surface(ROS_NULL) {
 }
 
+ros::SDLImageBuffer::SDLImageBuffer(SDL_Surface* src)
+    : surface(ROS_NULL) {
+    assign(src);
+}
+
 ros::SDLImageBuffer::~SDLImageBuffer() {
     free();
 }
@@ -129,6 +134,20 @@ bool ros::SDLImageBuffer::assign(const ImageBuffer& src) {
     }
 
     src.unlock();
+    return true;
+}
+
+bool ros::SDLImageBuffer::assign(SDL_Surface* src) {
+    if (surface == src) {
+        return true;
+    }
+
+    free();
+    if (!src) {
+        return false;
+    }
+    surface = src;
+
     return true;
 }
 

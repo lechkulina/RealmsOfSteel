@@ -17,6 +17,7 @@ namespace ros {
     class SDLImageBuffer: public ImageBuffer {
         public:
             SDLImageBuffer();
+            SDLImageBuffer(SDL_Surface* src);
             virtual ~SDLImageBuffer();
 
             SDLImageBuffer(const SDLImageBuffer& src);
@@ -24,6 +25,7 @@ namespace ros {
 
             virtual bool allocate(U32 width, U32 height, PixelFormat format);
             virtual bool assign(const ImageBuffer& src);
+            bool assign(SDL_Surface* src);
             virtual bool resize(U32 width, U32 height, BlitMode mode);
             virtual bool convert(PixelFormat format);
             virtual void free();
@@ -46,6 +48,8 @@ namespace ros {
         private:
             SDL_Surface* surface;
     };
+
+    typedef boost::shared_ptr<SDLImageBuffer> SDLImageBufferPtr;
 }
 
 #endif // ROS_SDL_IMAGE_BUFFER_H
