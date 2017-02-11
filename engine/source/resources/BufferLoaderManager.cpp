@@ -7,6 +7,9 @@
 #include <application/Logger.h>
 #include <resources/BufferLoaderManager.h>
 #include "RawBufferLoader.h"
+#if defined(ROS_USING_SDL) && defined(ROS_USING_SDL_IMAGE)
+    #include "SDLImageBufferLoader.h"
+#endif
 
 ros::BufferLoaderManager::~BufferLoaderManager() {
     uninit();
@@ -19,6 +22,12 @@ bool ros::BufferLoaderManager::init(const PropertyTree& config) {
         Logger::report(LogLevel_Critical, boost::format("Failed to register a raw loader"));
         return false;
     }
+#if defined(ROS_USING_SDL) && defined(ROS_USING_SDL_IMAGE)
+    if (!factory.registerClass<SDLImageBufferLoader>(boost::regex("sdl-image"))) {
+        Logger::report(LogLevel_Critical, boost::format("Failed to register a sdl image loader"));
+        return false;
+    }
+#endif
 
     for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
         if (iter->first == "loader" && !initLoader(iter->second)) {
