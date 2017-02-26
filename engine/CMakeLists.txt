@@ -51,6 +51,11 @@ if (Boost_FOUND)
     target_link_libraries(Engine PUBLIC ${Boost_LIBRARIES})
 endif()
 
+find_package(glm REQUIRED)
+if (glm_FOUND)
+    target_include_directories(Engine PUBLIC ${glm_INCLUDE_DIRS})
+endif()
+
 if (ROS_USE_ZIP)
     find_package(ZLIB)
     if (ZLIB_FOUND)
