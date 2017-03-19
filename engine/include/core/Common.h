@@ -21,9 +21,11 @@
 #include <new>
 #include <map>
 #include <list>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 #include <boost/integer.hpp>
