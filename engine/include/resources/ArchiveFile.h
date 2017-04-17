@@ -21,7 +21,7 @@ namespace ros {
             virtual bool open(const PropertyTree& config);
             virtual void close();
 
-            virtual ArchiveEntryMap& getEntries() =0;
+            virtual const ArchiveEntryMap& getEntries() const =0;
 
             const std::string& getName() const { return name; }
 

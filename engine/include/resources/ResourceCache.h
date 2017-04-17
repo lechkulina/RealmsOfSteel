@@ -28,13 +28,14 @@ namespace ros {
             bool init(const PropertyTree& config);
             void uninit();
 
+            ArchiveEntryPtr findEntry(const std::string& name) const;
             BufferPtr acquireBuffer(const std::string& name);
             void releaseBuffer(BufferPtr buffer);
 
             ArchiveFileManager& getArchiveManager() { return archiveManager; }
             BufferLoaderManager& getLoaderManager() { return loaderManager; }
             BufferCacheManager& getCacheManager() { return cacheManager; }
-            BufferCacheList& getCaches() { return caches; }
+            const BufferCacheList& getCaches() const { return caches; }
 
         private:
             static ResourceCachePtr instance;

@@ -52,10 +52,10 @@ ros::BufferPtr ros::BufferCache::loadBuffer(const std::string& name) {
     return loader->loadBuffer(src);
 }
 
-ros::ArchiveEntryPtr ros::BufferCache::findEntry(const std::string& name) {
-    for (ArchiveFileList::iterator iter = archives.begin(); iter != archives.end(); ++iter) {
-        ArchiveEntryMap& entries = (*iter)->getEntries();
-        ArchiveEntryMap::iterator found = entries.find(name);
+ros::ArchiveEntryPtr ros::BufferCache::findEntry(const std::string& name) const {
+    for (ArchiveFileList::const_iterator iter = archives.begin(); iter != archives.end(); ++iter) {
+        const ArchiveEntryMap& entries = (*iter)->getEntries();
+        ArchiveEntryMap::const_iterator found = entries.find(name);
         if (found != entries.end()) {
             return found->second;
         }
@@ -63,8 +63,8 @@ ros::ArchiveEntryPtr ros::BufferCache::findEntry(const std::string& name) {
     return ArchiveEntryPtr();
 }
 
-ros::BufferLoaderPtr ros::BufferCache::findLoader(const std::string& name) {
-    for (BufferLoaderList::iterator iter = loaders.begin(); iter != loaders.end(); ++iter) {
+ros::BufferLoaderPtr ros::BufferCache::findLoader(const std::string& name) const {
+    for (BufferLoaderList::const_iterator iter = loaders.begin(); iter != loaders.end(); ++iter) {
         if ((*iter)->isLoadable(name)) {
             return *iter;
         }

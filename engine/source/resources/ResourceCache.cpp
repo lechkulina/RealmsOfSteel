@@ -46,11 +46,23 @@ void ros::ResourceCache::uninit() {
     archiveManager.uninit();
 }
 
+ros::ArchiveEntryPtr ros::ResourceCache::findEntry(const std::string& name) const {
+    for (BufferCacheList::const_iterator iter = caches.begin(); iter != caches.end(); ++iter) {
+        BufferCachePtr cache = *iter;
+        ArchiveEntryPtr entry = cache->findEntry(name);
+        if (entry) {
+            return entry;
+        }
+    }
+    return ArchiveEntryPtr();
+}
+
 ros::BufferPtr ros::ResourceCache::acquireBuffer(const std::string& name) {
     for (BufferCacheList::iterator iter = caches.begin(); iter != caches.end(); ++iter) {
-        BufferPtr acquired = (*iter)->acquireBuffer(name);
-        if (acquired) {
-            return acquired;
+        BufferCachePtr cache = *iter;
+        BufferPtr buffer = cache->acquireBuffer(name);
+        if (buffer) {
+            return buffer;
         }
     }
     return BufferPtr();
@@ -58,7 +70,7 @@ ros::BufferPtr ros::ResourceCache::acquireBuffer(const std::string& name) {
 
 void ros::ResourceCache::releaseBuffer(BufferPtr buffer) {
     for (BufferCacheList::iterator iter = caches.begin(); iter != caches.end(); ++iter) {
-        (*iter)->releaseBuffer(buffer);
+        BufferCachePtr cache = *iter;
+        cache->releaseBuffer(buffer);
     }
 }
-

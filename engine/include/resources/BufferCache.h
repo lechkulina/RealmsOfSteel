@@ -20,13 +20,16 @@ namespace ros {
             virtual bool init(const PropertyTree& config);
             virtual void uninit();
 
+            ArchiveEntryPtr findEntry(const std::string& name) const;
+            BufferLoaderPtr findLoader(const std::string& name) const;
+
             virtual BufferPtr acquireBuffer(const std::string& name) =0;
             virtual void releaseBuffer(BufferPtr buffer) =0;
             virtual U32 computeUsedSize() const =0;
 
             const std::string& getName() const { return name; }
-            ArchiveFileList& getArchives() { return archives; }
-            BufferLoaderList& getLoaders() { return loaders; }
+            const ArchiveFileList& getArchives() const { return archives; }
+            const BufferLoaderList& getLoaders() const { return loaders; }
 
         protected:
             BufferPtr loadBuffer(const std::string& name);
@@ -35,9 +38,6 @@ namespace ros {
             std::string name;
             ArchiveFileList archives;
             BufferLoaderList loaders;
-
-            ArchiveEntryPtr findEntry(const std::string& name);
-            BufferLoaderPtr findLoader(const std::string& name);
     };
 
     typedef boost::shared_ptr<BufferCache> BufferCachePtr;

@@ -56,7 +56,7 @@ namespace ros {
             virtual bool isOpen() const;
             virtual const std::string& getPath() const { return path; }
 
-            virtual ArchiveEntryMap& getEntries() { return entries; }
+            virtual const ArchiveEntryMap& getEntries() const { return entries; }
 
         private:
             RawFilePtr file;
