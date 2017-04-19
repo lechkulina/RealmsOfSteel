@@ -19,11 +19,12 @@ namespace ros {
             virtual const std::string& getName() const =0;
             virtual U32 getCompressedSize() const =0;
             virtual U32 getUncompressedSize() const =0;
+            virtual bool isCompressed() const =0;
             virtual RawBufferPtr decompress() =0;
     };
 
     typedef boost::shared_ptr<ArchiveEntry> ArchiveEntryPtr;
-    typedef std::map<std::string, ArchiveEntryPtr> ArchiveEntryMap;
+    typedef std::map<std::string, ArchiveEntryPtr> ArchiveEntriesMap;
 }
 
 #endif // ROS_ARCHIVE_ENTRY_H

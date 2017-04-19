@@ -12,6 +12,8 @@
 
 namespace ros {
     struct ZIPDirectoryRecord {
+        static const U32 SIGNATURE = 0x06054b50;
+
         U32 signature;
         U16 diskNumber;
         U16 diskStart;
@@ -23,6 +25,8 @@ namespace ros {
     };
 
     struct ZIPDirectoryHeader {
+        static const U32 SIGNATURE = 0x02014b50;
+
         U32 signature;
         U16 versionMade;
         U16 versionRequired;
@@ -42,28 +46,24 @@ namespace ros {
         U32 headerOffset;
     };
 
-    static const U32 ZIPDirectoryRecord_Signature = 0x06054b50;
-    static const U32 ZIPDirectoryHeader_Signature = 0x02014b50;
-
     class ZIPArchiveFile : public ArchiveFile {
         public:
             ZIPArchiveFile() {}
-            explicit ZIPArchiveFile(const PropertyTree& config);
+            explicit ZIPArchiveFile(const std::string& path);
             virtual ~ZIPArchiveFile();
 
-            virtual bool open(const PropertyTree& config);
+            virtual bool open(const std::string& path);
             virtual void close();
             virtual bool isOpen() const;
-            virtual const std::string& getPath() const { return path; }
+            virtual const std::string& getPath() const;
 
-            virtual const ArchiveEntryMap& getEntries() const { return entries; }
+            virtual const ArchiveEntriesMap& getEntries() const { return entries; }
 
         private:
-            RawFilePtr file;
-            std::string path;
-            ArchiveEntryMap entries;
+            RawFilePtr rawFile;
+            ArchiveEntriesMap entries;
 
-            bool initFile(const PropertyTree& config);
+            bool initRawFile(const std::string& path);
             bool readEntries();
     };
 }

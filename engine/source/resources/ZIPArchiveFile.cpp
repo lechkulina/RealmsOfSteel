@@ -9,17 +9,17 @@
 #include "ZIPArchiveEntry.h"
 #include "ZIPArchiveFile.h"
 
-ros::ZIPArchiveFile::ZIPArchiveFile(const PropertyTree& config) {
-    open(config);
+ros::ZIPArchiveFile::ZIPArchiveFile(const std::string& path) {
+    open(path);
 }
 
 ros::ZIPArchiveFile::~ZIPArchiveFile() {
     close();
 }
 
-bool ros::ZIPArchiveFile::open(const PropertyTree& config) {
+bool ros::ZIPArchiveFile::open(const std::string& path) {
     close();
-    if (!ArchiveFile::open(config) || !initFile(config) || !readEntries()) {
+    if (!initRawFile(path) || !readEntries()) {
         close();
         return false;
     }
@@ -28,125 +28,118 @@ bool ros::ZIPArchiveFile::open(const PropertyTree& config) {
 
 void ros::ZIPArchiveFile::close() {
     entries.clear();
-    path.clear();
-    file.reset();
-    ArchiveFile::close();
+    rawFile.reset();
 }
 
 bool ros::ZIPArchiveFile::isOpen() const {
-    return file && file->isOpen();
+    return rawFile && rawFile->isOpen();
 }
 
-bool ros::ZIPArchiveFile::initFile(const PropertyTree& config) {
-    StringOpt path = config.get_optional<std::string>("path");
-    if (!path) {
-        Logger::report(LogLevel_Error, boost::format("Missing path property in archive %s") % getName());
+const std::string& ros::ZIPArchiveFile::getPath() const {
+    if (rawFile) {
+        return rawFile->getPath();
+    }
+    return File::EMPTY_PATH;
+}
+
+bool ros::ZIPArchiveFile::initRawFile(const std::string& path) {
+    rawFile = boost::make_shared<RawFile>(path.c_str(), FileType_Binary, FileOpenMode_Read);
+    if (!rawFile || !rawFile->isOpen()) {
+        Logger::report(LogLevel_Error, boost::format("Failed to open archive file %s") % path);
         return false;
     }
-    this->path = *path;
-
-    file = boost::make_shared<RawFile>(path->c_str(), FileType_Binary, FileOpenMode_Read);
-    if (!file || !file->isOpen()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to open file %s for archive %s") % path % getName());
-        return false;
-    }
-
     return true;
 }
 
 bool ros::ZIPArchiveFile::readEntries() {
-    ZIPDirectoryRecord record;
-    memset(&record, 0, sizeof(record));
+    ZIPDirectoryRecord directoryRecord;
+    memset(&directoryRecord, 0, sizeof(directoryRecord));
 
-    U32 position = -sizeof(U32);
+    U32 directoryRecordPosition = -sizeof(U32);
     while(true) {
-        if (!file->seek(position, FileOrigin_End) || !file->readLittle(record.signature)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to find directory record signature 0x%x in file %s used for archive %s")
-                                % ZIPDirectoryRecord_Signature % file->getPath() % getName());
+        if (!rawFile->seek(directoryRecordPosition, FileOrigin_End) ||
+            !rawFile->readLittle(directoryRecord.signature)) {
+            Logger::report(LogLevel_Error, boost::format("Failed to find directory record signature in archive file %s") % getPath());
             return false;
         }
-        if (record.signature == ZIPDirectoryRecord_Signature) {
+        if (directoryRecord.signature == ZIPDirectoryRecord::SIGNATURE) {
             break;
         }
-        --position;
+        --directoryRecordPosition;
     }
 
-    if (!file->readLittle(record.diskNumber) ||
-        !file->readLittle(record.diskStart) ||
-        !file->readLittle(record.entriesCount) ||
-        !file->readLittle(record.entriesTotalCount) ||
-        !file->readLittle(record.directorySize) ||
-        !file->readLittle(record.directoryOffset) ||
-        !file->readLittle(record.commentLength)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to read directory record from file %s used for archive %s")
-                            % file->getPath() % getName());
+    if (!rawFile->readLittle(directoryRecord.diskNumber) ||
+        !rawFile->readLittle(directoryRecord.diskStart) ||
+        !rawFile->readLittle(directoryRecord.entriesCount) ||
+        !rawFile->readLittle(directoryRecord.entriesTotalCount) ||
+        !rawFile->readLittle(directoryRecord.directorySize) ||
+        !rawFile->readLittle(directoryRecord.directoryOffset) ||
+        !rawFile->readLittle(directoryRecord.commentLength)) {
+        Logger::report(LogLevel_Error, boost::format("Failed to read directory record from archive file %s") % getPath());
         return false;
     }
 
-    RawBuffer buffer(record.directorySize);
-    if (buffer.isNull() || !file->seek(record.directoryOffset, FileOrigin_Begin) || !file->read(buffer.at<void>(), buffer.getSize())) {
-        Logger::report(LogLevel_Error, boost::format("Failed to read directory headers from file %s used for archive %s")
-                            % file->getPath() % getName());
+    RawBuffer rawBuffer(directoryRecord.directorySize);
+    if (rawBuffer.isNull() ||
+        !rawFile->seek(directoryRecord.directoryOffset, FileOrigin_Begin) ||
+        !rawFile->read(rawBuffer.at<void>(), rawBuffer.getSize())) {
+        Logger::report(LogLevel_Error, boost::format("Failed to read directory headers from archive file %s") % getPath());
         return false;
     }
 
-    for (U16 i=0; i < record.entriesCount; ++i) {
-        ZIPDirectoryHeader header;
-        memset(&header, 0, sizeof(header));
+    for (U16 i=0; i < directoryRecord.entriesCount; ++i) {
+        ZIPDirectoryHeader directoryHeader;
+        memset(&directoryHeader, 0, sizeof(directoryHeader));
 
-        if (buffer.hasEnded() || !buffer.readLittle(header.signature)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to read directory header at 0x%x from file %s used for archive %s")
-                                % buffer.getPosition() % file->getPath() % getName());
+        if (rawBuffer.hasEnded() || !rawBuffer.readLittle(directoryHeader.signature)) {
+            Logger::report(LogLevel_Error, boost::format("Failed to read directory header from archive file %s") % getPath());
             return false;
         }
-        if (header.signature != ZIPDirectoryHeader_Signature) {
-            Logger::report(LogLevel_Error, boost::format("Invalid directory header signature 0x%x in file %s used for archive %s")
-                                % header.signature % file->getPath() % getName());
+        if (directoryHeader.signature != ZIPDirectoryHeader::SIGNATURE) {
+            Logger::report(LogLevel_Error, boost::format("Invalid directory header signature in archive file %s") % getPath());
             continue;
         }
 
-        if (!buffer.readLittle(header.versionMade) ||
-            !buffer.readLittle(header.versionRequired) ||
-            !buffer.readLittle(header.flags) ||
-            !buffer.readLittle(header.compressionMethod) ||
-            !buffer.readLittle(header.modificationTime) ||
-            !buffer.readLittle(header.modificationDate) ||
-            !buffer.readLittle(header.crc32) ||
-            !buffer.readLittle(header.compressedSize) ||
-            !buffer.readLittle(header.uncompressedSize) ||
-            !buffer.readLittle(header.nameLength) ||
-            !buffer.readLittle(header.extrasLength) ||
-            !buffer.readLittle(header.commentLength) ||
-            !buffer.readLittle(header.diskStart) ||
-            !buffer.readLittle(header.internalAttributes) ||
-            !buffer.readLittle(header.externalAttributes) ||
-            !buffer.readLittle(header.headerOffset)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to read directory header from file %s used for archive %s")
-                                % file->getPath() % getName());
+        if (!rawBuffer.readLittle(directoryHeader.versionMade) ||
+            !rawBuffer.readLittle(directoryHeader.versionRequired) ||
+            !rawBuffer.readLittle(directoryHeader.flags) ||
+            !rawBuffer.readLittle(directoryHeader.compressionMethod) ||
+            !rawBuffer.readLittle(directoryHeader.modificationTime) ||
+            !rawBuffer.readLittle(directoryHeader.modificationDate) ||
+            !rawBuffer.readLittle(directoryHeader.crc32) ||
+            !rawBuffer.readLittle(directoryHeader.compressedSize) ||
+            !rawBuffer.readLittle(directoryHeader.uncompressedSize) ||
+            !rawBuffer.readLittle(directoryHeader.nameLength) ||
+            !rawBuffer.readLittle(directoryHeader.extrasLength) ||
+            !rawBuffer.readLittle(directoryHeader.commentLength) ||
+            !rawBuffer.readLittle(directoryHeader.diskStart) ||
+            !rawBuffer.readLittle(directoryHeader.internalAttributes) ||
+            !rawBuffer.readLittle(directoryHeader.externalAttributes) ||
+            !rawBuffer.readLittle(directoryHeader.headerOffset)) {
+            Logger::report(LogLevel_Error, boost::format("Failed to read directory header from archive file %s") % getPath());
             return false;
         }
 
-        std::string entryName(buffer.at<char>(buffer.getPosition()), header.nameLength);
+        std::string entryName(rawBuffer.at<char>(rawBuffer.getPosition()), directoryHeader.nameLength);
         if (entryName.empty()) {
-            Logger::report(LogLevel_Error, boost::format("Found empty entry name in file %s used for archive %s")
-                                % file->getPath() % getName());
+            Logger::report(LogLevel_Error, boost::format("Found empty entry name in archive file %s") % getPath());
             continue;
         }
 
-        ArchiveEntryPtr entry = boost::make_shared<ZIPArchiveEntry>(entryName.c_str(), file, header);
+        ArchiveEntryPtr entry = boost::make_shared<ZIPArchiveEntry>(entryName, rawFile, directoryHeader);
         if (!entry) {
             return false;
         }
         entries[entryName] = entry;
 
-        if (!buffer.seek(header.nameLength + header.extrasLength + header.commentLength, BufferOrigin_Current)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to progress to the next directory header in file %s used for archive %s")
-                                % file->getPath() % getName());
+        S64 nextEntryOffset = directoryHeader.nameLength + directoryHeader.extrasLength + directoryHeader.commentLength;
+        if (!rawBuffer.seek(nextEntryOffset, BufferOrigin_Current)) {
+            Logger::report(LogLevel_Error, boost::format("Failed to seek to the next directory header in archive file %s used for archive %s")
+                                % getPath());
             return false;
         }
     }
 
-    Logger::report(LogLevel_Trace, boost::format("Found %d entries in file %s used for archive %s")
-                        % entries.size() % file->getPath() % getName());
+    Logger::report(LogLevel_Trace, boost::format("Found %d entries in archive file %s") % entries.size() % getPath());
     return true;
 }
