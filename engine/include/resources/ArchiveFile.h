@@ -20,10 +20,13 @@ namespace ros {
 
     class ROS_API ArchiveFile: public File {
         public:
+            static ArchiveFilePtr create(const std::string& classId);
+
             virtual bool open(const std::string& path) =0;
             virtual const ArchiveEntriesMap& getEntries() const =0;
 
-            static ArchiveFilePtr create(const std::string& classId);
+            ArchiveEntryPtr findEntry(const std::string& entryName) const;
+            bool hasEntry(const std::string& entryName) const;
     };
 }
 
