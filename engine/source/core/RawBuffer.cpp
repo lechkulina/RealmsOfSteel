@@ -4,7 +4,7 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <Core/RawBuffer.h>
+#include <core/RawBuffer.h>
 
 ros::RawBuffer::RawBuffer()
     : data(ROS_NULL)

@@ -9,6 +9,7 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <resources/Resource.h>
 
 namespace ros {
     enum BufferOrigin {
@@ -17,12 +18,9 @@ namespace ros {
         BufferOrigin_End
     };
 
-    class ROS_API Buffer {
+    class ROS_API Buffer : public Resource {
         public:
-            virtual ~Buffer() {}
-
-            virtual bool isNull() const =0;
-            virtual U32 getSize() const =0;
+            // TODO add buffer-specific stuff
     };
 
     typedef boost::shared_ptr<Buffer> BufferPtr;

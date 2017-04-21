@@ -9,62 +9,17 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
-#include <application/Logger.h>
-#include <resources/ResourceCache.h>
 
 namespace ros {
-    template<class DerivedBuffer>
-    class Resource {
+    class ROS_API Resource {
         public:
-            typedef boost::shared_ptr<DerivedBuffer> DerivedBufferPtr;
+            virtual ~Resource() {}
 
-            Resource() { }
-            explicit Resource(const std::string& name) {
-                acquire(name);
-            }
-
-            virtual ~Resource() {
-                release();
-            }
-
-            bool acquire(const std::string& name) {
-                release();
-
-                BufferPtr buffer = ResourceCache::getInstance()->acquireBuffer(name);
-                if (!buffer) {
-                    return false;
-                }
-
-                DerivedBufferPtr cast = boost::dynamic_pointer_cast<DerivedBuffer>(buffer);
-                if (!cast) {
-                    Logger::report(LogLevel_Critical, boost::format("Invalid buffer requested for resource %s") % name);
-                    return false;
-                }
-
-                this->buffer = cast;
-                return true;
-            }
-
-            void release() {
-                if (buffer && buffer.unique()) {
-                    ResourceCache::getInstance()->releaseBuffer(buffer);
-                    buffer.reset();
-                }
-            }
-
-            inline bool isNull() const { return !buffer; }
-            inline operator bool() const { return buffer; }
-
-            inline DerivedBuffer& operator*() { return *buffer; }
-            inline const DerivedBuffer& operator*() const { return *buffer; }
-            inline DerivedBuffer* operator->() { return buffer.get(); }
-            inline const DerivedBuffer* operator->() const { return buffer.get(); }
-
-        private:
-            DerivedBufferPtr buffer;
+            virtual bool isNull() const =0;
+            virtual U32 getSize() const =0;
     };
 
-    typedef Resource<RawBuffer> RawResource;
+    typedef boost::shared_ptr<Resource> ResourcePtr;
 }
 
 #endif // ROS_RESOURCE_H

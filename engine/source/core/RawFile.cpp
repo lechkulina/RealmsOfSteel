@@ -4,7 +4,7 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <Core/RawFile.h>
+#include <core/RawFile.h>
 
 ros::RawFile::RawFile()
     : stream(ROS_NULL)
