@@ -7,24 +7,15 @@
 #ifndef ROS_RAW_BUFFER_LOADER_H
 #define ROS_RAW_BUFFER_LOADER_H
 
-#include <boost/regex.hpp>
 #include <core/Common.h>
 #include <core/Environment.h>
-#include <resources/BufferLoader.h>
+#include <resources/ResourceLoader.h>
 
 namespace ros {
-    class RawBufferLoader : public BufferLoader {
+    class RawBufferLoader : public ResourceLoader {
         public:
-            virtual ~RawBufferLoader();
-
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-
-            virtual bool isLoadable(const std::string& name) const;
-            virtual BufferPtr loadBuffer(RawBufferPtr src);
-
-        private:
-            boost::regex loadable;
+            virtual bool isLoadable(const std::string& resourceName) const;
+            virtual ResourcePtr load(const std::string& resourceName);
     };
 }
 

@@ -5,36 +5,13 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
+#include <resources/FileSystem.h>
 #include "RawBufferLoader.h"
 
-ros::RawBufferLoader::~RawBufferLoader() {
-    uninit();
-}
-
-bool ros::RawBufferLoader::init(const PropertyTree &config) {
-    uninit();
-    if (!BufferLoader::init(config)) {
-        uninit();
-        return false;
-    }
-
-    loadable = config.get("loadable", "");
-
+bool ros::RawBufferLoader::isLoadable(const std::string&) const {
     return true;
 }
 
-void ros::RawBufferLoader::uninit() {
-    loadable.assign("");
-    BufferLoader::uninit();
-}
-
-bool ros::RawBufferLoader::isLoadable(const std::string& name) const {
-    if (loadable.empty()) {
-        return true;
-    }
-    return boost::regex_match(name, loadable);
-}
-
-ros::BufferPtr ros::RawBufferLoader::loadBuffer(RawBufferPtr src) {
-    return src;
+ros::ResourcePtr ros::RawBufferLoader::load(const std::string& resourceName) {
+    return FileSystem::getInstance()->readFile(resourceName);
 }
