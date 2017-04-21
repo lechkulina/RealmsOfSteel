@@ -11,7 +11,7 @@
 #include "SDLOpenGLWindow.h"
 #include "../graphics/OpenGLShader.h"
 #include "../graphics/OpenGLProgram.h"
-#include "../graphics/SDLImageBuffer.h"
+#include "../graphics/SDLImage.h"
 
 namespace {
     const struct KeyboardButtonMapping {
@@ -195,8 +195,8 @@ ros::ProgramPtr ros::SDLOpenGLApplication::createProgram() {
     return boost::make_shared<OpenGLProgram>();
 }
 
-ros::ImageBufferPtr ros::SDLOpenGLApplication::createImageBuffer() {
-    return boost::make_shared<SDLImageBuffer>();
+ros::ImagePtr ros::SDLOpenGLApplication::createImage() {
+    return boost::make_shared<SDLImage>();
 }
 
 bool ros::SDLOpenGLApplication::translateEvent() {

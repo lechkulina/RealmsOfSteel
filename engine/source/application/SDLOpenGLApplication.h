@@ -23,7 +23,7 @@ namespace ros {
             virtual WindowPtr createWindow();
             virtual ShaderPtr createShader();
             virtual ProgramPtr createProgram();
-            virtual ImageBufferPtr createImageBuffer();
+            virtual ImagePtr createImage();
 
         protected:
             virtual bool translateEvent();

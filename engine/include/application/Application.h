@@ -17,7 +17,7 @@
 #include <graphics/Program.h>
 #include <graphics/ShaderManager.h>
 #include <graphics/ProgramManager.h>
-#include <graphics/ImageBuffer.h>
+#include <graphics/Image.h>
 
 namespace ros {
     class Application;
@@ -45,7 +45,7 @@ namespace ros {
             virtual WindowPtr createWindow() =0;
             virtual ShaderPtr createShader() =0;
             virtual ProgramPtr createProgram() =0;
-            virtual ImageBufferPtr createImageBuffer() =0;
+            virtual ImagePtr createImage() =0;
 
         protected:
             typedef std::list<ViewPtr> ViewList;
