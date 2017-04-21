@@ -8,7 +8,7 @@
 #include <boost/range.hpp>
 #include <SDL2/SDL_pixels.h>
 #include <application/Logger.h>
-#include "SDLImageBuffer.h"
+#include "SDLImage.h"
 
 namespace {
     const struct PixelFormatMapping {
@@ -45,30 +45,30 @@ namespace {
     }
 }
 
-ros::SDLImageBuffer::SDLImageBuffer()
+ros::SDLImage::SDLImage()
     : surface(ROS_NULL) {
 }
 
-ros::SDLImageBuffer::SDLImageBuffer(SDL_Surface* src)
+ros::SDLImage::SDLImage(SDL_Surface* src)
     : surface(ROS_NULL) {
     assign(src);
 }
 
-ros::SDLImageBuffer::~SDLImageBuffer() {
+ros::SDLImage::~SDLImage() {
     free();
 }
 
-ros::SDLImageBuffer::SDLImageBuffer(const SDLImageBuffer& src)
+ros::SDLImage::SDLImage(const SDLImage& src)
     : surface(ROS_NULL){
     assign(src);
 }
 
-ros::SDLImageBuffer& ros::SDLImageBuffer::operator=(const SDLImageBuffer& src) {
+ros::SDLImage& ros::SDLImage::operator=(const SDLImage& src) {
     assign(src);
     return *this;
 }
 
-bool ros::SDLImageBuffer::allocate(U32 width, U32 height, PixelFormat format) {
+bool ros::SDLImage::allocate(U32 width, U32 height, PixelFormat format) {
     free();
 
     Uint32 nativeFormat = SDLFormat_fromPixelFormat(format);
@@ -96,7 +96,7 @@ bool ros::SDLImageBuffer::allocate(U32 width, U32 height, PixelFormat format) {
     return true;
 }
 
-bool ros::SDLImageBuffer::assign(const ImageBuffer& src) {
+bool ros::SDLImage::assign(const Image& src) {
     if (this == &src) {
         return true;
     }
@@ -137,7 +137,7 @@ bool ros::SDLImageBuffer::assign(const ImageBuffer& src) {
     return true;
 }
 
-bool ros::SDLImageBuffer::assign(SDL_Surface* src) {
+bool ros::SDLImage::assign(SDL_Surface* src) {
     if (surface == src) {
         return true;
     }
@@ -151,7 +151,7 @@ bool ros::SDLImageBuffer::assign(SDL_Surface* src) {
     return true;
 }
 
-bool ros::SDLImageBuffer::resize(U32 width, U32 height, BlitMode mode) {
+bool ros::SDLImage::resize(U32 width, U32 height, BlitMode mode) {
     if (!surface) {
         return false;
     }
@@ -198,7 +198,7 @@ bool ros::SDLImageBuffer::resize(U32 width, U32 height, BlitMode mode) {
     return true;
 }
 
-bool ros::SDLImageBuffer::convert(PixelFormat format) {
+bool ros::SDLImage::convert(PixelFormat format) {
     if (!surface) {
         return false;
     }
@@ -220,7 +220,7 @@ bool ros::SDLImageBuffer::convert(PixelFormat format) {
     return true;
 }
 
-void ros::SDLImageBuffer::free() {
+void ros::SDLImage::free() {
     if (!surface) {
         return;
     }
@@ -228,49 +228,49 @@ void ros::SDLImageBuffer::free() {
     surface = ROS_NULL;
 }
 
-ros::U32 ros::SDLImageBuffer::getWidth() const {
+ros::U32 ros::SDLImage::getWidth() const {
     if (surface) {
         return static_cast<U32>(surface->w);
     }
     return 0;
 }
 
-ros::U32 ros::SDLImageBuffer::getHeight() const {
+ros::U32 ros::SDLImage::getHeight() const {
     if (surface) {
         return static_cast<U32>(surface->h);
     }
     return 0;
 }
 
-ros::PixelFormat ros::SDLImageBuffer::getFormat() const {
+ros::PixelFormat ros::SDLImage::getFormat() const {
     if (surface) {
         return PixelFormat_fromSDLFormat(surface->format->format);
     }
     return PixelFormat_Unknown;
 }
 
-ros::U32 ros::SDLImageBuffer::getBitsPerPixel() const {
+ros::U32 ros::SDLImage::getBitsPerPixel() const {
     if (surface) {
         return surface->format->BitsPerPixel;
     }
     return 0;
 }
 
-ros::U32 ros::SDLImageBuffer::getPitch() const {
+ros::U32 ros::SDLImage::getPitch() const {
     if (surface) {
         return surface->pitch;
     }
     return 0;
 }
 
-ros::U32 ros::SDLImageBuffer::getSize() const {
+ros::U32 ros::SDLImage::getSize() const {
     if (surface) {
         return static_cast<U32>(surface->pitch * surface->h);
     }
     return 0;
 }
 
-bool ros::SDLImageBuffer::clear() {
+bool ros::SDLImage::clear() {
     if (!surface) {
         return false;
     }
@@ -283,7 +283,7 @@ bool ros::SDLImageBuffer::clear() {
     return true;
 }
 
-void* ros::SDLImageBuffer::lock() {
+void* ros::SDLImage::lock() {
     if (!surface) {
         return ROS_NULL;
     }
@@ -296,11 +296,11 @@ void* ros::SDLImageBuffer::lock() {
     return surface->pixels;
 }
 
-const void* ros::SDLImageBuffer::lock() const {
-    return const_cast<SDLImageBuffer*>(this)->lock();
+const void* ros::SDLImage::lock() const {
+    return const_cast<SDLImage*>(this)->lock();
 }
 
-void ros::SDLImageBuffer::unlock() const {
+void ros::SDLImage::unlock() const {
     if (surface) {
         SDL_UnlockSurface(surface);
     }

@@ -4,12 +4,12 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_IMAGE_BUFFER_H
-#define ROS_IMAGE_BUFFER_H
+#ifndef ROS_IMAGE_H
+#define ROS_IMAGE_H
 
 #include <core/Common.h>
 #include <core/Environment.h>
-#include <core/Buffer.h>
+#include <resources/Resource.h>
 
 namespace ros {
     enum PixelFormat {
@@ -29,10 +29,12 @@ namespace ros {
         BlitMode_Scaled
     };
 
-    class ROS_API ImageBuffer: public Buffer {
+    class ROS_API Image: public Resource {
         public:
+            virtual ~Image() {}
+
             virtual bool allocate(U32 width, U32 height, PixelFormat format) =0;
-            virtual bool assign(const ImageBuffer& src) =0;
+            virtual bool assign(const Image& src) =0;
             virtual bool resize(U32 width, U32 height, BlitMode mode) =0;
             virtual bool convert(PixelFormat format) =0;
             virtual void free() =0;
@@ -50,8 +52,8 @@ namespace ros {
             virtual void unlock() const =0;
     };
 
-    typedef boost::shared_ptr<ImageBuffer> ImageBufferPtr;
+    typedef boost::shared_ptr<Image> ImagePtr;
 }
 
-#endif // ROS_IMAGE_BUFFER_H
+#endif // ROS_IMAGE_H
 

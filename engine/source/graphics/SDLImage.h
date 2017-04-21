@@ -4,27 +4,27 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_SDL_IMAGE_BUFFER_H
-#define ROS_SDL_IMAGE_BUFFER_H
+#ifndef ROS_SDL_IMAGE_H
+#define ROS_SDL_IMAGE_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_surface.h>
 #include <core/Common.h>
 #include <core/Environment.h>
-#include <graphics/ImageBuffer.h>
+#include <graphics/Image.h>
 
 namespace ros {
-    class SDLImageBuffer: public ImageBuffer {
+    class SDLImage : public Image {
         public:
-            SDLImageBuffer();
-            SDLImageBuffer(SDL_Surface* src);
-            virtual ~SDLImageBuffer();
+            SDLImage();
+            SDLImage(SDL_Surface* src);
+            virtual ~SDLImage();
 
-            SDLImageBuffer(const SDLImageBuffer& src);
-            SDLImageBuffer& operator=(const SDLImageBuffer& src);
+            SDLImage(const SDLImage& src);
+            SDLImage& operator=(const SDLImage& src);
 
             virtual bool allocate(U32 width, U32 height, PixelFormat format);
-            virtual bool assign(const ImageBuffer& src);
+            virtual bool assign(const Image& src);
             bool assign(SDL_Surface* src);
             virtual bool resize(U32 width, U32 height, BlitMode mode);
             virtual bool convert(PixelFormat format);
@@ -49,8 +49,8 @@ namespace ros {
             SDL_Surface* surface;
     };
 
-    typedef boost::shared_ptr<SDLImageBuffer> SDLImageBufferPtr;
+    typedef boost::shared_ptr<SDLImage> SDLImagePtr;
 }
 
-#endif // ROS_SDL_IMAGE_BUFFER_H
+#endif // ROS_SDL_IMAGE_H
 
