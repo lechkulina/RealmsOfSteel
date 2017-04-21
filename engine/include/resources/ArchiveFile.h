@@ -9,6 +9,7 @@
 
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <core/Factory.h>
 #include <core/File.h>
 #include <resources/ArchiveEntry.h>
 
@@ -27,6 +28,9 @@ namespace ros {
 
             ArchiveEntryPtr findEntry(const std::string& entryName) const;
             bool hasEntry(const std::string& entryName) const;
+
+        private:
+            static Factory<ArchiveFile> factory;
     };
 }
 
