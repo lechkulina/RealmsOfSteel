@@ -5,6 +5,7 @@
 # For conditions of distribution and use, see copyright details in the LICENSE file.
 #
 add_library(Engine ${ROS_LINKAGE_TYPE}
+    source/core/File.cpp
     source/core/RawBuffer.cpp
     source/core/RawFile.cpp
     source/application/LogMessage.cpp
@@ -16,14 +17,12 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/application/Logger.cpp
     source/application/Application.cpp
     source/resources/ArchiveFile.cpp
-    source/resources/ArchiveFileManager.cpp
-    source/resources/BufferLoader.cpp
-    source/resources/BufferLoaderManager.cpp
+    source/resources/FileSystem.cpp
+    source/resources/ArchiveFileSystem.cpp
+    source/resources/ResourceLoader.cpp
     source/resources/RawBufferLoader.cpp
-    source/resources/BufferCache.cpp
-    source/resources/BufferCacheManager.cpp
-    source/resources/StaticBufferCache.cpp
-    source/resources/ResourceCache.cpp
+    source/resources/ResourcesCache.cpp
+    source/resources/StaticResourcesCache.cpp
     source/math/Scalar.cpp
     source/math/Vector2D.cpp
     source/math/Vector3D.cpp
@@ -95,7 +94,7 @@ if (ROS_USE_SDL)
         target_link_libraries(Engine PRIVATE ${SDL2_LIBRARY})
         target_compile_definitions(Engine PRIVATE ROS_USING_SDL SDL_MAIN_HANDLED)
         target_sources(Engine PRIVATE
-            source/graphics/SDLImageBuffer.cpp
+            source/graphics/SDLImage.cpp
         )
         if (OPENGL_FOUND AND GLEW_FOUND)
             target_sources(Engine PRIVATE
@@ -111,7 +110,7 @@ if (ROS_USE_SDL)
             target_link_libraries(Engine PRIVATE ${SDL2_IMAGE_LIBRARIES})
             target_compile_definitions(Engine PRIVATE ROS_USING_SDL_IMAGE)
             target_sources(Engine PRIVATE
-                source/resources/SDLImageBufferLoader.cpp
+                source/resources/SDLImageLoader.cpp
             )
         endif()
     endif()
