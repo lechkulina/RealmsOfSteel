@@ -20,6 +20,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Resource> ResourcePtr;
+    typedef std::map<std::string, ResourcePtr> ResourcesMap;
 }
 
 #endif // ROS_RESOURCE_H
