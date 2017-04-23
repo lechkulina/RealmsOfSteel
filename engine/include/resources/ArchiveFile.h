@@ -16,18 +16,18 @@
 namespace ros {
     class ArchiveFile;
     typedef boost::shared_ptr<ArchiveFile> ArchiveFilePtr;
-    typedef std::list<ArchiveFilePtr> ArchiveFileList;
-    typedef std::map<std::string, ArchiveFilePtr> ArchiveFileMap;
+    typedef std::list<ArchiveFilePtr> ArchiveFilesList;
+    typedef std::map<std::string, ArchiveFilePtr> ArchiveFilesMap;
 
     class ROS_API ArchiveFile: public File {
         public:
             static ArchiveFilePtr create(const std::string& classId);
 
-            virtual bool open(const std::string& path) =0;
+            virtual bool open(const fs::path& path) =0;
             virtual const ArchiveEntriesMap& getEntries() const =0;
 
-            ArchiveEntryPtr findEntry(const std::string& entryName) const;
-            bool hasEntry(const std::string& entryName) const;
+            ArchiveEntryPtr findEntry(const std::string& name) const;
+            bool hasEntry(const std::string& name) const;
 
         private:
             static Factory<ArchiveFile> factory;

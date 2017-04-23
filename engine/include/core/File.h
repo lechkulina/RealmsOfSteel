@@ -43,13 +43,13 @@ namespace ros {
 
     class ROS_API File : public boost::noncopyable {
         public:
-            static const std::string EMPTY_PATH;
+            static const fs::path EMPTY_PATH;
 
             virtual ~File() {}
 
             virtual void close() =0;
             virtual bool isOpen() const =0;
-            virtual const std::string& getPath() const =0;
+            virtual const fs::path& getPath() const =0;
     };
 
     typedef boost::shared_ptr<File> FilePtr;

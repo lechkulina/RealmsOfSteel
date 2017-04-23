@@ -9,9 +9,9 @@
 #include "RawBufferLoader.h"
 
 bool ros::RawBufferLoader::isLoadable(const std::string&) const {
-    return true;
+    return true;  // this loader acts as a fallback and it can basically load any type of resource as raw bits of data
 }
 
-ros::ResourcePtr ros::RawBufferLoader::load(const std::string& resourceName) {
-    return FileSystem::getInstance()->readFile(resourceName);
+ros::ResourcePtr ros::RawBufferLoader::loadResource(const std::string& name) {
+    return FileSystem::getInstance()->readFile(name);
 }

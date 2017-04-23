@@ -17,11 +17,11 @@ namespace ros {
             static const U32 DEFAULT_BUFFER_SIZE = 1024;
 
             RawFile();
-            RawFile(const char* path, FileType type, FileOpenMode openMode,
+            RawFile(const fs::path& path, FileType type, FileOpenMode openMode,
                     FileBufferMode bufferMode = DEFAULT_BUFFER_MODE, U32 bufferSize = DEFAULT_BUFFER_SIZE);
             virtual ~RawFile();
 
-            bool open(const char* path, FileType type, FileOpenMode openMode,
+            bool open(const fs::path& path, FileType type, FileOpenMode openMode,
                       FileBufferMode bufferMode = DEFAULT_BUFFER_MODE, U32 bufferSize = DEFAULT_BUFFER_SIZE);
             void close();
             FileType getType() const { return type; }
@@ -30,7 +30,7 @@ namespace ros {
             U32 getBufferSize() const { return bufferSize; }
 
             virtual bool isOpen() const { return stream; }
-            virtual const std::string& getPath() const { return path; }
+            virtual const fs::path& getPath() const { return path; }
 
             U32 getPosition() const;
             bool seek(S64 offset, FileOrigin origin) const;
@@ -82,13 +82,13 @@ namespace ros {
 
         private:
             FILE* stream;
-            std::string path;
+            fs::path path;
             FileType type;
             FileOpenMode openMode;
             FileBufferMode bufferMode;
             U32 bufferSize;
 
-            bool openStream(const char* path, FileType type, FileOpenMode mode);
+            bool openStream(const fs::path& path, FileType type, FileOpenMode mode);
             bool setBuffering(FileBufferMode mode, U32 size);
     };
 

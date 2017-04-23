@@ -11,35 +11,35 @@
 #include "../graphics/SDLImage.h"
 #include "SDLImageLoader.h"
 
-bool ros::SDLImageLoader::isLoadable(const std::string& resourceName) const {
+bool ros::SDLImageLoader::isLoadable(const std::string& name) const {
     // TODO use SDL API to check if a resource can be loaded
-    boost::regex loadableRegex(".*tga|.*bmp|.*pbm|.*pgm|.*ppm|.*xpm|.*xcf|.*gif|.*lbm|.*iff|.*jpg|.*tif|.*png");
-    return boost::regex_match(resourceName, loadableRegex);
+    boost::regex regex(".*tga|.*bmp|.*pbm|.*pgm|.*ppm|.*xpm|.*xcf|.*gif|.*lbm|.*iff|.*jpg|.*tif|.*png");
+    return boost::regex_match(name, regex);
 }
 
-ros::ResourcePtr ros::SDLImageLoader::load(const std::string& resourceName) {
-    RawBufferPtr buffer = FileSystem::getInstance()->readFile(resourceName);
+ros::ResourcePtr ros::SDLImageLoader::loadResource(const std::string& name) {
+    RawBufferPtr buffer = FileSystem::getInstance()->readFile(name);
     if (!buffer) {
         return SDLImagePtr();
     }
     SDL_RWops* stream = SDL_RWFromConstMem(buffer->at<const void>(), buffer->getSize());
     if (!stream) {
         Logger::report(LogLevel_Error, boost::format("Failed to create SDL RWops stream for resource %s - SDL error occured %s")
-                            % resourceName % SDL_GetError());
+                            % name % SDL_GetError());
         return SDLImagePtr();
     }
 
     SDL_Surface* surface = IMG_Load_RW(stream, 0);
     if (!surface) {
         Logger::report(LogLevel_Error, boost::format("Failed to load SDL surface for resource %s - SDLImage error occured %s")
-                            % resourceName % IMG_GetError());
+                            % name % IMG_GetError());
         SDL_RWclose(stream);
         return SDLImagePtr();
     }
 
     SDLImagePtr image = boost::make_shared<SDLImage>(surface);
     if (!image || image->isNull()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create resource for %s") % resourceName);
+        Logger::report(LogLevel_Error, boost::format("Failed to create image resource for %s") % name);
         SDL_FreeSurface(surface);
         SDL_RWclose(stream);
         return SDLImagePtr();

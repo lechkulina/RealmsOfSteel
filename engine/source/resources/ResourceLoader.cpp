@@ -20,6 +20,6 @@ ros::ResourceLoaderPtr ros::ResourceLoader::create(const std::string& classId) {
         factory.registerClass<SDLImageLoader>(boost::regex("sdl-image-loader"));
 #endif
     }
-    ResourceLoaderPtr resourceLoader(factory.create(classId.c_str()));
-    return resourceLoader;
+    ResourceLoaderPtr instance(factory.create(classId.c_str()));
+    return instance;
 }

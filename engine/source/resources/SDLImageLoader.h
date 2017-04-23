@@ -13,11 +13,8 @@
 namespace ros {
     class SDLImageLoader : public ResourceLoader {
         public:
-            virtual bool isLoadable(const std::string& resourceName) const;
-            virtual ResourcePtr load(const std::string& resourceName);
-
-        private:
-            boost::regex loadable;
+            virtual bool isLoadable(const std::string& name) const;
+            virtual ResourcePtr loadResource(const std::string& name);
     };
 }
 

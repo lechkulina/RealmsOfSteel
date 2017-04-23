@@ -19,16 +19,18 @@ namespace ros {
     class ROS_API FileSystem: public boost::noncopyable {
         public:
             static FileSystemPtr initInstance(const std::string& classId);
-            static FileSystemPtr getInstance() { return fileSystem; }
+            static FileSystemPtr getInstance() { return instance; }
 
             virtual ~FileSystem() {}
 
-            virtual RawBufferPtr readFile(const std::string& fileName) const =0;
-            virtual bool hasFile(const std::string& fileName) const =0;
+            virtual bool setRoot(const fs::path& path) =0;
+            virtual const fs::path& getRoot() const =0;
+            virtual RawBufferPtr readFile(const std::string& name) const =0;
+            virtual bool hasFile(const std::string& name) const =0;
 
         private:
             static Factory<FileSystem> factory;
-            static FileSystemPtr fileSystem;
+            static FileSystemPtr instance;
     };
 }
 

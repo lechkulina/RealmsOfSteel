@@ -32,7 +32,7 @@ namespace ros {
 
     class ZIPArchiveEntry : public ArchiveEntry {
         public:
-            ZIPArchiveEntry(const std::string& name, RawFilePtr rawFile, const ZIPDirectoryHeader& directoryHeader);
+            ZIPArchiveEntry(const std::string& name, RawFilePtr file, const ZIPDirectoryHeader& directoryHeader);
 
             virtual const std::string& getName() const { return name; }
             virtual U32 getCompressedSize() const { return directoryHeader.compressedSize; }
@@ -42,7 +42,7 @@ namespace ros {
 
         private:
             std::string name;
-            RawFilePtr rawFile;
+            RawFilePtr file;
             ZIPDirectoryHeader directoryHeader;
             ZIPFileHeader fileHeader;
 

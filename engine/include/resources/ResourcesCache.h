@@ -25,21 +25,21 @@ namespace ros {
             virtual ~ResourcesCache() {}
 
             bool addLoader(ResourceLoaderPtr loader);
-            ResourceLoaderPtr findLoader(const std::string& resourceName) const;
+            ResourceLoaderPtr findLoaderForResource(const std::string& name) const;
 
-            virtual ResourcePtr readResource(const std::string& resourceName) =0;
-            virtual bool hasResource(const std::string& resourceName) const =0;
+            virtual ResourcePtr readResource(const std::string& name) =0;
+            virtual bool hasResource(const std::string& name) const =0;
             virtual U32 computeUsedSize() const =0;
 
             template<class T>
-            boost::shared_ptr<T> fetchResource(const std::string& resourceName) {
-                ResourcePtr resource = this->readResource(resourceName);
+            boost::shared_ptr<T> fetchResource(const std::string& name) {
+                ResourcePtr resource = this->readResource(name);
                 if (!resource) {
                     return boost::shared_ptr<T>();
                 }
                 boost::shared_ptr<T> casted = boost::dynamic_pointer_cast<T>(resource);
                 if (!casted) {
-                    Logger::report(LogLevel_Error, boost::format("Invalid resource type used for resource %s") % resourceName);
+                    Logger::report(LogLevel_Error, boost::format("Invalid type requested for resource %s") % name);
                     return boost::shared_ptr<T>();
                 }
                 return casted;

@@ -30,10 +30,10 @@ bool ros::ResourcesCache::addLoader(ResourceLoaderPtr loader) {
     return true;
 }
 
-ros::ResourceLoaderPtr ros::ResourcesCache::findLoader(const std::string& resourceName) const {
-    for (ResourceLoadersList::const_iterator i = loaders.begin(); i != loaders.end(); ++i) {
-        ResourceLoaderPtr loader = *i;
-        if (loader->isLoadable(resourceName)) {
+ros::ResourceLoaderPtr ros::ResourcesCache::findLoaderForResource(const std::string& name) const {
+    for (ResourceLoadersList::const_iterator iter = loaders.begin(); iter != loaders.end(); ++iter) {
+        ResourceLoaderPtr loader = *iter;
+        if (loader->isLoadable(name)) {
             return loader;
         }
     }

@@ -14,8 +14,8 @@
 namespace ros {
     class RawBufferLoader : public ResourceLoader {
         public:
-            virtual bool isLoadable(const std::string& resourceName) const;
-            virtual ResourcePtr load(const std::string& resourceName);
+            virtual bool isLoadable(const std::string& name) const;
+            virtual ResourcePtr loadResource(const std::string& name);
     };
 }
 

@@ -14,7 +14,7 @@ ros::RawFile::RawFile()
     , bufferSize(0) {
 }
 
-ros::RawFile::RawFile(const char* path, FileType type, FileOpenMode openMode, FileBufferMode bufferMode, U32 bufferSize)
+ros::RawFile::RawFile(const fs::path& path, FileType type, FileOpenMode openMode, FileBufferMode bufferMode, U32 bufferSize)
     : stream(ROS_NULL)
     , type(FileType_Invalid)
     , openMode(FileOpenMode_Invalid)
@@ -27,7 +27,7 @@ ros::RawFile::~RawFile() {
     close();
 }
 
-bool ros::RawFile::open(const char* path, FileType type, FileOpenMode openMode, FileBufferMode bufferMode, U32 bufferSize) {
+bool ros::RawFile::open(const fs::path& path, FileType type, FileOpenMode openMode, FileBufferMode bufferMode, U32 bufferSize) {
     close();
     if (!openStream(path, type, openMode) || !setBuffering(bufferMode, bufferSize)) {
         close();
@@ -126,7 +126,7 @@ bool ros::RawFile::write(const void* src, U32 size) {
     return fwrite(src, 1, size, stream) == size;
 }
 
-bool ros::RawFile::openStream(const char* path, FileType type, FileOpenMode mode) {
+bool ros::RawFile::openStream(const fs::path& path, FileType type, FileOpenMode mode) {
     char modeStr[4];
     memset(modeStr, 0, sizeof(modeStr) / sizeof(modeStr[0]));
 
@@ -162,7 +162,7 @@ bool ros::RawFile::openStream(const char* path, FileType type, FileOpenMode mode
             return false;
     }
 
-    stream = fopen(path, modeStr);
+    stream = fopen(path.string().c_str(), modeStr);
     this->path = path;
     this->type = type;
     openMode = mode;

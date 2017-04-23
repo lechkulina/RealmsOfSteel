@@ -22,14 +22,14 @@ ros::ArchiveFilePtr ros::ArchiveFile::create(const std::string& classId) {
     return archiveFile;
 }
 
-ros::ArchiveEntryPtr ros::ArchiveFile::findEntry(const std::string& entryName) const {
-    ArchiveEntriesMap::const_iterator foundEntry = getEntries().find(entryName);
-    if (foundEntry != getEntries().end()) {
-        return foundEntry->second;
+ros::ArchiveEntryPtr ros::ArchiveFile::findEntry(const std::string& name) const {
+    ArchiveEntriesMap::const_iterator iter = getEntries().find(name);
+    if (iter != getEntries().end()) {
+        return iter->second;
     }
     return ArchiveEntryPtr();
 }
 
-bool ros::ArchiveFile::hasEntry(const std::string& entryName) const {
-    return findEntry(entryName).get() != ROS_NULL;
+bool ros::ArchiveFile::hasEntry(const std::string& name) const {
+    return findEntry(name).get() != ROS_NULL;
 }

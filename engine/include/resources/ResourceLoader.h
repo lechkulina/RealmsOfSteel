@@ -23,8 +23,8 @@ namespace ros {
 
             virtual ~ResourceLoader() {}
 
-            virtual bool isLoadable(const std::string& resourceName) const =0;
-            virtual ResourcePtr load(const std::string& resourceName) =0;
+            virtual bool isLoadable(const std::string& name) const =0;
+            virtual ResourcePtr loadResource(const std::string& name) =0;
     };
 }
 

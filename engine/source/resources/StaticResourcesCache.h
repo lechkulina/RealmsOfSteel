@@ -12,8 +12,8 @@
 namespace ros {
     class StaticResourcesCache : public ResourcesCache {
         public:
-            virtual ResourcePtr readResource(const std::string& resourceName);
-            virtual bool hasResource(const std::string& resourceName) const;
+            virtual ResourcePtr readResource(const std::string& name);
+            virtual bool hasResource(const std::string& name) const;
             virtual U32 computeUsedSize() const;
 
         private:

@@ -6,4 +6,4 @@
  */
 #include <core/File.h>
 
-const std::string ros::File::EMPTY_PATH("");
+const ros::fs::path ros::File::EMPTY_PATH;

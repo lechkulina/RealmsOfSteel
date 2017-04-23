@@ -49,21 +49,21 @@ namespace ros {
     class ZIPArchiveFile : public ArchiveFile {
         public:
             ZIPArchiveFile() {}
-            explicit ZIPArchiveFile(const std::string& path);
+            explicit ZIPArchiveFile(const fs::path& path);
             virtual ~ZIPArchiveFile();
 
-            virtual bool open(const std::string& path);
+            virtual bool open(const fs::path& path);
             virtual void close();
             virtual bool isOpen() const;
-            virtual const std::string& getPath() const;
+            virtual const fs::path& getPath() const;
 
             virtual const ArchiveEntriesMap& getEntries() const { return entries; }
 
         private:
-            RawFilePtr rawFile;
+            RawFilePtr file;
             ArchiveEntriesMap entries;
 
-            bool initRawFile(const std::string& path);
+            bool initFile(const fs::path& path);
             bool readEntries();
     };
 }

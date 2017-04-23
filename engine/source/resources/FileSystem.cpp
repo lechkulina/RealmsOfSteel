@@ -10,19 +10,19 @@
 #include "ArchiveFileSystem.h"
 
 ros::Factory<ros::FileSystem> ros::FileSystem::factory;
-ros::FileSystemPtr ros::FileSystem::fileSystem;
+ros::FileSystemPtr ros::FileSystem::instance;
 
 ros::FileSystemPtr ros::FileSystem::initInstance(const std::string& classId) {
-    if (fileSystem) {
-        return fileSystem;
+    if (instance) {
+        return instance;
     }
     if (factory.isEmpty()) {
         factory.registerClass<ArchiveFileSystem>(boost::regex("archive-file-system"));
     }
-    fileSystem.reset(factory.create(classId.c_str()));
-    if (!fileSystem) {
+    instance.reset(factory.create(classId.c_str()));
+    if (!instance) {
         Logger::report(LogLevel_Error, boost::format("Unknown file system class ID %s") % classId);
         return FileSystemPtr();
     }
-    return fileSystem;
+    return instance;
 }
