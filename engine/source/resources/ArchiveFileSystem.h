@@ -15,16 +15,17 @@
 namespace ros {
     class ROS_API ArchiveFileSystem : public FileSystem {
         public:
-            ArchiveFileSystem();
+            bool addArchive(ArchiveFilePtr archive);
+            bool openArchive(const fs::path& path);
 
-            bool addArchiveFile(ArchiveFilePtr archiveFile);
-            bool openArchiveFile(const std::string& path);
-
-            virtual RawBufferPtr readFile(const std::string& fileName) const;
-            virtual bool hasFile(const std::string& fileName) const;
+            virtual bool setRoot(const fs::path& path);
+            virtual const fs::path& getRoot() const { return root; }
+            virtual RawBufferPtr readFile(const std::string& name) const;
+            virtual bool hasFile(const std::string& name) const;
 
         private:
-            ArchiveFileList archiveFiles;
+            fs::path root;
+            ArchiveFilesList archives;
     };
 }
 #endif // ROS_ARCHIVE_FILE_SYSTEM_H

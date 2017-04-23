@@ -4,49 +4,85 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
+#include <boost/filesystem.hpp>
 #include <application/Logger.h>
 #include "ArchiveFileSystem.h"
 
-ros::ArchiveFileSystem::ArchiveFileSystem() {
-    // TODO do not hardcode this
-    openArchiveFile("common.zip");
-}
-
-bool ros::ArchiveFileSystem::addArchiveFile(ArchiveFilePtr archiveFile) {
-    for (ArchiveFileList::const_iterator i = archiveFiles.begin(); i != archiveFiles.end(); ++i) {
-        ArchiveFilePtr archiveFile = *i;
-        if (archiveFile->getPath() == archiveFile->getPath()) {
+bool ros::ArchiveFileSystem::addArchive(ArchiveFilePtr archive) {
+    const fs::path& path = archive->getPath();
+    for (ArchiveFilesList::const_iterator iter = archives.begin(); iter != archives.end(); ++iter) {
+        if ((*iter)->getPath() == path) {
+            Logger::report(LogLevel_Warning, boost::format("Archive %s has already been added into file system - ignoring it") % path);
             return false;
         }
     }
-    archiveFiles.push_back(archiveFile);
+    Logger::report(LogLevel_Trace, boost::format("Archive %s added into file system") % path);
+    archives.push_back(archive);
     return true;
 }
 
-bool ros::ArchiveFileSystem::openArchiveFile(const std::string& path) {
-    ArchiveFilePtr archiveFile = ArchiveFile::create(path);
-    if (!archiveFile || !archiveFile->open(path)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to add archive file %s into file system") % path);
+bool ros::ArchiveFileSystem::openArchive(const fs::path& path) {
+    ArchiveFilePtr archive = ArchiveFile::create(path.string());
+    if (!archive) {
+        Logger::report(LogLevel_Error, boost::format("Failed to create archive %s for file system") % path);
         return false;
     }
-    return addArchiveFile(archiveFile);
+    if (!archive->open(path)) {
+        Logger::report(LogLevel_Error, boost::format("Failed to open archive %s for file system") % path);
+        return false;
+    }
+    return addArchive(archive);
 }
 
-ros::RawBufferPtr ros::ArchiveFileSystem::readFile(const std::string& fileName) const {
-    for (ArchiveFileList::const_iterator i = archiveFiles.begin(); i != archiveFiles.end(); ++i) {
-        ArchiveFilePtr archiveFile = *i;
-        ArchiveEntryPtr archiveEntry = archiveFile->findEntry(fileName);
-        if (archiveEntry) {
-            return archiveEntry->decompress();
+bool ros::ArchiveFileSystem::setRoot(const fs::path& root) {
+    this->root.clear();
+    archives.clear();
+
+    sys::error_code error;
+    const bool isDirectory = fs::is_directory(root, error);
+    if (error) {
+        Logger::report(LogLevel_Error, boost::format("Failed to check type for root %s - system error occured %s")
+                            % root % error.message());
+        return false;
+    }
+    if (!isDirectory) {
+        Logger::report(LogLevel_Error, boost::format("Provided root %s does not point to a directory") % root);
+        return false;
+    }
+
+    fs::directory_iterator iter(root, error);
+    if (error) {
+        Logger::report(LogLevel_Error, boost::format("Failed to open root %s - system error occured %s")
+                            % root % error.message());
+        return false;
+    }
+    while (iter != fs::directory_iterator()) {
+        const fs::directory_entry entry = *iter;
+        openArchive(entry.path());
+        ++iter;
+    }
+
+    Logger::report(LogLevel_Debug, boost::format("Root %s set with %d opened archives") % root % archives.size());
+    return archives.size() > 0;
+}
+
+ros::RawBufferPtr ros::ArchiveFileSystem::readFile(const std::string& name) const {
+    for (ArchiveFilesList::const_iterator iter = archives.begin(); iter != archives.end(); ++iter) {
+        ArchiveFilePtr archive = *iter;
+        ArchiveEntryPtr entry = archive->findEntry(name);
+        if (entry) {
+            Logger::report(LogLevel_Trace, boost::format("Found entry for file %s in file system") % name);
+            return entry->decompress();
         }
     }
+    Logger::report(LogLevel_Warning, boost::format("Failed to find entry for file %s in file system") % name);
     return RawBufferPtr();
 }
 
-bool ros::ArchiveFileSystem::hasFile(const std::string& fileName) const {
-    for (ArchiveFileList::const_iterator i = archiveFiles.begin(); i != archiveFiles.end(); ++i) {
-        ArchiveFilePtr archiveFile = *i;
-        if (archiveFile->hasEntry(fileName)) {
+bool ros::ArchiveFileSystem::hasFile(const std::string& name) const {
+    for (ArchiveFilesList::const_iterator iter = archives.begin(); iter != archives.end(); ++iter) {
+        ArchiveFilePtr archive = *iter;
+        if (archive->hasEntry(name)) {
             return true;
         }
     }
