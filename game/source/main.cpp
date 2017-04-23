@@ -8,7 +8,8 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <application/Logger.h>
 #include <application/Application.h>
-#include <resources/ResourceCache.h>
+#include <resources/FileSystem.h>
+#include <resources/ResourcesCache.h>
 
 int main() {
     int exitCode = EXIT_FAILURE;
@@ -18,7 +19,8 @@ int main() {
 
     if (!ros::Logger::initInstance(config.get_child("Logger")) ||
         !ros::Application::initInstance(config.get_child("application")) ||
-        !ros::ResourceCache::initInstance(config.get_child("resources"))) {
+        !ros::FileSystem::initInstance(config.get_child("file-system")) ||
+        !ros::ResourcesCache::initInstance(config.get_child("resources-cache"))) {
         return exitCode;
     }
 
