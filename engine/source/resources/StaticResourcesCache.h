@@ -16,6 +16,9 @@ namespace ros {
             virtual bool hasResource(const std::string& name) const;
             virtual U32 computeUsedSize() const;
 
+            virtual void setCapacity(U32Opt capacity);
+            virtual U32Opt getCapacity() const { return capacity; }
+
         private:
             U32Opt capacity;
             ResourcesMap resources;

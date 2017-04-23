@@ -15,9 +15,9 @@ static ros::Factory<ros::ResourceLoader> factory;
 
 ros::ResourceLoaderPtr ros::ResourceLoader::create(const std::string& classId) {
     if (factory.isEmpty()) {
-        factory.registerClass<RawBufferLoader>(boost::regex("raw-buffer-loader"));
+        factory.registerClass<RawBufferLoader>(boost::regex("raw-buffer"));
 #if defined(ROS_USING_SDL) && defined(ROS_USING_SDL_IMAGE)
-        factory.registerClass<SDLImageLoader>(boost::regex("sdl-image-loader"));
+        factory.registerClass<SDLImageLoader>(boost::regex("sdl-image"));
 #endif
     }
     ResourceLoaderPtr instance(factory.create(classId.c_str()));

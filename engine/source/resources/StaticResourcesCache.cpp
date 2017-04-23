@@ -53,3 +53,7 @@ ros::U32 ros::StaticResourcesCache::computeUsedSize() const {
     }
     return size;
 }
+
+void ros::StaticResourcesCache::setCapacity(U32Opt capacity) {
+    this->capacity = capacity;
+}

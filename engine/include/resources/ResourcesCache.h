@@ -19,17 +19,20 @@ namespace ros {
 
     class ROS_API ResourcesCache : public boost::noncopyable {
         public:
-            static ResourcesCachePtr initInstance(const std::string& classId);
+            static ResourcesCachePtr initInstance(const pt::ptree& config);
             static ResourcesCachePtr getInstance() { return instance; }
 
             virtual ~ResourcesCache() {}
 
-            bool addLoader(ResourceLoaderPtr loader);
+            void addLoader(ResourceLoaderPtr loader);
             ResourceLoaderPtr findLoaderForResource(const std::string& name) const;
 
             virtual ResourcePtr readResource(const std::string& name) =0;
             virtual bool hasResource(const std::string& name) const =0;
             virtual U32 computeUsedSize() const =0;
+
+            virtual void setCapacity(U32Opt capacity) =0;
+            virtual U32Opt getCapacity() const =0;
 
             template<class T>
             boost::shared_ptr<T> fetchResource(const std::string& name) {

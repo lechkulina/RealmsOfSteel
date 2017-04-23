@@ -34,5 +34,6 @@ ros::FileSystemPtr ros::FileSystem::initInstance(const pt::ptree& config) {
         return FileSystemPtr();
     }
 
+    Logger::report(LogLevel_Trace, boost::format("File system with class ID %s initialized") % classId);
     return instance;
 }
