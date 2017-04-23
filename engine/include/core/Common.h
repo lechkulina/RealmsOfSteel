@@ -31,6 +31,7 @@
 #include <boost/integer.hpp>
 #include <boost/chrono.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/filesystem.hpp>
 
 #define ROS_NOOP ((void)0)
 #define ROS_NULL NULL
@@ -42,6 +43,10 @@
 #endif
 
 namespace ros {
+    namespace sys = boost::system;
+    namespace fs = boost::filesystem;
+    namespace pt = boost::property_tree;
+
     typedef boost::int_t<8>::exact S8;
     typedef boost::int_t<16>::exact S16;
     typedef boost::int_t<32>::exact S32;
