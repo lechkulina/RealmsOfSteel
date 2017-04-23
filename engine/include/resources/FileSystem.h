@@ -18,7 +18,9 @@ namespace ros {
 
     class ROS_API FileSystem: public boost::noncopyable {
         public:
-            static FileSystemPtr initInstance(const std::string& classId);
+            static const fs::path DEFAULT_ROOT;
+
+            static FileSystemPtr initInstance(const pt::ptree& config);
             static FileSystemPtr getInstance() { return instance; }
 
             virtual ~FileSystem() {}

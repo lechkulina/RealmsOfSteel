@@ -35,7 +35,7 @@ ros::ApplicationPtr ros::Application::initInstance(const PropertyTree& config) {
         Logger::report(LogLevel_Error, boost::format("Missing type property in application"));
         return application;
     }
-    application.reset(factory.create(type->c_str()));
+    application.reset(factory.create(*type));
     if (!application) {
         Logger::report(LogLevel_Error, boost::format("Unknown type %s property used for application") % (*type));
         return application;

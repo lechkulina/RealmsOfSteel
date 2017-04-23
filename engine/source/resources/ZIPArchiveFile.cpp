@@ -139,6 +139,6 @@ bool ros::ZIPArchiveFile::readEntries() {
         }
     }
 
-    Logger::report(LogLevel_Trace, boost::format("Found %d entries in archive %s") % entries.size() % getPath());
+    Logger::report(LogLevel_Debug, boost::format("Found %d entries in archive %s") % entries.size() % getPath());
     return true;
 }

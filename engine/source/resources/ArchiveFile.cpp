@@ -18,7 +18,7 @@ ros::ArchiveFilePtr ros::ArchiveFile::create(const std::string& classId) {
         factory.registerClass<ZIPArchiveFile>(boost::regex(".*zip$"));
 #endif
     }
-    ArchiveFilePtr archiveFile(factory.create(classId.c_str()));
+    ArchiveFilePtr archiveFile(factory.create(classId));
     return archiveFile;
 }
 

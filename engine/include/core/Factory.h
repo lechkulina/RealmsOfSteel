@@ -55,9 +55,9 @@ namespace ros {
                 return creators.empty();
             }
 
-            Base* create(const char* str) const {
+            Base* create(const std::string& classId) const {
                 for (typename CreatorMap::const_iterator iter = creators.begin(); iter != creators.end(); ++iter) {
-                    if (boost::regex_match(str, iter->first)) {
+                    if (boost::regex_match(classId, iter->first)) {
                         return (*(iter->second))();
                     }
                 }
