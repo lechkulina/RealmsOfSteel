@@ -20,6 +20,7 @@ namespace ros {
 
             virtual bool setRoot(const fs::path& path);
             virtual const fs::path& getRoot() const { return root; }
+            virtual char getSeparator() const { return '/'; }
             virtual RawBufferPtr readFile(const std::string& name) const;
             virtual bool hasFile(const std::string& name) const;
 
