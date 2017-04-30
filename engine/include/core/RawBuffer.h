@@ -29,11 +29,10 @@ namespace ros {
             bool clear();
 
             virtual bool isNull() const { return !data; }
-            virtual U32 getSize() const { return size; }
 
             template<class Type>
             inline Type* at(U32 offset = 0) {
-                if (!data || offset >= size) {
+                if (!data || offset >= getSize()) {
                     return ROS_NULL;
                 }
                 return reinterpret_cast<Type*>(data + offset);
@@ -41,7 +40,7 @@ namespace ros {
 
             template<class Type>
             inline const Type* at(U32 offset = 0) const {
-                if (!data || offset >= size) {
+                if (!data || offset >= getSize()) {
                     return ROS_NULL;
                 }
                 return reinterpret_cast<const Type*>(data + offset);
@@ -96,7 +95,6 @@ namespace ros {
 
         private:
             U8* data;
-            U32 size;
             mutable S64 position;
     };
 

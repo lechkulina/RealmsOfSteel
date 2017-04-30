@@ -8,13 +8,11 @@
 
 ros::RawBuffer::RawBuffer()
     : data(ROS_NULL)
-    , size(0)
     , position(0) {
 }
 
 ros::RawBuffer::RawBuffer(U32 size)
     : data(ROS_NULL)
-    , size(0)
     , position(0) {
     allocate(size);
 }
@@ -25,7 +23,6 @@ ros::RawBuffer::~RawBuffer() {
 
 ros::RawBuffer::RawBuffer(const RawBuffer& src)
     : data(ROS_NULL)
-    , size(0)
     , position(0) {
     assign(src);
 }
@@ -46,7 +43,7 @@ bool ros::RawBuffer::allocate(U32 size) {
         return false;
     }
     memset(data, 0, size);
-    this->size = size;
+    setSize(size);
 
     return true;
 }
@@ -54,8 +51,8 @@ bool ros::RawBuffer::allocate(U32 size) {
 void ros::RawBuffer::free() {
     delete []data;
     data = ROS_NULL;
-    size = 0;
     position = 0;
+    setSize(0);
 }
 
 bool ros::RawBuffer::assign(const RawBuffer& src) {
@@ -85,18 +82,18 @@ bool ros::RawBuffer::resize(U32 size) {
         return false;
     }
     memset(data, 0, size);
-    memcpy(data, this->data, std::min(size, this->size));
+    memcpy(data, this->data, std::min(size, getSize()));
 
     free();
     this->data = data;
-    this->size = size;
+    setSize(size);
 
     return true;
 }
 
 bool ros::RawBuffer::clear() {
     if (data) {
-        memset(data, 0, size);
+        memset(data, 0, getSize());
         return true;
     }
     return false;
@@ -112,22 +109,22 @@ bool ros::RawBuffer::seek(S64 offset, BufferOrigin origin) const {
 
     switch(origin) {
         case BufferOrigin_Begin:
-            if (offset >= static_cast<S64>(size)) {
+            if (offset >= static_cast<S64>(getSize())) {
                 return false;
             }
             position = offset;
             break;
         case BufferOrigin_Current:
-            if (position + offset > static_cast<S64>(size) || position + offset < 0) {
+            if (position + offset > static_cast<S64>(getSize()) || position + offset < 0) {
                 return false;
             }
             position += offset;
             break;
         case BufferOrigin_End:
-            if (offset >= 0 || static_cast<S64>(size) + offset < 0) {
+            if (offset >= 0 || static_cast<S64>(getSize()) + offset < 0) {
                 return false;
             }
-            position = size + offset;
+            position = getSize() + offset;
             break;
     }
 
@@ -143,11 +140,11 @@ bool ros::RawBuffer::rewind() const {
 }
 
 bool ros::RawBuffer::hasEnded() const {
-    return position >= static_cast<S64>(size);
+    return position >= static_cast<S64>(getSize());
 }
 
 bool ros::RawBuffer::read(void* dst, U32 size) const {
-    if (!data || position + size > this->size) {
+    if (!data || position + size > getSize()) {
         return false;
     }
     if (size == 0) {
@@ -161,7 +158,7 @@ bool ros::RawBuffer::read(void* dst, U32 size) const {
 }
 
 bool ros::RawBuffer::write(const void* src, U32 size) {
-    if (!data || position + size > this->size)
+    if (!data || position + size > getSize())
         return false;
     if (size == 0) {
         return true;
