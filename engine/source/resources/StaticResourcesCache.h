@@ -12,15 +12,22 @@
 namespace ros {
     class StaticResourcesCache : public ResourcesCache {
         public:
-            virtual ResourcePtr readResource(const std::string& name);
+            StaticResourcesCache();
+
             virtual bool hasResource(const std::string& name) const;
-            virtual U32 computeUsedSize() const;
+            virtual void dropResource(const std::string& name);
+            virtual U32 getUsedSize() const { return usedSize; }
 
             virtual void setCapacity(U32Opt capacity);
             virtual U32Opt getCapacity() const { return capacity; }
 
+        protected:
+            virtual ResourcePtr loadResource(const std::string& name);
+            virtual void onResourceSizeChanged(S32 delta);
+
         private:
             U32Opt capacity;
+            U32 usedSize;
             ResourcesMap resources;
     };
 }

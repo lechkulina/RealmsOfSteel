@@ -8,7 +8,23 @@
 #include <resources/FileSystem.h>
 #include "StaticResourcesCache.h"
 
-ros::ResourcePtr ros::StaticResourcesCache::readResource(const std::string& name) {
+ros::StaticResourcesCache::StaticResourcesCache()
+    : usedSize(0) {
+}
+
+bool ros::StaticResourcesCache::hasResource(const std::string& name) const {
+    return resources.find(name) != resources.end();
+}
+
+void ros::StaticResourcesCache::setCapacity(U32Opt capacity) {
+    this->capacity = capacity;
+}
+
+void ros::StaticResourcesCache::dropResource(const std::string& name) {
+    resources.erase(name);
+}
+
+ros::ResourcePtr ros::StaticResourcesCache::loadResource(const std::string& name) {
     ResourcesMap::const_iterator found = resources.find(name);
     if (found != resources.end()) {
         Logger::report(LogLevel_Trace, boost::format("Resource %s found in cache") % name);
@@ -26,34 +42,25 @@ ros::ResourcePtr ros::StaticResourcesCache::readResource(const std::string& name
         return ResourcePtr();
     }
 
+    const U32 resourceSize = resource->getSize();
     if (capacity) {
-        const S32 exceededSize = resource->getSize() + computeUsedSize() - (*capacity);
+        const S32 exceededSize = resourceSize + usedSize - (*capacity);
         if (exceededSize > 0) {
             Logger::report(LogLevel_Warning, boost::format("Resource %s uses %d bytes and exceeds cache capacity by %d bytes - deleting it")
-                                % name % resource->getSize() % exceededSize);
+                                % name % resourceSize % exceededSize);
             return ResourcePtr();
         }
     }
 
-    Logger::report(LogLevel_Trace, boost::format("Resource %s loaded into in cache") % name);
+    Logger::report(LogLevel_Trace, boost::format("Resource %s (uses %d bytes) loaded into in cache") % name % resourceSize);
+    resource->setCache(ResourcesCache::getInstance());
+    usedSize += resourceSize;
     resources[name] = resource;
 
     return resource;
 }
 
-bool ros::StaticResourcesCache::hasResource(const std::string& name) const {
-    return resources.find(name) != resources.end();
-}
-
-ros::U32 ros::StaticResourcesCache::computeUsedSize() const {
-    U32 size = 0;
-    for (ResourcesMap::const_iterator iter = resources.begin(); iter != resources.end(); ++iter) {
-        ResourcePtr resource = iter->second;
-        size += resource->getSize();
-    }
-    return size;
-}
-
-void ros::StaticResourcesCache::setCapacity(U32Opt capacity) {
-    this->capacity = capacity;
+void ros::StaticResourcesCache::onResourceSizeChanged(S32 delta) {
+    usedSize += delta;
+    Logger::report(LogLevel_Trace, boost::format("Resources cache used size %d was changed by %d bytes") % usedSize % delta);
 }

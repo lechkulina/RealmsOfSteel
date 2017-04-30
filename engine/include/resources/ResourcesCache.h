@@ -18,6 +18,8 @@ namespace ros {
     typedef boost::shared_ptr<ResourcesCache> ResourcesCachePtr;
 
     class ROS_API ResourcesCache : public boost::noncopyable {
+            friend class Resource;
+
         public:
             static ResourcesCachePtr initInstance(const pt::ptree& config);
             static ResourcesCachePtr getInstance() { return instance; }
@@ -27,16 +29,16 @@ namespace ros {
             void addLoader(ResourceLoaderPtr loader);
             ResourceLoaderPtr findLoaderForResource(const std::string& name) const;
 
-            virtual ResourcePtr readResource(const std::string& name) =0;
             virtual bool hasResource(const std::string& name) const =0;
-            virtual U32 computeUsedSize() const =0;
+            virtual void dropResource(const std::string& name) =0;
+            virtual U32 getUsedSize() const =0;
 
             virtual void setCapacity(U32Opt capacity) =0;
             virtual U32Opt getCapacity() const =0;
 
             template<class T>
-            boost::shared_ptr<T> fetchResource(const std::string& name) {
-                ResourcePtr resource = this->readResource(name);
+            boost::shared_ptr<T> acquireResource(const std::string& name) {
+                ResourcePtr resource = this->loadResource(name);
                 if (!resource) {
                     return boost::shared_ptr<T>();
                 }
@@ -47,6 +49,10 @@ namespace ros {
                 }
                 return casted;
             }
+
+        protected:
+            virtual ResourcePtr loadResource(const std::string& name) =0;
+            virtual void onResourceSizeChanged(S32 delta) =0;
 
         private:
             static Factory<ResourcesCache> factory;

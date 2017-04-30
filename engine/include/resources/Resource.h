@@ -11,12 +11,26 @@
 #include <core/Environment.h>
 
 namespace ros {
+    class ResourcesCache;
+    typedef boost::weak_ptr<ResourcesCache> ResourcesCacheWeakPtr;
+
     class ROS_API Resource {
         public:
+            Resource();
             virtual ~Resource() {}
 
+            void setCache(ResourcesCacheWeakPtr cache);
+            ResourcesCacheWeakPtr getCache() const { return cache; }
+            U32 getSize() const { return size; }
+
             virtual bool isNull() const =0;
-            virtual U32 getSize() const =0;
+
+        protected:
+            virtual void setSize(U32 size);
+
+        private:
+            ResourcesCacheWeakPtr cache;
+            U32 size;
     };
 
     typedef boost::shared_ptr<Resource> ResourcePtr;
