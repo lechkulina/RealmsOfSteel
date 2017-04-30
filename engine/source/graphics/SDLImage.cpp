@@ -92,6 +92,7 @@ bool ros::SDLImage::allocate(U32 width, U32 height, PixelFormat format) {
         free();
         return false;
     }
+    setSize(static_cast<U32>(surface->pitch * surface->h));
 
     return true;
 }
@@ -132,6 +133,7 @@ bool ros::SDLImage::assign(const Image& src) {
         free();
         return false;
     }
+    setSize(static_cast<U32>(surface->pitch * surface->h));
 
     src.unlock();
     return true;
@@ -147,6 +149,7 @@ bool ros::SDLImage::assign(SDL_Surface* src) {
         return false;
     }
     surface = src;
+    setSize(static_cast<U32>(surface->pitch * surface->h));
 
     return true;
 }
@@ -194,6 +197,7 @@ bool ros::SDLImage::resize(U32 width, U32 height, BlitMode mode) {
 
     free();
     this->surface = surface;
+    setSize(static_cast<U32>(surface->pitch * surface->h));
 
     return true;
 }
@@ -216,6 +220,7 @@ bool ros::SDLImage::convert(PixelFormat format) {
 
     free();
     this->surface = surface;
+    setSize(static_cast<U32>(surface->pitch * surface->h));
 
     return true;
 }
@@ -226,6 +231,7 @@ void ros::SDLImage::free() {
     }
     SDL_FreeSurface(surface);
     surface = ROS_NULL;
+    setSize(0);
 }
 
 ros::U32 ros::SDLImage::getWidth() const {
@@ -259,13 +265,6 @@ ros::U32 ros::SDLImage::getBitsPerPixel() const {
 ros::U32 ros::SDLImage::getPitch() const {
     if (surface) {
         return surface->pitch;
-    }
-    return 0;
-}
-
-ros::U32 ros::SDLImage::getSize() const {
-    if (surface) {
-        return static_cast<U32>(surface->pitch * surface->h);
     }
     return 0;
 }

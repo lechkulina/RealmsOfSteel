@@ -37,7 +37,6 @@ namespace ros {
             virtual U32 getPitch() const;
 
             virtual bool isNull() const { return !surface; }
-            virtual U32 getSize() const;
 
             virtual bool clear();
 
