@@ -25,6 +25,8 @@ namespace ros {
             static const size_t MAX_EXTENSION_LENGTH = 4;
 
             Assimp::Importer* importer;
+
+            bool extractMeshes(const aiScene* srcScene, MeshesList& dstMeshes);
     };
 }
 
