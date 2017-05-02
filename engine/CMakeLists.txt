@@ -123,6 +123,9 @@ if (ROS_USE_ASSIMP)
         target_include_directories(Engine PRIVATE ${ASSIMP_INCLUDE_DIRS})
         target_link_libraries(Engine PRIVATE ${ASSIMP_LIBRARIES})
         target_compile_definitions(Engine PRIVATE ROS_USING_ASSIMP)
+        target_sources(Engine PRIVATE
+            source/resources/AssimpIOStream.cpp
+        )
     endif()
 endif()
 
