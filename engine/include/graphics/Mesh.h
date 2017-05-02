@@ -13,39 +13,70 @@
 #include <graphics/Material.h>
 
 namespace ros {
-    enum FaceMode {
-        FaceMode_Point,
-        FaceMode_Line,
-        FaceMode_Triangle,
-        FaceMode_Polygon
+    typedef std::vector<U32> IndicesVector;
+
+    enum FaceType {
+        FaceType_None,
+        FaceType_Point,
+        FaceType_Line,
+        FaceType_Triangle
     };
 
     class ROS_API Mesh {
         public:
-            Mesh(const std::string& name, FaceMode faceMode);
+            Mesh();
 
+            void setName(const std::string& name);
             const std::string& getName() const { return name; }
-            FaceMode getFaceMode() const { return faceMode; }
 
-            const VertexVector& getVertices() const { return vertices; }
+            const VerticesVector& getVertices() const { return vertices; }
             void addVertex(const Vertex& vertex);
 
-            const IndexVector& getIndices() const { return indices; }
+            void setNormals(bool normals);
+            bool hasNormals() const { return normals; }
+
+            void setTangents(bool tangents);
+            bool hasTangents() const { return tangents; }
+
+            void setBitangents(bool bitangents);
+            bool hasBitangents() const { return bitangents; }
+
+            bool hasColors() const { return getColorsPerVertex() > 0; }
+            void setColorsPerVertex(U32 colorsPerVertex);
+            U32 getColorsPerVertex() const { return colorsPerVertex; }
+
+            void setTextureCoordsPerVertex(U32 textureCoordsPerVertex);
+            U32 getTextureCoordsPerVertex() const { return textureCoordsPerVertex; }
+            bool hasTextureCoords() const { return getTextureCoordsPerVertex() > 0; }
+            void setTextureCoordsComponents(U32 textureCoordsComponents);
+            U32 getTextureCoordsComponents() const { return textureCoordsComponents; }
+
+            const IndicesVector& getIndices() const { return indices; }
             void addIndex(U32 index);
 
-            MaterialPtr getMaterial() const { return material; }
+            void setFacesType(FaceType facesType);
+            FaceType getFacesType() const { return facesType; }
+            U32 getIndicesPerFace() const;
+
             void setMaterial(MaterialPtr material);
+            MaterialPtr getMaterial() const { return material; }
 
         private:
             std::string name;
-            FaceMode faceMode;
-            VertexVector vertices;
-            IndexVector indices;
+            VerticesVector vertices;
+            bool normals;
+            bool tangents;
+            bool bitangents;
+            U32 colorsPerVertex;
+            U32 textureCoordsPerVertex;
+            U32 textureCoordsComponents;
+            IndicesVector indices;
+            FaceType facesType;
             MaterialPtr material;
     };
 
     typedef boost::shared_ptr<Mesh> MeshPtr;
-    typedef std::list<MeshPtr> MeshList;
+    typedef std::list<MeshPtr> MeshesList;
 }
 
 #endif // ROS_MESH
