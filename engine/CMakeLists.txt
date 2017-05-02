@@ -19,6 +19,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/resources/ArchiveFile.cpp
     source/resources/FileSystem.cpp
     source/resources/ArchiveFileSystem.cpp
+    source/resources/Resource.cpp
     source/resources/ResourceLoader.cpp
     source/resources/RawBufferLoader.cpp
     source/resources/ResourcesCache.cpp
