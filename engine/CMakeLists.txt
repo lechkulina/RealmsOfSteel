@@ -125,6 +125,7 @@ if (ROS_USE_ASSIMP)
         target_compile_definitions(Engine PRIVATE ROS_USING_ASSIMP)
         target_sources(Engine PRIVATE
             source/resources/AssimpIOStream.cpp
+            source/resources/AssimpIOSystem.cpp
         )
     endif()
 endif()
