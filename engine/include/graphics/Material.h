@@ -51,7 +51,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Material> MaterialPtr;
-    typedef std::map<std::string, MaterialPtr> MaterialMap;
+    typedef std::map<std::string, MaterialPtr> MaterialsMap;
 }
 
 #endif // ROS_MATERIAL_H
