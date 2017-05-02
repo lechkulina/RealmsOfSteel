@@ -126,6 +126,7 @@ if (ROS_USE_ASSIMP)
         target_sources(Engine PRIVATE
             source/resources/AssimpIOStream.cpp
             source/resources/AssimpIOSystem.cpp
+            source/resources/AssimpSceneLoader.cpp
         )
     endif()
 endif()
