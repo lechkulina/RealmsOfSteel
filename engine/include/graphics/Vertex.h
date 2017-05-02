@@ -15,16 +15,18 @@
 
 namespace ros {
     struct ROS_API Vertex {
+        static const U32 MAX_COLORS = 3;
+        static const U32 MAX_TEXTURE_COORDS = 3;
+
+        glm::vec4 colors[MAX_COLORS];
+        glm::vec3 textureCoords[MAX_TEXTURE_COORDS];
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec3 tangent;
         glm::vec3 bitangent;
-        glm::vec2 textureCoordinates;
-        glm::vec4 color;
     };
 
-    typedef std::vector<Vertex> VertexVector;
-    typedef std::vector<U32> IndexVector;
+    typedef std::vector<Vertex> VerticesVector;
 }
 
 #endif // ROS_VERTEX_H
