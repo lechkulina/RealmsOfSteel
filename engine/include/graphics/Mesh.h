@@ -76,7 +76,7 @@ namespace ros {
     };
 
     typedef boost::shared_ptr<Mesh> MeshPtr;
-    typedef std::list<MeshPtr> MeshesList;
+    typedef std::vector<MeshPtr> MeshesVector;
 }
 
 #endif // ROS_MESH

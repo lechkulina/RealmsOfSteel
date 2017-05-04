@@ -33,7 +33,7 @@ namespace ros {
             const glm::mat4& getTransformation() const { return transformation; }
             void setTransformation(const glm::mat4& transformation);
 
-            const MeshesList& getMeshes() const { return meshes; }
+            const MeshesVector& getMeshes() const { return meshes; }
             void addMesh(MeshPtr mesh);
 
         private:
@@ -41,7 +41,7 @@ namespace ros {
             SceneNodeWeakPtr parent;
             SceneNodeList children;
             glm::mat4 transformation;
-            MeshesList meshes;
+            MeshesVector meshes;
     };
 }
 
