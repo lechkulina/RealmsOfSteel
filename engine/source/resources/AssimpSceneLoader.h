@@ -26,7 +26,8 @@ namespace ros {
 
             Assimp::Importer* importer;
 
-            bool extractMeshes(const aiScene* srcScene, MeshesList& dstMeshes);
+            bool extractMaterials(const aiScene* srcScene, MaterialsVector& dstMaterials);
+            bool extractMeshes(const aiScene* srcScene, MeshesVector& dstMeshes);
     };
 }
 
