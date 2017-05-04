@@ -12,11 +12,24 @@
 #include <core/Environment.h>
 
 namespace ros {
+    enum ShadingModel {
+        ShadingModel_Flat,
+        ShadingModel_Gouraud,
+        ShadingModel_Phong,
+        ShadingModel_Blinn
+    };
+
+    enum BlendMode {
+        BlendMode_Default,
+        BlendMode_Additive
+    };
+
     class ROS_API Material {
         public:
-            Material(const std::string& name);
+            Material();
 
             const std::string& getName() const { return name; }
+            void setName(const std::string& name);
 
             const glm::vec3& getDiffuseColor() const { return diffuseColor; }
             void setDiffuseColor(const glm::vec3& diffuseColor);
@@ -33,11 +46,20 @@ namespace ros {
             bool isTwoSided() const { return twoSided; }
             void setTwoSided(bool twoSided);
 
+            ShadingModel getShadingModel() const { return shadingModel; }
+            void setShadingModel(ShadingModel shadingModel);
+
+            BlendMode getBlendMode() const { return blendMode; }
+            void setBlendMode(BlendMode blendMode);
+
             float getOpacity() const { return opacity; }
             void setOpacity(float opacity);
 
             float getShininess() const { return shininess; }
             void setShininess(float shininess);
+
+            float getShininessStrength() const { return shininessStrength; }
+            void setShininessStrength(float shininessStrength);
 
         private:
             std::string name;
@@ -45,12 +67,16 @@ namespace ros {
             glm::vec3 specularColor;
             glm::vec3 ambientColor;
             glm::vec3 emissiveColor;
+            ShadingModel shadingModel;
+            BlendMode blendMode;
             bool twoSided;
             float opacity;
             float shininess;
+            float shininessStrength;
     };
 
     typedef boost::shared_ptr<Material> MaterialPtr;
+    typedef std::vector<MaterialPtr> MaterialsVector;
     typedef std::map<std::string, MaterialPtr> MaterialsMap;
 }
 
