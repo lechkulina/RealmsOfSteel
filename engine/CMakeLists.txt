@@ -37,6 +37,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/graphics/ShaderManager.cpp
     source/graphics/Program.cpp
     source/graphics/ProgramManager.cpp
+    source/graphics/Texture.cpp
     source/graphics/Material.cpp
     source/graphics/Mesh.cpp
     source/graphics/SceneNode.cpp

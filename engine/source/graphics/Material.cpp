@@ -58,3 +58,35 @@ void ros::Material::setShininess(float shininess) {
 void ros::Material::setShininessStrength(float shininessStrength) {
     this->shininessStrength = shininessStrength;
 }
+
+void ros::Material::addDiffuseTexture(const Texture& texture) {
+    diffuseTextures.push_back(texture);
+}
+
+void ros::Material::addSpecularTexture(const Texture& texture) {
+    specularTextures.push_back(texture);
+}
+
+void ros::Material::addAmbientTexture(const Texture& texture) {
+    ambientTextures.push_back(texture);
+}
+
+void ros::Material::addEmissiveTexture(const Texture& texture) {
+    emissiveTextures.push_back(texture);
+}
+
+void ros::Material::addGlossinessMap(const Texture& map) {
+    glossinessMaps.push_back(map);
+}
+
+void ros::Material::addHeightMap(const Texture& map) {
+    heightMaps.push_back(map);
+}
+
+void ros::Material::addNormalMap(const Texture& map) {
+    normalMaps.push_back(map);
+}
+
+void ros::Material::addLightMap(const Texture& map) {
+    lightMaps.push_back(map);
+}

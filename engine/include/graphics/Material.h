@@ -10,6 +10,7 @@
 #include <glm/vec3.hpp>
 #include <core/Common.h>
 #include <core/Environment.h>
+#include <graphics/Texture.h>
 
 namespace ros {
     enum ShadingModel {
@@ -61,6 +62,30 @@ namespace ros {
             float getShininessStrength() const { return shininessStrength; }
             void setShininessStrength(float shininessStrength);
 
+            const TexturesStack& getDiffuseTextures() const { return diffuseTextures; }
+            void addDiffuseTexture(const Texture& texture);
+
+            const TexturesStack& getSpecularTextures() const { return specularTextures; }
+            void addSpecularTexture(const Texture& texture);
+
+            const TexturesStack& getAmbientTextures() const { return ambientTextures; }
+            void addAmbientTexture(const Texture& texture);
+
+            const TexturesStack& getEmissiveTextures() const { return emissiveTextures; }
+            void addEmissiveTexture(const Texture& texture);
+
+            const TexturesStack& getGlossinessMaps() const { return glossinessMaps; }
+            void addGlossinessMap(const Texture& map);
+
+            const TexturesStack& getHeightMaps() const { return heightMaps; }
+            void addHeightMap(const Texture& map);
+
+            const TexturesStack& getNormalMaps() const { return normalMaps; }
+            void addNormalMap(const Texture& map);
+
+            const TexturesStack& getLightMaps() const { return lightMaps; }
+            void addLightMap(const Texture& map);
+
         private:
             std::string name;
             glm::vec3 diffuseColor;
@@ -73,6 +98,14 @@ namespace ros {
             float opacity;
             float shininess;
             float shininessStrength;
+            TexturesStack diffuseTextures;
+            TexturesStack specularTextures;
+            TexturesStack ambientTextures;
+            TexturesStack emissiveTextures;
+            TexturesStack glossinessMaps;
+            TexturesStack heightMaps;
+            TexturesStack normalMaps;
+            TexturesStack lightMaps;
     };
 
     typedef boost::shared_ptr<Material> MaterialPtr;
