@@ -37,7 +37,7 @@ bool ros::OpenGL_checkForErrors() {
     bool found = false;
     for (GLenum error = glGetError(); error != GL_NO_ERROR; error = glGetError()) {
         const char* str = Error_toString(error);
-        Logger::report(LogLevel_Error, boost::format("OpenGL error occured: %d (%s)") % error % (str ? str : "Unknown"));
+        ROS_ERROR(boost::format("OpenGL error occured: %d (%s)") % error % (str ? str : "Unknown"));
         found = true;
     }
     return found;

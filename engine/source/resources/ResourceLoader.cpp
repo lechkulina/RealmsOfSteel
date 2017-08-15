@@ -26,6 +26,6 @@ ros::ResourceLoaderPtr ros::ResourceLoader::create(const std::string& classId) {
         factory.registerClass<AssimpSceneLoader>(boost::regex("assimp-scene"));
 #endif
     }
-    ResourceLoaderPtr instance(factory.create(classId.c_str()));
+    ResourceLoaderPtr instance(factory.create(classId));
     return instance;
 }

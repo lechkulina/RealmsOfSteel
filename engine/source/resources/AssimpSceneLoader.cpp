@@ -35,7 +35,7 @@ bool ros::AssimpSceneLoader::extractMaterials(const aiScene* srcScene, Materials
         MaterialPtr dstMaterial = boost::make_shared<Material>();
         aiString name;
         if (srcMaterial->Get(AI_MATKEY_NAME, name) != AI_SUCCESS) {
-            Logger::report(LogLevel_Error, boost::format("Failed to get material name at index %d") % materialIdx);
+            ROS_ERROR(boost::format("Failed to get material name at index %d") % materialIdx);
             return false;
         }
         dstMaterial->setName(name.C_Str());
@@ -44,35 +44,35 @@ bool ros::AssimpSceneLoader::extractMaterials(const aiScene* srcScene, Materials
         if (srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS) {
             dstMaterial->setDiffuseColor(glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b));
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get diffuse color form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get diffuse color form material %s") % name.C_Str());
         }
 
         aiColor3D specularColor;
         if (srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specularColor) == AI_SUCCESS) {
             dstMaterial->setSpecularColor(glm::vec3(specularColor.r, specularColor.g, specularColor.b));
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get specular color form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get specular color form material %s") % name.C_Str());
         }
 
         aiColor3D ambientColor;
         if (srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor) == AI_SUCCESS) {
             dstMaterial->setAmbientColor(glm::vec3(ambientColor.r, ambientColor.g, ambientColor.b));
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get ambient color form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get ambient color form material %s") % name.C_Str());
         }
 
         aiColor3D emissiveColor;
         if (srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor) == AI_SUCCESS) {
             dstMaterial->setEmissiveColor(glm::vec3(emissiveColor.r, emissiveColor.g, emissiveColor.b));
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get emissive color form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get emissive color form material %s") % name.C_Str());
         }
 
         int twoSided = 0;
         if (srcMaterial->Get(AI_MATKEY_TWOSIDED, twoSided) == AI_SUCCESS) {
             dstMaterial->setTwoSided(twoSided != 0);
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get sides info form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get sides info form material %s") % name.C_Str());
         }
 
         int shadingModel = 0;
@@ -91,11 +91,10 @@ bool ros::AssimpSceneLoader::extractMaterials(const aiScene* srcScene, Materials
                     dstMaterial->setShadingModel(ShadingModel_Blinn);
                     break;
                 default:
-                    Logger::report(LogLevel_Warning, boost::format("Unsupported shading model %d found in material %s")
-                                        % shadingModel % name.C_Str());
+                    ROS_WARNING(boost::format("Unsupported shading model %d found in material %s") % shadingModel % name.C_Str());
             }
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get shading model form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get shading model form material %s") % name.C_Str());
         }
 
         int blendMode = 0;
@@ -108,35 +107,34 @@ bool ros::AssimpSceneLoader::extractMaterials(const aiScene* srcScene, Materials
                     dstMaterial->setBlendMode(BlendMode_Additive);
                     break;
                 default:
-                    Logger::report(LogLevel_Error, boost::format("Unsupported blending mode %d found in material %s")
-                                        % name.C_Str());
+                    ROS_ERROR(boost::format("Unsupported blending mode %d found in material %s") % name.C_Str());
             }
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get blending mode form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get blending mode form material %s") % name.C_Str());
         }
 
         float opacity = 0.0f;
         if (srcMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
             dstMaterial->setOpacity(opacity);
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get opacity form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get opacity form material %s") % name.C_Str());
         }
 
         float shininess = 0.0f;
         if (srcMaterial->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
             dstMaterial->setShininess(shininess);
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get shininess form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get shininess form material %s") % name.C_Str());
         }
 
         float shininessStrength = 0.0f;
         if (srcMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, shininessStrength) == AI_SUCCESS) {
             dstMaterial->setShininessStrength(shininessStrength);
         } else {
-            Logger::report(LogLevel_Warning, boost::format("Failed to get shininess strength form material %s") % name.C_Str());
+            ROS_WARNING(boost::format("Failed to get shininess strength form material %s") % name.C_Str());
         }
 
-        Logger::report(LogLevel_Trace, boost::format("Found material %s at index %d") % name.C_Str() % materialIdx);
+        ROS_TRACE(boost::format("Found material %s at index %d") % name.C_Str() % materialIdx);
 
         dstMaterials.push_back(dstMaterial);
     }
@@ -147,11 +145,11 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
     for (unsigned int meshIdx=0; meshIdx < srcScene->mNumMeshes; ++meshIdx) {
         const aiMesh* const srcMesh = srcScene->mMeshes[meshIdx];
         if (!srcMesh->HasPositions()) {
-            Logger::report(LogLevel_Error, boost::format("Mesh %s does not contain positions") % srcMesh->mName.C_Str());
+            ROS_ERROR(boost::format("Mesh %s does not contain positions") % srcMesh->mName.C_Str());
             return false;
         }
         if (!srcMesh->HasFaces()) {
-            Logger::report(LogLevel_Error, boost::format("Mesh %s does not contain faces") % srcMesh->mName.C_Str());
+            ROS_ERROR(boost::format("Mesh %s does not contain faces") % srcMesh->mName.C_Str());
             return false;
         }
 
@@ -172,7 +170,7 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
                 indicesPerFace = 3;
                 break;
             default:
-                Logger::report(LogLevel_Error, boost::format("Unsupported faces type found in mesh %s") % srcMesh->mName.C_Str());
+                ROS_ERROR(boost::format("Unsupported faces type found in mesh %s") % srcMesh->mName.C_Str());
                 return false;
         }
 
@@ -183,16 +181,16 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
         unsigned int colorsPerVertex = srcMesh->GetNumColorChannels();
         if (colorsPerVertex > Vertex::MAX_COLORS) {
             colorsPerVertex = Vertex::MAX_COLORS;
-            Logger::report(LogLevel_Warning, boost::format("Mesh %s has %d colors per vertex but only %d are supported")
-                                % srcMesh->mName.C_Str() % srcMesh->GetNumColorChannels() % (int)Vertex::MAX_COLORS);
+            ROS_WARNING(boost::format("Mesh %s has %d colors per vertex but only %d are supported")
+                            % srcMesh->mName.C_Str() % srcMesh->GetNumColorChannels() % (int)Vertex::MAX_COLORS);
         }
         dstMesh->setColorsPerVertex(colorsPerVertex);
 
         unsigned int textureCoordsPerVertex = srcMesh->GetNumUVChannels();
         if (textureCoordsPerVertex > Vertex::MAX_TEXTURE_COORDS) {
             textureCoordsPerVertex = Vertex::MAX_TEXTURE_COORDS;
-            Logger::report(LogLevel_Warning, boost::format("Mesh %s has %d texture coords per vertex but only %d are supported")
-                                % srcMesh->mName.C_Str() % srcMesh->GetNumUVChannels() % (int)Vertex::MAX_TEXTURE_COORDS);
+            ROS_WARNING(boost::format("Mesh %s has %d texture coords per vertex but only %d are supported")
+                            % srcMesh->mName.C_Str() % srcMesh->GetNumUVChannels() % (int)Vertex::MAX_TEXTURE_COORDS);
         }
         dstMesh->setTextureCoordsPerVertex(textureCoordsPerVertex);
         unsigned int textureCoordsComponents = 0;  // support only the same number of texture coords components for all the texture coords
@@ -200,8 +198,8 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
             textureCoordsComponents = srcMesh->mNumUVComponents[0];
             for (unsigned int textureCoordsIdx=1; textureCoordsIdx < textureCoordsPerVertex; ++textureCoordsIdx) {
                 if (srcMesh->mNumUVComponents[textureCoordsIdx] != textureCoordsComponents) {
-                    Logger::report(LogLevel_Error, boost::format("Mixed number number of %d (instead %d) texture coords components found in mesh %s")
-                                        % srcMesh->mNumUVComponents[textureCoordsIdx] % textureCoordsComponents % srcMesh->mName.C_Str());
+                    ROS_ERROR(boost::format("Mixed number number of %d (instead %d) texture coords components found in mesh %s")
+                                % srcMesh->mNumUVComponents[textureCoordsIdx] % textureCoordsComponents % srcMesh->mName.C_Str());
                     return false;
                 }
             }
@@ -257,8 +255,8 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
         for (unsigned int faceIdx=0; faceIdx < srcMesh->mNumFaces; ++faceIdx) {
             const aiFace& srcFace = srcMesh->mFaces[faceIdx];
             if (srcFace.mNumIndices != indicesPerFace) {
-                Logger::report(LogLevel_Error, boost::format("Unsupported number of indices %d (instead %d) found in mesh %s")
-                                % srcFace.mNumIndices % indicesPerFace % srcMesh->mName.C_Str());
+                ROS_ERROR(boost::format("Unsupported number of indices %d (instead %d) found in mesh %s")
+                             % srcFace.mNumIndices % indicesPerFace % srcMesh->mName.C_Str());
                 return false;
             }
             for (unsigned int indexIdx=0; indexIdx < indicesPerFace; ++indexIdx) {
@@ -275,8 +273,7 @@ bool ros::AssimpSceneLoader::extractMeshes(const aiScene* srcScene, MeshesVector
 ros::ResourcePtr ros::AssimpSceneLoader::loadResource(const std::string& name) {
     const aiScene* const srcScene = importer->ReadFile(name.c_str(), aiProcess_Triangulate|aiProcess_SortByPType);
     if (!srcScene) {
-        Logger::report(LogLevel_Error, boost::format("Failed to load scene for resource %s - Assimp error occured %s")
-                            % name % importer->GetErrorString());
+        ROS_ERROR(boost::format("Failed to load scene for resource %s - Assimp error occured %s") % name % importer->GetErrorString());
         return ScenePtr();
     }
 
@@ -284,7 +281,7 @@ ros::ResourcePtr ros::AssimpSceneLoader::loadResource(const std::string& name) {
     MeshesVector dstMeshes;
     if (!extractMaterials(srcScene, dstMaterials) ||
         !extractMeshes(srcScene, dstMeshes)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create scene for resource %s") % name);
+        ROS_ERROR(boost::format("Failed to create scene for resource %s") % name);
         importer->FreeScene();
         return ScenePtr();
     }

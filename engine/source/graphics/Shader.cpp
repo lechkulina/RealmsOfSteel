@@ -10,7 +10,7 @@
 bool ros::Shader::init(const PropertyTree &config) {
     name = config.data();
     if (name.empty()) {
-        Logger::report(LogLevel_Error, boost::format("Shader name is missing"));
+        ROS_ERROR(boost::format("Shader name is missing"));
         uninit();
         return false;
     }

@@ -11,7 +11,7 @@
 bool ros::Program::init(const PropertyTree &config) {
     name = config.data();
     if (name.empty()) {
-        Logger::report(LogLevel_Error, boost::format("Program name is missing"));
+        ROS_ERROR(boost::format("Program name is missing"));
         uninit();
         return false;
     }

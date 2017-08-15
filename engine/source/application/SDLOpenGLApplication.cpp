@@ -161,14 +161,14 @@ ros::SDLOpenGLApplication::~SDLOpenGLApplication() {
 
 bool ros::SDLOpenGLApplication::init(const PropertyTree& config) {
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize the application - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to initialize the application - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
     SDL_version version;
     memset(&version, 0, sizeof(version));
     SDL_GetVersion(&version);
-    Logger::report(LogLevel_Trace, boost::format("Application initialized successfully - using SDL %d.%d.%d")
+    ROS_TRACE(boost::format("Application initialized successfully - using SDL %d.%d.%d")
                         % (int)version.major % (int)version.minor % (int)version.patch);
 
     return Application::init(config);

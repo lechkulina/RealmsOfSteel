@@ -73,7 +73,7 @@ bool ros::SDLImage::allocate(U32 width, U32 height, PixelFormat format) {
 
     Uint32 nativeFormat = SDLFormat_fromPixelFormat(format);
     if (nativeFormat == SDL_PIXELFORMAT_UNKNOWN) {
-        Logger::report(LogLevel_Error, boost::format("Unsupported pixel format %d") % nativeFormat);
+        ROS_ERROR(boost::format("Unsupported pixel format %d") % nativeFormat);
         free();
         return false;
     }
@@ -81,14 +81,14 @@ bool ros::SDLImage::allocate(U32 width, U32 height, PixelFormat format) {
     int depth;
     Uint32 redMask, greenMask, blueMask, alphaMask;
     if (!SDL_PixelFormatEnumToMasks(nativeFormat, &depth, &redMask, &greenMask, &blueMask, &alphaMask)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
         free();
         return false;
     }
 
     surface = SDL_CreateRGBSurface(0, width, height, depth, redMask, greenMask, blueMask, alphaMask);
     if (!surface) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
         free();
         return false;
     }
@@ -114,7 +114,7 @@ bool ros::SDLImage::assign(const Image& src) {
 
     Uint32 nativeFormat = SDLFormat_fromPixelFormat(src.getFormat());
     if (nativeFormat == SDL_PIXELFORMAT_UNKNOWN) {
-        Logger::report(LogLevel_Error, boost::format("Unsupported pixel format %d") % nativeFormat);
+        ROS_ERROR(boost::format("Unsupported pixel format %d") % nativeFormat);
         free();
         return false;
     }
@@ -122,14 +122,14 @@ bool ros::SDLImage::assign(const Image& src) {
     int depth;
     Uint32 redMask, greenMask, blueMask, alphaMask;
     if (!SDL_PixelFormatEnumToMasks(nativeFormat, &depth, &redMask, &greenMask, &blueMask, &alphaMask)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
         free();
         return false;
     }
 
     surface = SDL_CreateRGBSurfaceFrom(data, src.getWidth(), src.getHeight(), depth, src.getPitch(), redMask, greenMask, blueMask, alphaMask);
     if (!surface) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
         free();
         return false;
     }
@@ -162,14 +162,14 @@ bool ros::SDLImage::resize(U32 width, U32 height, BlitMode mode) {
     int depth;
     Uint32 redMask, greenMask, blueMask, alphaMask;
     if (!SDL_PixelFormatEnumToMasks(surface->format->format, &depth, &redMask, &greenMask, &blueMask, &alphaMask)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to compute channels masks and depth - SDL error occured %s")  % SDL_GetError());
         free();
         return false;
     }
 
     SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, depth, redMask, greenMask, blueMask, alphaMask);
     if (!surface) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create surface - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
@@ -177,20 +177,20 @@ bool ros::SDLImage::resize(U32 width, U32 height, BlitMode mode) {
     switch (mode) {
         case BlitMode_Crop:
             if (SDL_BlitSurface(this->surface, &dimensions, surface, ROS_NULL) != 0) {
-                Logger::report(LogLevel_Error, boost::format("Failed to blit a surface - SDL error occured %s") % SDL_GetError());
+                ROS_ERROR(boost::format("Failed to blit a surface - SDL error occured %s") % SDL_GetError());
                 SDL_FreeSurface(surface);
                 return false;
             }
             break;
         case BlitMode_Scaled:
             if (SDL_BlitScaled(this->surface, ROS_NULL, surface, &dimensions) != 0) {
-                Logger::report(LogLevel_Error, boost::format("Failed to blit a surface - SDL error occured %s") % SDL_GetError());
+                ROS_ERROR(boost::format("Failed to blit a surface - SDL error occured %s") % SDL_GetError());
                 SDL_FreeSurface(surface);
                 return false;
             }
             break;
         default:
-            Logger::report(LogLevel_Error, boost::format("Unsupported blit mode %d") % mode);
+            ROS_ERROR(boost::format("Unsupported blit mode %d") % mode);
             SDL_FreeSurface(surface);
             return false;
     }
@@ -209,12 +209,12 @@ bool ros::SDLImage::convert(PixelFormat format) {
 
     Uint32 nativeFormat = SDLFormat_fromPixelFormat(format);
     if (nativeFormat == SDL_PIXELFORMAT_UNKNOWN) {
-        Logger::report(LogLevel_Error, boost::format("Unsupported pixel format %d") % nativeFormat);
+        ROS_ERROR(boost::format("Unsupported pixel format %d") % nativeFormat);
         return false;
     }
     SDL_Surface* surface = SDL_ConvertSurfaceFormat(this->surface, nativeFormat, 0);
     if (!surface) {
-        Logger::report(LogLevel_Error, boost::format("Failed to convert surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to convert surface - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
@@ -275,7 +275,7 @@ bool ros::SDLImage::clear() {
     }
 
     if (SDL_FillRect(surface, ROS_NULL, SDL_MapRGB(surface->format, 0, 0, 0)) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to fill a rectangle on a surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to fill a rectangle on a surface - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
@@ -288,7 +288,7 @@ void* ros::SDLImage::lock() {
     }
 
     if (SDL_LockSurface(surface) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to lock a surface - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to lock a surface - SDL error occured %s") % SDL_GetError());
         return ROS_NULL;
     }
 

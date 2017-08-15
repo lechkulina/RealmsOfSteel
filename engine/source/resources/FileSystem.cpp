@@ -26,14 +26,14 @@ ros::FileSystemPtr ros::FileSystem::initInstance(const pt::ptree& config) {
     const std::string classId = config.data();
     instance.reset(factory.create(classId));
     if (!instance) {
-        Logger::report(LogLevel_Error, boost::format("Unknown file system class ID %s") % classId);
+        ROS_ERROR(boost::format("Unknown file system class ID %s") % classId);
         return FileSystemPtr();
     }
     if (!instance->setRoot(config.get("root", DEFAULT_ROOT))) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize file system with class ID %s") % classId);
+        ROS_ERROR(boost::format("Failed to initialize file system with class ID %s") % classId);
         return FileSystemPtr();
     }
 
-    Logger::report(LogLevel_Trace, boost::format("File system with class ID %s initialized") % classId);
+    ROS_TRACE(boost::format("File system with class ID %s initialized") % classId);
     return instance;
 }

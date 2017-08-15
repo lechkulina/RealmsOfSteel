@@ -32,14 +32,14 @@ void ros::ProgramManager::uninit() {
 ros::ProgramPtr ros::ProgramManager::initProgram(const PropertyTree& config) {
     std::string name = config.data();
     if (name.empty()) {
-        Logger::report(LogLevel_Error, boost::format("Program name is missing"));
+        ROS_ERROR(boost::format("Program name is missing"));
         return ProgramPtr();
     }
 
     ProgramMap::iterator iter = programs.find(name);
     if (iter != programs.end()) {
         if (!config.empty()) {
-            Logger::report(LogLevel_Warning, boost::format("Program %s has already been defined - ignoring redefinition") % name);
+            ROS_WARNING(boost::format("Program %s has already been defined - ignoring redefinition") % name);
         }
         return iter->second;
     }

@@ -32,14 +32,14 @@ void ros::ShaderManager::uninit() {
 ros::ShaderPtr ros::ShaderManager::initShader(const PropertyTree& config) {
     std::string name = config.data();
     if (name.empty()) {
-        Logger::report(LogLevel_Error, boost::format("Shader name is missing"));
+        ROS_ERROR(boost::format("Shader name is missing"));
         return ShaderPtr();
     }
 
     ShaderMap::iterator iter = shaders.find(name);
     if (iter != shaders.end()) {
         if (!config.empty()) {
-            Logger::report(LogLevel_Warning, boost::format("Shader %s has already been defined - ignoring redefinition") % name);
+            ROS_WARNING(boost::format("Shader %s has already been defined - ignoring redefinition") % name);
         }
         return iter->second;
     }

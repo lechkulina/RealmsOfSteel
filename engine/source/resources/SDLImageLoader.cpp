@@ -24,22 +24,20 @@ ros::ResourcePtr ros::SDLImageLoader::loadResource(const std::string& name) {
     }
     SDL_RWops* stream = SDL_RWFromConstMem(buffer->at<const void>(), buffer->getSize());
     if (!stream) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create SDL RWops stream for resource %s - SDL error occured %s")
-                            % name % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create SDL RWops stream for resource %s - SDL error occured %s") % name % SDL_GetError());
         return SDLImagePtr();
     }
 
     SDL_Surface* surface = IMG_Load_RW(stream, 0);
     if (!surface) {
-        Logger::report(LogLevel_Error, boost::format("Failed to load SDL surface for resource %s - SDLImage error occured %s")
-                            % name % IMG_GetError());
+        ROS_ERROR(boost::format("Failed to load SDL surface for resource %s - SDLImage error occured %s")  % name % IMG_GetError());
         SDL_RWclose(stream);
         return SDLImagePtr();
     }
 
     SDLImagePtr image = boost::make_shared<SDLImage>(surface);
     if (!image || image->isNull()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create image resource for %s") % name);
+        ROS_ERROR(boost::format("Failed to create image resource for %s") % name);
         SDL_FreeSurface(surface);
         SDL_RWclose(stream);
         return SDLImagePtr();

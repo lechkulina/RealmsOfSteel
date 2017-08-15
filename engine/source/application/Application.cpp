@@ -32,12 +32,12 @@ ros::ApplicationPtr ros::Application::initInstance(const PropertyTree& config) {
 
     StringOpt type = config.get_optional<std::string>("type");
     if (!type) {
-        Logger::report(LogLevel_Error, boost::format("Missing type property in application"));
+        ROS_ERROR(boost::format("Missing type property in application"));
         return application;
     }
     application.reset(factory.create(*type));
     if (!application) {
-        Logger::report(LogLevel_Error, boost::format("Unknown type %s property used for application") % (*type));
+        ROS_ERROR(boost::format("Unknown type %s property used for application") % (*type));
         return application;
     }
     if (!application->init(config)) {
@@ -74,7 +74,7 @@ void ros::Application::uninit() {
 }
 
 int ros::Application::run() {
-    Logger::report(LogLevel_Trace, boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
+    ROS_TRACE(boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
 
     float frameDuration = (1 / framesPerSecond) * 1000;
     float accumulatedTicks = 0.0f;
@@ -143,7 +143,7 @@ void ros::Application::onRenderEvent() {
 bool ros::Application::initWindow(const PropertyTree& config) {
     PropertyTree::const_assoc_iterator iter = config.find("window");
     if (iter == config.not_found()) {
-        Logger::report(LogLevel_Error, boost::format("Missing window property in application"));
+        ROS_ERROR(boost::format("Missing window property in application"));
         return false;
     }
     window = createWindow();

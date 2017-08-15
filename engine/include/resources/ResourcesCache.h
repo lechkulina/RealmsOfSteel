@@ -44,7 +44,7 @@ namespace ros {
                 }
                 boost::shared_ptr<T> casted = boost::dynamic_pointer_cast<T>(resource);
                 if (!casted) {
-                    Logger::report(LogLevel_Error, boost::format("Invalid type requested for resource %s") % name);
+                    ROS_ERROR(boost::format("Invalid type requested for resource %s") % name);
                     return boost::shared_ptr<T>();
                 }
                 return casted;

@@ -41,8 +41,8 @@ bool ros::SDLOpenGLWindow::init(const PropertyTree& config) {
         uninit();
         return false;
     }
-    Logger::report(LogLevel_Debug, boost::format("Window initialized successfully - using OpenGL %s from %s")
-                        % glGetString(GL_VERSION) % glGetString(GL_VENDOR));
+    ROS_DEBUG(boost::format("Window initialized successfully - using OpenGL %s from %s")
+                % glGetString(GL_VERSION) % glGetString(GL_VENDOR));
     return true;
 }
 
@@ -79,29 +79,27 @@ bool ros::SDLOpenGLWindow::setAttributes(const PropertyTree& config) {
         SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, greenSize) != 0 ||
         SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, blueSize) != 0||
         SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaSize) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set color buffer channels sizes to %d.%d.%d.%d - SDL error occured %s")
-                            % redSize % greenSize % blueSize % alphaSize % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to set color buffer channels sizes to %d.%d.%d.%d - SDL error occured %s")
+                    % redSize % greenSize % blueSize % alphaSize % SDL_GetError());
         return false;
     }
 
     int depthSize = config.get("depth-size", DEFAULT_DEPTH_SIZE);
     if (SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depthSize) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set depth buffer size to %d - SDL error occured %s")
-                            % depthSize % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to set depth buffer size to %d - SDL error occured %s") % depthSize % SDL_GetError());
         return false;
     }
 
     int stencilSize = config.get("stencil-size", DEFAULT_STENCIL_SIZE);
     if (SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencilSize) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to set stencil buffer size to %d - SDL error occured %s")
-                            % stencilSize % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to set stencil buffer size to %d - SDL error occured %s") % stencilSize % SDL_GetError());
         return false;
     }
 
     doubleBuffered = config.get("double-buffered", DEFAULT_DOUBLE_BUFFERED);
     if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, doubleBuffered) != 0) {
-        Logger::report(LogLevel_Error, boost::format("Failed to %s double buffering - SDL error occured %s")
-                            % (doubleBuffered ? "enable" : "disable")  % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to %s double buffering - SDL error occured %s")
+                    % (doubleBuffered ? "enable" : "disable")  % SDL_GetError());
         return false;
     }
 
@@ -123,7 +121,7 @@ bool ros::SDLOpenGLWindow::initWindow(const PropertyTree& config) {
 
     window = SDL_CreateWindow("Realms of Steel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
     if (!window) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create the window - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create the window - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
@@ -133,13 +131,13 @@ bool ros::SDLOpenGLWindow::initWindow(const PropertyTree& config) {
 bool ros::SDLOpenGLWindow::initContext() {
     context = SDL_GL_CreateContext(window);
     if (!context) {
-        Logger::report(LogLevel_Error, boost::format("Failed to create OpenGL context - SDL error occured %s") % SDL_GetError());
+        ROS_ERROR(boost::format("Failed to create OpenGL context - SDL error occured %s") % SDL_GetError());
         return false;
     }
 
     GLenum error = glewInit();
     if (error != GLEW_OK) {
-        Logger::report(LogLevel_Error, boost::format("Failed to initialize OpenGL - GLEW error occured %s") % glewGetErrorString(error));
+        ROS_ERROR(boost::format("Failed to initialize OpenGL - GLEW error occured %s") % glewGetErrorString(error));
         return false;
     }
 

@@ -45,7 +45,7 @@ const ros::fs::path& ros::ZIPArchiveFile::getPath() const {
 bool ros::ZIPArchiveFile::initFile(const fs::path& path) {
     file = boost::make_shared<RawFile>(path, FileType_Binary, FileOpenMode_Read);
     if (!file || !file->isOpen()) {
-        Logger::report(LogLevel_Error, boost::format("Failed to open archive %s") % path);
+        ROS_ERROR(boost::format("Failed to open archive %s") % path);
         return false;
     }
     return true;
@@ -59,7 +59,7 @@ bool ros::ZIPArchiveFile::readEntries() {
     while(true) {
         if (!file->seek(position, FileOrigin_End) ||
             !file->readLittle(record.signature)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to find directory record signature in archive %s") % getPath());
+            ROS_ERROR(boost::format("Failed to find directory record signature in archive %s") % getPath());
             return false;
         }
         if (record.signature == ZIPDirectoryRecord::SIGNATURE) {
@@ -75,7 +75,7 @@ bool ros::ZIPArchiveFile::readEntries() {
         !file->readLittle(record.directorySize) ||
         !file->readLittle(record.directoryOffset) ||
         !file->readLittle(record.commentLength)) {
-        Logger::report(LogLevel_Error, boost::format("Failed to read directory record from archive %s") % getPath());
+        ROS_ERROR(boost::format("Failed to read directory record from archive %s") % getPath());
         return false;
     }
 
@@ -83,7 +83,7 @@ bool ros::ZIPArchiveFile::readEntries() {
     if (buffer.isNull() ||
         !file->seek(record.directoryOffset, FileOrigin_Begin) ||
         !file->read(buffer.at<void>(), buffer.getSize())) {
-        Logger::report(LogLevel_Error, boost::format("Failed to read directory headers from archive %s") % getPath());
+        ROS_ERROR(boost::format("Failed to read directory headers from archive %s") % getPath());
         return false;
     }
 
@@ -92,11 +92,11 @@ bool ros::ZIPArchiveFile::readEntries() {
         memset(&header, 0, sizeof(header));
 
         if (buffer.hasEnded() || !buffer.readLittle(header.signature)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to read directory header from archive %s") % getPath());
+            ROS_ERROR(boost::format("Failed to read directory header from archive %s") % getPath());
             return false;
         }
         if (header.signature != ZIPDirectoryHeader::SIGNATURE) {
-            Logger::report(LogLevel_Error, boost::format("Invalid directory header signature in archive %s") % getPath());
+            ROS_ERROR(boost::format("Invalid directory header signature in archive %s") % getPath());
             continue;
         }
 
@@ -116,13 +116,13 @@ bool ros::ZIPArchiveFile::readEntries() {
             !buffer.readLittle(header.internalAttributes) ||
             !buffer.readLittle(header.externalAttributes) ||
             !buffer.readLittle(header.headerOffset)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to read directory header from archive %s") % getPath());
+            ROS_ERROR(boost::format("Failed to read directory header from archive %s") % getPath());
             return false;
         }
 
         std::string name(buffer.at<char>(buffer.getPosition()), header.nameLength);
         if (name.empty()) {
-            Logger::report(LogLevel_Warning, boost::format("Found empty entry name in archive %s") % getPath());
+            ROS_WARNING(boost::format("Found empty entry name in archive %s") % getPath());
             continue;
         }
 
@@ -134,11 +134,11 @@ bool ros::ZIPArchiveFile::readEntries() {
 
         const S64 offset = header.nameLength + header.extrasLength + header.commentLength;
         if (!buffer.seek(offset, BufferOrigin_Current)) {
-            Logger::report(LogLevel_Error, boost::format("Failed to seek to the next directory header in archive %s") % getPath());
+            ROS_ERROR(boost::format("Failed to seek to the next directory header in archive %s") % getPath());
             return false;
         }
     }
 
-    Logger::report(LogLevel_Debug, boost::format("Found %d entries in archive %s") % entries.size() % getPath());
+    ROS_DEBUG(boost::format("Found %d entries in archive %s") % entries.size() % getPath());
     return true;
 }

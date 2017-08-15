@@ -22,7 +22,7 @@ ros::ResourcesCachePtr ros::ResourcesCache::initInstance(const pt::ptree& config
     const std::string classId = config.data();
     instance.reset(factory.create(classId));
     if (!instance) {
-        Logger::report(LogLevel_Error, boost::format("Unknown resources cache class ID %s") % classId);
+        ROS_ERROR(boost::format("Unknown resources cache class ID %s") % classId);
         return ResourcesCachePtr();
     }
     instance->setCapacity(config.get_optional<U32>("capacity"));
@@ -32,15 +32,15 @@ ros::ResourcesCachePtr ros::ResourcesCache::initInstance(const pt::ptree& config
             const std::string& loaderClassId = loaderConfig.data();
             ResourceLoaderPtr loader = ros::ResourceLoader::create(loaderClassId);
             if (!loader) {
-                Logger::report(LogLevel_Error, boost::format("Unknown resource loader class ID %s") % loaderClassId);
+                ROS_ERROR(boost::format("Unknown resource loader class ID %s") % loaderClassId);
                 continue;
             }
-            Logger::report(LogLevel_Trace, boost::format("Loader with class ID %s added into in cache") % loaderClassId);
+            ROS_TRACE(boost::format("Loader with class ID %s added into in cache") % loaderClassId);
             instance->addLoader(loader);
         }
     }
 
-    Logger::report(LogLevel_Trace, boost::format("Resources cache with class ID %s initialized") % classId);
+    ROS_TRACE(boost::format("Resources cache with class ID %s initialized") % classId);
     return instance;
 }
 
