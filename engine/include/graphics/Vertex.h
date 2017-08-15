@@ -15,15 +15,14 @@
 
 namespace ros {
     struct ROS_API Vertex {
-        static const U32 MAX_COLORS = 3;
-        static const U32 MAX_TEXTURE_COORDS = 3;
-
-        glm::vec4 colors[MAX_COLORS];
-        glm::vec3 textureCoords[MAX_TEXTURE_COORDS];
+        glm::vec4 color;
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec3 tangent;
         glm::vec3 bitangent;
+        glm::vec2 textureCoords;
+
+        void setColor(const glm::vec4& color) { this->color = color; }
     };
 
     typedef std::vector<Vertex> VerticesVector;

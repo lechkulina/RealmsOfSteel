@@ -8,6 +8,9 @@
 #define ROS_ASSIMP_SCENE_LOADER_H
 
 #include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/material.h>
 #include <core/Common.h>
 #include <resources/ResourceLoader.h>
 #include <graphics/Scene.h>
@@ -26,8 +29,8 @@ namespace ros {
 
             Assimp::Importer* importer;
 
-            bool extractMaterials(const aiScene* srcScene, MaterialsVector& dstMaterials);
-            bool extractMeshes(const aiScene* srcScene, MeshesVector& dstMeshes);
+            MeshPtr createMesh(const aiMesh* src);
+            MaterialPtr createMaterial(const aiMaterial* src);
     };
 }
 

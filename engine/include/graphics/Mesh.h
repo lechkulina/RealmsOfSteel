@@ -15,63 +15,33 @@
 namespace ros {
     typedef std::vector<U32> IndicesVector;
 
-    enum FaceType {
-        FaceType_None,
-        FaceType_Point,
-        FaceType_Line,
-        FaceType_Triangle
-    };
-
     class ROS_API Mesh {
         public:
+            static const U32 VERTICES_PROPS_NONE = 0;
+            static const U32 VERTICES_PROPS_NORMALS = 1 << 1;
+            static const U32 VERTICES_PROPS_TENGENTS = 1 << 2;
+            static const U32 VERTICES_PROPS_BITANGENTS = 1 << 3;
+            static const U32 VERTICES_PROPS_COLORS = 1 << 4;
+            static const U32 VERTICES_PROPS_TEXTURE_COORDS = 1 << 5;
+
             Mesh();
 
             void setName(const std::string& name);
             const std::string& getName() const { return name; }
-
-            const VerticesVector& getVertices() const { return vertices; }
             void addVertex(const Vertex& vertex);
-
-            void setNormals(bool normals);
-            bool hasNormals() const { return normals; }
-
-            void setTangents(bool tangents);
-            bool hasTangents() const { return tangents; }
-
-            void setBitangents(bool bitangents);
-            bool hasBitangents() const { return bitangents; }
-
-            bool hasColors() const { return getColorsPerVertex() > 0; }
-            void setColorsPerVertex(U32 colorsPerVertex);
-            U32 getColorsPerVertex() const { return colorsPerVertex; }
-
-            void setTextureCoordsPerVertex(U32 textureCoordsPerVertex);
-            U32 getTextureCoordsPerVertex() const { return textureCoordsPerVertex; }
-            bool hasTextureCoords() const { return getTextureCoordsPerVertex() > 0; }
-            void setTextureCoordsComponents(U32 textureCoordsComponents);
-            U32 getTextureCoordsComponents() const { return textureCoordsComponents; }
-
+            const VerticesVector& getVertices() const { return vertices; }
+            void setVerticesProps(U32 verticesProps);
+            U32 getVerticesProps() const { return verticesProps; }
+            void addIndices(U32 index0, U32 index1, U32 index2);
             const IndicesVector& getIndices() const { return indices; }
-            void addIndex(U32 index);
-
-            void setFacesType(FaceType facesType);
-            FaceType getFacesType() const { return facesType; }
-            U32 getIndicesPerFace() const;
-
             void setMaterial(MaterialPtr material);
             MaterialPtr getMaterial() const { return material; }
 
         private:
             std::string name;
             VerticesVector vertices;
-            bool normals;
-            bool tangents;
-            bool bitangents;
-            U32 colorsPerVertex;
-            U32 textureCoordsPerVertex;
-            U32 textureCoordsComponents;
+            U32 verticesProps;
             IndicesVector indices;
-            FaceType facesType;
             MaterialPtr material;
     };
 
