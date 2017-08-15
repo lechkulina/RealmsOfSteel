@@ -28,12 +28,16 @@ namespace ros {
 
             void setName(const std::string& name);
             const std::string& getName() const { return name; }
+
             void addVertex(const Vertex& vertex);
             const VerticesVector& getVertices() const { return vertices; }
+
             void setVerticesProps(U32 verticesProps);
             U32 getVerticesProps() const { return verticesProps; }
+
             void addIndices(U32 index0, U32 index1, U32 index2);
             const IndicesVector& getIndices() const { return indices; }
+
             void setMaterial(MaterialPtr material);
             MaterialPtr getMaterial() const { return material; }
 

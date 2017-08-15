@@ -26,7 +26,83 @@ bool ros::AssimpSceneLoader::isLoadable(const std::string& name) const {
     return importer->IsExtensionSupported(extension);
 }
 
-ros::MeshPtr ros::AssimpSceneLoader::createMesh(const aiMesh* src) {
+ros::MaterialPtr ros::AssimpSceneLoader::createMaterial(const aiMaterial* src) {
+    aiString name;
+    if (src->Get(AI_MATKEY_NAME, name) != AI_SUCCESS) {
+        ROS_ERROR(boost::format("Failed to get material name"));
+        return MaterialPtr();
+    }
+
+    MaterialPtr material = boost::make_shared<Material>();
+    material->setName(name.C_Str());
+
+    aiColor3D diffuseColor;
+    if (src->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS) {
+        material->setDiffuseColor(glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b));
+    } else {
+        ROS_WARNING(boost::format("Failed to get diffuse color form material %s") % name.C_Str());
+    }
+
+    aiColor3D specularColor;
+    if (src->Get(AI_MATKEY_COLOR_SPECULAR, specularColor) == AI_SUCCESS) {
+        material->setSpecularColor(glm::vec3(specularColor.r, specularColor.g, specularColor.b));
+    } else {
+        ROS_WARNING(boost::format("Failed to get specular color form material %s") % name.C_Str());
+    }
+
+    aiColor3D ambientColor;
+    if (src->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor) == AI_SUCCESS) {
+        material->setAmbientColor(glm::vec3(ambientColor.r, ambientColor.g, ambientColor.b));
+    } else {
+        ROS_WARNING(boost::format("Failed to get ambient color form material %s") % name.C_Str());
+    }
+
+    aiColor3D emissiveColor;
+    if (src->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor) == AI_SUCCESS) {
+        material->setEmissiveColor(glm::vec3(emissiveColor.r, emissiveColor.g, emissiveColor.b));
+    } else {
+        ROS_WARNING(boost::format("Failed to get emissive color form material %s") % name.C_Str());
+    }
+
+    int twoSided = 0;
+    if (src->Get(AI_MATKEY_TWOSIDED, twoSided) == AI_SUCCESS) {
+        material->setTwoSided(twoSided != 0);
+    } else {
+        ROS_WARNING(boost::format("Failed to get sides info form material %s") % name.C_Str());
+    }
+
+    float opacity = 0.0f;
+    if (src->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
+        material->setOpacity(opacity);
+    } else {
+        ROS_WARNING(boost::format("Failed to get opacity form material %s") % name.C_Str());
+    }
+
+    float shininess = 0.0f;
+    if (src->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+        material->setShininess(shininess);
+    } else {
+        ROS_WARNING(boost::format("Failed to get shininess form material %s") % name.C_Str());
+    }
+
+    return material;
+}
+
+ros::MaterialsVector ros::AssimpSceneLoader::createMaterials(const aiScene* src) {
+    MaterialsVector materials;
+    if (!src->HasMaterials()) {
+        return materials;
+    }
+    for (unsigned int i=0; i < src->mNumMaterials; ++i) {
+        MaterialPtr material = createMaterial(src->mMaterials[i]);
+        if (material) {
+            materials.push_back(material);
+        }
+    }
+    return materials;
+}
+
+ros::MeshPtr ros::AssimpSceneLoader::createMesh(const aiMesh* src, const MaterialsVector& materials) {
     const aiString& name = src->mName;
     if (!src->HasPositions() || !src->HasFaces()) {
         ROS_ERROR(boost::format("Mesh %s is missing faces data") % name.C_Str());
@@ -97,76 +173,36 @@ ros::MeshPtr ros::AssimpSceneLoader::createMesh(const aiMesh* src) {
     for (unsigned int j=0; j < src->mNumFaces; ++j) {
         const aiFace& face = src->mFaces[j];
         if (face.mNumIndices != 3) {
-            ROS_WARNING(boost::format("Mesh %s uses unsupported number of indices %d") % name.C_Str() % face.mNumIndices);
-            continue;
+            ROS_ERROR(boost::format("Mesh %s uses unsupported number of indices %d") % name.C_Str() % face.mNumIndices);
+            return MeshPtr();
         }
         mesh->addIndices(face.mIndices[0], face.mIndices[1], face.mIndices[2]);
     }
 
+    unsigned int materialIndex = src->mMaterialIndex;
+    if (materialIndex >= materials.size()) {
+        LOG_ERROR(boost::format("Mesh %s uses invalid material index %d (max material index is %d)") % name.C_Str() % materialIndex % materials.size());
+        return MeshPtr();
+    }
+    mesh->setMaterial(materials[materialIndex]);
+
     return mesh;
 }
 
-ros::MaterialPtr ros::AssimpSceneLoader::createMaterial(const aiMaterial* src) {
-    aiString name;
-    if (src->Get(AI_MATKEY_NAME, name) != AI_SUCCESS) {
-        ROS_ERROR(boost::format("Failed to get material name"));
-        return MaterialPtr();
+ros::MeshesVector ros::AssimpSceneLoader::createMeshes(const aiScene* src, const MaterialsVector& materials) {
+    MeshesVector meshes;
+    if (!src->HasMeshes()) {
+        return meshes;
     }
-
-    MaterialPtr material = boost::make_shared<Material>();
-    material->setName(name.C_Str());
-
-    aiColor3D diffuseColor;
-    if (src->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS) {
-        material->setDiffuseColor(glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b));
-    } else {
-        ROS_WARNING(boost::format("Failed to get diffuse color form material %s") % name.C_Str());
+    for (unsigned int i=0; i < src->mNumMeshes; ++i) {
+        MeshPtr mesh = createMesh(src->mMeshes[i], materials);
+        if (mesh) {
+            meshes.push_back(mesh);
+        }
     }
-
-    aiColor3D specularColor;
-    if (src->Get(AI_MATKEY_COLOR_SPECULAR, specularColor) == AI_SUCCESS) {
-        material->setSpecularColor(glm::vec3(specularColor.r, specularColor.g, specularColor.b));
-    } else {
-        ROS_WARNING(boost::format("Failed to get specular color form material %s") % name.C_Str());
-    }
-
-    aiColor3D ambientColor;
-    if (src->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor) == AI_SUCCESS) {
-        material->setAmbientColor(glm::vec3(ambientColor.r, ambientColor.g, ambientColor.b));
-    } else {
-        ROS_WARNING(boost::format("Failed to get ambient color form material %s") % name.C_Str());
-    }
-
-    aiColor3D emissiveColor;
-    if (src->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor) == AI_SUCCESS) {
-        material->setEmissiveColor(glm::vec3(emissiveColor.r, emissiveColor.g, emissiveColor.b));
-    } else {
-        ROS_WARNING(boost::format("Failed to get emissive color form material %s") % name.C_Str());
-    }
-
-    int twoSided = 0;
-    if (src->Get(AI_MATKEY_TWOSIDED, twoSided) == AI_SUCCESS) {
-        material->setTwoSided(twoSided != 0);
-    } else {
-        ROS_WARNING(boost::format("Failed to get sides info form material %s") % name.C_Str());
-    }
-
-    float opacity = 0.0f;
-    if (src->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
-        material->setOpacity(opacity);
-    } else {
-        ROS_WARNING(boost::format("Failed to get opacity form material %s") % name.C_Str());
-    }
-
-    float shininess = 0.0f;
-    if (src->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
-        material->setShininess(shininess);
-    } else {
-        ROS_WARNING(boost::format("Failed to get shininess form material %s") % name.C_Str());
-    }
-
-    return material;
+    return meshes;
 }
+
 
 ros::ResourcePtr ros::AssimpSceneLoader::loadResource(const std::string& name) {
     const aiScene* const srcScene = importer->ReadFile(name.c_str(), aiProcess_Triangulate|aiProcess_SortByPType);

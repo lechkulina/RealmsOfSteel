@@ -29,8 +29,10 @@ namespace ros {
 
             Assimp::Importer* importer;
 
-            MeshPtr createMesh(const aiMesh* src);
             MaterialPtr createMaterial(const aiMaterial* src);
+            MaterialsVector createMaterials(const aiScene* src);
+            MeshPtr createMesh(const aiMesh* src, const MaterialsVector& materials);
+            MeshesVector createMeshes(const aiScene* src, const MaterialsVector& materials);
     };
 }
 
