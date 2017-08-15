@@ -8,50 +8,46 @@
 #include "LogsConsoleSink.h"
 #include "LogsFileSink.h"
 
-ros::LogsSinkFactory ros::LogsSink::factory;
+ros::Factory<ros::LogsSink> ros::LogsSink::factory;
 
-ros::LogsSinkPtr ros::LogsSink::create(const PropertyTree& config) {
+ros::LogsSinkPtr ros::LogsSink::create(const std::string& classId) {
     if (factory.isEmpty()) {
-        factory.registerClass<LogsConsoleSink>(boost::regex("Console"));
-        factory.registerClass<LogsFileSink>(boost::regex("File"));
+        factory.registerClass<LogsConsoleSink>(boost::regex("console"));
+        factory.registerClass<LogsFileSink>(boost::regex("file"));
     }
-
-    const std::string& type = config.data();
-    LogsSinkPtr sink(factory.create(type.c_str()));
-    if (!sink) {
-        std::cerr << "Failed to create sink: Unknown type " << type << std::endl;
-        return LogsSinkPtr();
-    }
-    if (!sink->init(config)) {
-        return LogsSinkPtr();
-    }
-
+    LogsSinkPtr sink(factory.create(classId));
     return sink;
 }
 
-bool ros::LogsSink::init(const PropertyTree& config) {
-    for (PropertyTree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
-        if (iter->first == "Filter") {
-            LogsFilterPtr filter = LogsFilter::create(iter->second);
+bool ros::LogsSink::init(const pt::ptree& config) {
+    for (pt::ptree::const_iterator iter = config.begin(); iter != config.end(); ++iter) {
+        if (iter->first == "filter") {
+            const pt::ptree& filterConfig = iter->second;
+            const std::string& filterClassId = filterConfig.data();
+            LogsFilterPtr filter = LogsFilter::create(filterClassId);
             if (!filter) {
+                std::cerr << "Unknown logs filter class ID " << filterClassId << std::endl;
                 continue;
             }
-            filters.push_back(filter);
+            if (!filter->init(filterConfig)) {
+                continue;
+            }
+            addFilter(filter);
         }
     }
     return true;
 }
 
-void ros::LogsSink::uninit() {
-    filters.clear();
-}
-
-bool ros::LogsSink::isMessageAccepted(const LogMessage& message) const {
-    for (LogsFilterList::const_iterator iter = filters.begin(); iter != filters.end(); ++iter) {
+bool ros::LogsSink::isEntryAccepted(const LogEntry& entry) const {
+    for (LogsFiltersList::const_iterator iter = filters.begin(); iter != filters.end(); ++iter) {
         LogsFilterPtr filter = *iter;
-        if (!filter->isMessageAccepted(message)) {
+        if (!filter->isEntryAccepted(entry)) {
             return false;
         }
     }
     return true;
+}
+
+void ros::LogsSink::addFilter(LogsFilterPtr filter) {
+    filters.push_back(filter);
 }

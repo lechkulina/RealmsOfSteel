@@ -8,28 +8,28 @@
 #include <boost/range.hpp>
 #include "LogsLevelFilter.h"
 
-bool ros::LogsLevelFilter::init(const PropertyTree& config) {
-    StringOpt thresholdLevelStr = config.get_optional<std::string>("ThresholdLevel");
-    if (!thresholdLevelStr) {
+void ros::LogsLevelFilter::setThreshold(LogLevelOpt threshold) {
+    this->threshold = threshold;
+}
+
+bool ros::LogsLevelFilter::init(const pt::ptree& config) {
+    StringOpt thresholdStr = config.get_optional<std::string>("threshold");
+    if (!thresholdStr) {
         std::cerr << "Failed to initialize level filter: Missing threshold level" << std::endl;
         return false;
     }
-    thresholdLevel = LogLevel_fromString(thresholdLevelStr->c_str());
-    if (!thresholdLevel) {
-        std::cerr << "Failed to initialize level filter: Unknown threshold level" << *thresholdLevelStr << std::endl;
-        uninit();
+    LogLevelOpt threshold = LogLevel_fromString(thresholdStr->c_str());
+    if (!threshold) {
+        std::cerr << "Failed to initialize level filter: Unknown threshold level" << *thresholdStr << std::endl;
         return false;
     }
+    setThreshold(threshold);
     return true;
 }
 
-void ros::LogsLevelFilter::uninit() {
-    thresholdLevel.reset();
-}
-
-bool ros::LogsLevelFilter::isMessageAccepted(const LogMessage& message) const {
-    if (!thresholdLevel) {
+bool ros::LogsLevelFilter::isEntryAccepted(const LogEntry& entry) const {
+    if (!threshold) {
         return true;
     }
-    return message.getLevel() >= *thresholdLevel;
+    return entry.getLevel() >= *threshold;
 }

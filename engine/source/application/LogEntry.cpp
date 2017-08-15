@@ -6,15 +6,13 @@
  */
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
-#include <application/LogMessage.h>
+#include <application/LogEntry.h>
 
 namespace {
-    struct LogLevelMapping {
+    const struct LogLevelMapping {
         const char* str;
         ros::LogLevel level;
-    };
-
-    const LogLevelMapping logLevelMappings[] = {
+    } logLevelMappings[] = {
         {"Trace", ros::LogLevel_Trace},
         {"Debug", ros::LogLevel_Debug},
         {"Warning", ros::LogLevel_Warning},
@@ -32,7 +30,6 @@ ros::LogLevelOpt ros::LogLevel_fromString(const char* str) {
     return LogLevelOpt();
 }
 
-
 const char* ros::LogLevel_toString(LogLevel level) {
     const LogLevelMapping* iter = std::find_if(boost::begin(logLevelMappings), boost::end(logLevelMappings),
         boost::bind(&LogLevelMapping::level, _1) == level);
@@ -46,12 +43,14 @@ std::ostream& ros::operator<<(std::ostream& stream, LogLevel level) {
     return stream << LogLevel_toString(level);
 }
 
-std::ostream& ros::operator<<(std::ostream& stream, const LogMessage& message) {
-    return stream << "[" << message.getLevel() << "] " << message.getMessage() << std::endl;
+std::ostream& ros::operator<<(std::ostream& stream, const LogEntry& entry) {
+    return stream << "[" << entry.getLevel() << "] " << entry.getMessage() << std::endl;
 }
 
-ros::LogMessage::LogMessage(LogLevel level, const std::string& message)
+ros::LogEntry::LogEntry(LogLevel level, const char* fileName, U32 lineNumber, const std::string& message)
     : level(level)
+    , fileName(fileName)
+    , lineNumber(lineNumber)
     , message(message)
-    , timePoint(SystemClock::now()) {
+    , time(chr::system_clock::now()) {
 }

@@ -12,12 +12,14 @@
 namespace ros {
     class ROS_API LogsLevelFilter : public LogsFilter {
         public:
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-            virtual bool isMessageAccepted(const LogMessage& message) const;
+            void setThreshold(LogLevelOpt threshold);
+            LogLevelOpt getThreshold() const { return threshold; }
+
+            virtual bool init(const pt::ptree& config);
+            virtual bool isEntryAccepted(const LogEntry& entry) const;
 
         private:
-            LogLevelOpt thresholdLevel;
+            LogLevelOpt threshold;
     };
 }
 

@@ -10,6 +10,7 @@
 #include <application/Application.h>
 #include <resources/FileSystem.h>
 #include <resources/ResourcesCache.h>
+#include <graphics/Scene.h>
 
 int main() {
     int exitCode = EXIT_FAILURE;
@@ -17,7 +18,7 @@ int main() {
     ros::PropertyTree config;
     boost::property_tree::read_info("Config.info", config);
 
-    if (!ros::Logger::initInstance(config.get_child("Logger")) ||
+    if (!ros::Logger::initInstance(config.get_child("logger")) ||
         !ros::Application::initInstance(config.get_child("application")) ||
         !ros::FileSystem::initInstance(config.get_child("file-system")) ||
         !ros::ResourcesCache::initInstance(config.get_child("resources-cache"))) {

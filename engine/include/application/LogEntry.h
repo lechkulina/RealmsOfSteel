@@ -4,10 +4,9 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#ifndef ROS_LOG_MESSAGE_H
-#define ROS_LOG_MESSAGE_H
+#ifndef ROS_LOG_ENTRY_H
+#define ROS_LOG_ENTRY_H
 
-#include <boost/format.hpp>
 #include <core/Common.h>
 #include <core/Environment.h>
 
@@ -26,22 +25,26 @@ namespace ros {
     const char* LogLevel_toString(LogLevel level);
     std::ostream& operator<<(std::ostream& stream, LogLevel level);
 
-    class ROS_API LogMessage {
+    class ROS_API LogEntry {
         public:
-            LogMessage(LogLevel level, const std::string& message);
+            LogEntry(LogLevel level, const char* fileName, U32 lineNumber, const std::string& message);
 
             LogLevel getLevel() const { return level; }
+            const char* getFileName() const { return fileName; }
+            U32 getLineNumber() const { return lineNumber; }
             const std::string& getMessage() const { return message; }
-            SystemClock::time_point getTimePoint() const { return timePoint; }
+            chr::system_clock::time_point getTime() const { return time; }
 
         private:
             LogLevel level;
+            const char* fileName;
+            U32 lineNumber;
             std::string message;
-            SystemClock::time_point timePoint;
+            chr::system_clock::time_point time;
     };
 
-    std::ostream& operator<<(std::ostream& stream, const LogMessage& message);
+    std::ostream& operator<<(std::ostream& stream, const LogEntry& entry);
 }
 
-#endif // ROS_LOG_MESSAGE_H
+#endif // ROS_LOG_ENTRY_H
 

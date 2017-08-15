@@ -10,30 +10,29 @@
 #include <core/Common.h>
 #include <core/Environment.h>
 #include <core/Factory.h>
-#include <application/LogMessage.h>
+#include <application/LogEntry.h>
 #include <application/LogsFilter.h>
 
 namespace ros {
     class LogsSink;
     typedef boost::shared_ptr<LogsSink> LogsSinkPtr;
-    typedef Factory<LogsSink> LogsSinkFactory;
+    typedef std::list<LogsSinkPtr> LogsSinksList;
 
     class ROS_API LogsSink : public LogsFilter {
         public:
-            static LogsSinkPtr create(const PropertyTree& config);
+            static LogsSinkPtr create(const std::string& classId);
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-            virtual bool isMessageAccepted(const LogMessage& message) const;
+            virtual bool init(const pt::ptree& config);
+            virtual bool isEntryAccepted(const LogEntry& entry) const;
 
-            virtual bool sendMessage(const LogMessage& message) =0;
-            virtual void flushMessages() =0;
+            void addFilter(LogsFilterPtr filter);
+
+            virtual bool sendEntry(const LogEntry& entry) =0;
+            virtual void flushEntries() =0;
 
         private:
-            typedef std::list<LogsFilterPtr> LogsFilterList;
-
-            static LogsSinkFactory factory;
-            LogsFilterList filters;
+            static Factory<LogsSink> factory;
+            LogsFiltersList filters;
     };
 }
 

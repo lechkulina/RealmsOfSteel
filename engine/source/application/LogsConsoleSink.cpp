@@ -8,16 +8,16 @@
 #include <boost/range.hpp>
 #include "LogsConsoleSink.h"
 
+const std::string ros::LogsConsoleSink::DEFAULT_STREAM("output");
+
 namespace {
-    struct StreamMapping {
+    const struct StreamMapping {
         const char* str;
         std::ostream* stream;
-    };
-
-    const StreamMapping streamMappings[] = {
-        {"Output", &std::cout},
-        {"Error", &std::cerr},
-        {"Log", &std::clog}
+    } streamMappings[] = {
+        {"output", &std::cout},
+        {"error", &std::cerr},
+        {"log", &std::clog}
     };
 
     std::ostream* Stream_fromString(const char* str) {
@@ -34,36 +34,35 @@ ros::LogsConsoleSink::LogsConsoleSink()
     : stream(ROS_NULL) {
 }
 
-bool ros::LogsConsoleSink::init(const PropertyTree& config) {
+void ros::LogsConsoleSink::setStream(std::ostream* stream) {
+    this->stream = stream;
+}
+
+bool ros::LogsConsoleSink::init(const pt::ptree& config) {
     if (!LogsSink::init(config)) {
         return false;
     }
 
-    std::string streamStr = config.get<std::string>("Stream", "Error");
-    stream = Stream_fromString(streamStr.c_str());
+    std::string streamStr = config.get("stream", DEFAULT_STREAM);
+    std::ostream* stream = Stream_fromString(streamStr.c_str());
     if (!stream) {
         std::cerr << "Failed to initialize console sink: Unknown stream " << streamStr << std::endl;
-        uninit();
         return false;
     }
 
+    setStream(stream);
     return true;
 }
 
-void ros::LogsConsoleSink::uninit() {
-    stream = ROS_NULL;
-    LogsSink::uninit();
-}
-
-bool ros::LogsConsoleSink::sendMessage(const LogMessage& message) {
+bool ros::LogsConsoleSink::sendEntry(const LogEntry& entry) {
     if (!stream) {
         return false;
     }
-    (*stream) << message;
+    (*stream) << entry;
     return stream->good();
 }
 
-void ros::LogsConsoleSink::flushMessages() {
+void ros::LogsConsoleSink::flushEntries() {
     if (stream) {
         stream->flush();
     }

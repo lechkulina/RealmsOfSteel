@@ -16,29 +16,34 @@ namespace ros {
     class Logger;
     typedef boost::shared_ptr<Logger> LoggerPtr;
 
-    class ROS_API Logger : public LogsSink {
+    class ROS_API Logger : public boost::noncopyable {
         public:
-            static LoggerPtr initInstance(const PropertyTree& config);
-            static LoggerPtr getInstance() { return logger; }
+            static LoggerPtr initInstance(const pt::ptree& config);
+            static LoggerPtr getInstance() { return instance; }
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
+            void addSink(LogsSinkPtr sink);
 
-            virtual bool sendMessage(const LogMessage& message);
-            virtual void flushMessages();
-
-            static bool report(LogLevel level, const boost::format& format) {
-                return getInstance()->sendMessage(LogMessage(level, format.str()));
-            }
-
-        protected:
-            typedef std::list<LogsSinkPtr> LogsSinkList;
-            LogsSinkList sinks;
+            bool sendEntry(const LogEntry& entry);
+            bool sendEntry(LogLevel level, const char* fileName, U32 lineNumber, const boost::format& message);
+            void flushEntries();
 
         private:
-            static LoggerPtr logger;
+            static LoggerPtr instance;
+            LogsSinksList sinks;
     };
 }
+
+#ifndef ROS_DISABLE_LOGS
+    #define ROS_LOG(level, message) ros::Logger::getInstance()->sendEntry((level), __FILE__, __LINE__, (message))
+#else
+    #define ROS_LOG(level, message) ROS_NOOP
+#endif
+
+#define ROS_TRACE(message) ROS_LOG(ros::LogLevel_Trace, message)
+#define ROS_DEBUG(message) ROS_LOG(ros::LogLevel_Debug, message)
+#define ROS_WARNING(message) ROS_LOG(ros::LogLevel_Warning, message)
+#define ROS_ERROR(message) ROS_LOG(ros::LogLevel_Error, message)
+#define ROS_CRITICAL(message) ROS_LOG(ros::LogLevel_Critical, message)
 
 #endif // ROS_LOGGER_H
 

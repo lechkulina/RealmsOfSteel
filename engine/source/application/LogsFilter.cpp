@@ -7,22 +7,12 @@
 #include <application/LogsFilter.h>
 #include "LogsLevelFilter.h"
 
-ros::LogsFilterFactory ros::LogsFilter::factory;
+ros::Factory<ros::LogsFilter> ros::LogsFilter::factory;
 
-boost::shared_ptr<ros::LogsFilter> ros::LogsFilter::create(const PropertyTree& config) {
+boost::shared_ptr<ros::LogsFilter> ros::LogsFilter::create(const std::string& classId) {
     if (factory.isEmpty()) {
-        factory.registerClass<LogsLevelFilter>(boost::regex("Level"));
+        factory.registerClass<LogsLevelFilter>(boost::regex("level"));
     }
-
-    const std::string& type = config.data();
-    LogsFilterPtr filter(factory.create(type.c_str()));
-    if (!filter) {
-        std::cerr << "Failed to create filter: Unknown type " << type << std::endl;
-        return LogsFilterPtr();
-    }
-    if (!filter->init(config)) {
-        return LogsFilterPtr();
-    }
-
+    LogsFilterPtr filter(factory.create(classId));
     return filter;
 }

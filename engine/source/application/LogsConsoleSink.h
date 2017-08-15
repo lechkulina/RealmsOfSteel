@@ -12,13 +12,17 @@
 namespace ros {
     class ROS_API LogsConsoleSink : public LogsSink {
         public:
+            static const std::string DEFAULT_STREAM;
+
             LogsConsoleSink();
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
+            void setStream(std::ostream* stream);
+            bool hasStream() const { return stream != ROS_NULL; }
 
-            virtual bool sendMessage(const LogMessage& message);
-            virtual void flushMessages();
+            virtual bool init(const pt::ptree& config);
+
+            virtual bool sendEntry(const LogEntry& entry);
+            virtual void flushEntries();
 
         private:
             std::ostream* stream;

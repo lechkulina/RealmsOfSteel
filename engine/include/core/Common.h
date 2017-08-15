@@ -32,6 +32,7 @@
 #include <boost/chrono.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 #define ROS_NOOP ((void)0)
 #define ROS_NULL NULL
@@ -46,6 +47,7 @@ namespace ros {
     namespace sys = boost::system;
     namespace fs = boost::filesystem;
     namespace pt = boost::property_tree;
+    namespace chr = boost::chrono;
 
     typedef boost::int_t<8>::exact S8;
     typedef boost::int_t<16>::exact S16;
@@ -57,7 +59,6 @@ namespace ros {
     typedef boost::uint_t<64>::exact U64;
 
     typedef boost::property_tree::ptree PropertyTree;
-    typedef boost::chrono::system_clock SystemClock;
 
     typedef boost::optional<S8> S8Opt;
     typedef boost::optional<S16> S16Opt;

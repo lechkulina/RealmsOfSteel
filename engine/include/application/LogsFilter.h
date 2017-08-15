@@ -10,25 +10,24 @@
 #include <core/Common.h>
 #include <core/Environment.h>
 #include <core/Factory.h>
-#include <application/LogMessage.h>
+#include <application/LogEntry.h>
 
 namespace ros {
     class LogsFilter;
     typedef boost::shared_ptr<LogsFilter> LogsFilterPtr;
-    typedef Factory<LogsFilter> LogsFilterFactory;
+    typedef std::list<LogsFilterPtr> LogsFiltersList;
 
     class ROS_API LogsFilter : public boost::noncopyable {
         public:
-            static LogsFilterPtr create(const PropertyTree& config);
+            static LogsFilterPtr create(const std::string& classId);
 
             virtual ~LogsFilter() {}
 
-            virtual bool init(const PropertyTree& config) =0;
-            virtual void uninit() =0;
-            virtual bool isMessageAccepted(const LogMessage& message) const =0;
+            virtual bool init(const pt::ptree& config) =0;
+            virtual bool isEntryAccepted(const LogEntry& entry) const =0;
 
         private:
-            static LogsFilterFactory factory;
+            static Factory<LogsFilter> factory;
     };
 }
 
