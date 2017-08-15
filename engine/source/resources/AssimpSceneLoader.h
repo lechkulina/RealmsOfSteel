@@ -33,6 +33,8 @@ namespace ros {
             MaterialsVector createMaterials(const aiScene* src);
             MeshPtr createMesh(const aiMesh* src, const MaterialsVector& materials);
             MeshesVector createMeshes(const aiScene* src, const MaterialsVector& materials);
+            SceneNodePtr createSceneNode(const aiNode* src, const MeshesVector& meshes, SceneNodeWeakPtr parent = SceneNodeWeakPtr());
+            ScenePtr createScene(const aiScene* src);
     };
 }
 

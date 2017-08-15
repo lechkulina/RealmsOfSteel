@@ -6,9 +6,12 @@
  */
 #include <graphics/SceneNode.h>
 
-ros::SceneNode::SceneNode(const std::string& name, SceneNodePtr parent /*= SceneNodePtr()*/)
-    : name(name)
-    , parent(parent) {
+void ros::SceneNode::setName(const std::string& name) {
+    this->name = name;
+}
+
+void ros::SceneNode::setParent(SceneNodeWeakPtr parent) {
+    this->parent = parent;
 }
 
 void ros::SceneNode::addChild(SceneNodePtr child) {

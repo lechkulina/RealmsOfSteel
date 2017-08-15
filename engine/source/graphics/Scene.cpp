@@ -6,11 +6,6 @@
  */
 #include <graphics/Scene.h>
 
-ros::Scene::Scene(const std::string& name, SceneNodePtr root /*= SceneNodePtr()*/)
-    : name(name)
-    , root(root) {
-}
-
 void ros::Scene::setRoot(SceneNodePtr root) {
     this->root = root;
 }

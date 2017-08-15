@@ -15,12 +15,8 @@
 namespace ros {
     class ROS_API Scene: public Resource {
         public:
-            Scene() {}
-            Scene(const std::string& name, SceneNodePtr root = SceneNodePtr());
-            const std::string& getName() const { return name; }
-
-            const SceneNodePtr getRoot() const { return root; }
             void setRoot(SceneNodePtr root);
+            const SceneNodePtr getRoot() const { return root; }
 
             virtual bool isNull() const { return root; }
 

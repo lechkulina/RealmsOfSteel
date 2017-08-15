@@ -95,9 +95,11 @@ ros::MaterialsVector ros::AssimpSceneLoader::createMaterials(const aiScene* src)
     }
     for (unsigned int i=0; i < src->mNumMaterials; ++i) {
         MaterialPtr material = createMaterial(src->mMaterials[i]);
-        if (material) {
-            materials.push_back(material);
+        if (!material) {
+            materials.clear();
+            return materials;
         }
+        materials.push_back(material);
     }
     return materials;
 }
@@ -181,7 +183,8 @@ ros::MeshPtr ros::AssimpSceneLoader::createMesh(const aiMesh* src, const Materia
 
     unsigned int materialIndex = src->mMaterialIndex;
     if (materialIndex >= materials.size()) {
-        LOG_ERROR(boost::format("Mesh %s uses invalid material index %d (max material index is %d)") % name.C_Str() % materialIndex % materials.size());
+        ROS_ERROR(boost::format("Mesh %s uses invalid material index %d - number of found materials is %d)")
+                    % name.C_Str() % materialIndex % materials.size());
         return MeshPtr();
     }
     mesh->setMaterial(materials[materialIndex]);
@@ -196,22 +199,76 @@ ros::MeshesVector ros::AssimpSceneLoader::createMeshes(const aiScene* src, const
     }
     for (unsigned int i=0; i < src->mNumMeshes; ++i) {
         MeshPtr mesh = createMesh(src->mMeshes[i], materials);
-        if (mesh) {
-            meshes.push_back(mesh);
+        if (!mesh) {
+            meshes.clear();
+            return meshes;
         }
+        meshes.push_back(mesh);
     }
     return meshes;
 }
 
+ros::SceneNodePtr ros::AssimpSceneLoader::createSceneNode(const aiNode* src, const MeshesVector& meshes, SceneNodeWeakPtr parent /*= SceneNodeWeakPtr()*/) {
+    const aiString& name = src->mName;
 
-ros::ResourcePtr ros::AssimpSceneLoader::loadResource(const std::string& name) {
-    const aiScene* const srcScene = importer->ReadFile(name.c_str(), aiProcess_Triangulate|aiProcess_SortByPType);
-    if (!srcScene) {
-        ROS_ERROR(boost::format("Failed to load scene for resource %s - Assimp error occured %s") % name % importer->GetErrorString());
+    SceneNodePtr sceneNode = boost::make_shared<SceneNode>();
+    sceneNode->setName(name.C_Str());
+    sceneNode->setParent(parent);
+
+    for (unsigned int i=0; i < src->mNumMeshes; ++i) {
+        unsigned int meshIndex = src->mMeshes[i];
+        if (meshIndex >= meshes.size()) {
+            ROS_ERROR(boost::format("Scene node %s uses invalid mesh index %d - number of found meshes is %d")
+                        % name.C_Str() % meshIndex % meshes.size());
+            return SceneNodePtr();
+        }
+        sceneNode->addMesh(meshes[meshIndex]);
+    }
+
+    const aiMatrix4x4& trans = src->mTransformation;
+    sceneNode->setTransformation(glm::mat4x4(
+        trans[0][0], trans[0][1], trans[0][2], trans[0][3],
+        trans[1][0], trans[1][1], trans[1][2], trans[1][3],
+        trans[2][0], trans[2][1], trans[2][2], trans[2][3],
+        trans[3][0], trans[3][1], trans[3][2], trans[3][3]
+    ));
+
+    for (unsigned int i=0; i < src->mNumChildren; ++i) {
+        SceneNodePtr child = createSceneNode(src->mChildren[i], meshes, sceneNode);
+        if (!child) {
+            return SceneNodePtr();
+        }
+        sceneNode->addChild(child);
+    }
+
+    return sceneNode;
+}
+
+ros::ScenePtr ros::AssimpSceneLoader::createScene(const aiScene* src) {
+    MaterialsVector materials = createMaterials(src);
+    MeshesVector meshes = createMeshes(src, materials);
+    if (meshes.empty()) {
         return ScenePtr();
     }
 
+    SceneNodePtr root = createSceneNode(src->mRootNode, meshes);
+    if (!root) {
+        return ScenePtr();
+    }
 
+    ScenePtr scene = boost::make_shared<Scene>();
+    scene->setRoot(root);
+
+    return scene;
+}
+
+ros::ResourcePtr ros::AssimpSceneLoader::loadResource(const std::string& name) {
+    const aiScene* const src = importer->ReadFile(name.c_str(), aiProcess_Triangulate|aiProcess_SortByPType);
+    if (!src) {
+        ROS_ERROR(boost::format("Failed to load scene for resource %s - Assimp error occured %s") % name % importer->GetErrorString());
+        return ScenePtr();
+    }
+    ScenePtr scene = createScene(src);
     importer->FreeScene();
-    return ScenePtr();
+    return scene;
 }
