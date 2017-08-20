@@ -19,7 +19,9 @@ void dumpScene(ros::SceneNodePtr node) {
     std::cout << "node name=" << node->getName() << " meshes=" << node->getMeshes().size() << " children=" << node->getChildren().size() << std::endl;
     for (ros::MeshesVector::const_iterator iter = node->getMeshes().begin(); iter != node->getMeshes().end(); ++iter) {
         ros::MeshPtr mesh = *iter;
-        std::cout << "    mesh name=" << mesh->getName() << " vertices=" << mesh->getVertices().size() << " indices=" << mesh->getIndices().size() << std::endl;
+        ros::MaterialPtr material = mesh->getMaterial();
+        std::cout << "    mesh name=" << mesh->getName() << " vertices=" << mesh->getVertices().size()
+                  << " indices=" << mesh->getIndices().size() << " material=" << material->getName() << std::endl;
     }
     for (ros::SceneNodesList::const_iterator iter = node->getChildren().begin(); iter != node->getChildren().end(); ++iter) {
         dumpScene(*iter);
