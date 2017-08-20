@@ -49,8 +49,10 @@ namespace ros {
             virtual void onKeyboardPressEvent(const KeyboardPressEvent& event);
             virtual void onMouseMotionEvent(const MouseMotionEvent& event);
             virtual void onMousePressEvent(const MousePressEvent& event);
+            virtual void onStartEvent();
             virtual void onUpdateEvent(float duration);
             virtual void onRenderEvent();
+            virtual void onStopEvent();
 
         private:
             static ApplicationFactory factory;

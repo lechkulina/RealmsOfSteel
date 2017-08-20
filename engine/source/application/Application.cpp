@@ -59,7 +59,7 @@ bool ros::Application::init(const PropertyTree& config) {
     maxAccumulatedTicks = config.get("max-accumulated-ticks", DEFAULT_MAX_ACCUMULATED_TICKS);
     quitOnEscape = config.get("quit-on-escape", DEFAULT_QUIT_ON_ESCAPE);
 
-    if (!initWindow(config) || !shaderManager.init(config) || !programManager.init(config)) {
+    if (!initWindow(config)) {
         uninit();
         return false;
     }
@@ -68,13 +68,13 @@ bool ros::Application::init(const PropertyTree& config) {
 }
 
 void ros::Application::uninit() {
-    programManager.uninit();
-    shaderManager.uninit();
     window.reset();
 }
 
 int ros::Application::run() {
     ROS_TRACE(boost::format("Starting Realms Of Steel %s") % ROS_VERSION);
+
+    onStartEvent();
 
     float frameDuration = (1 / framesPerSecond) * 1000;
     float accumulatedTicks = 0.0f;
@@ -99,6 +99,7 @@ int ros::Application::run() {
         window->swapBuffers();
     }
 
+    onStopEvent();
     return EXIT_SUCCESS;
 }
 
@@ -132,11 +133,19 @@ void ros::Application::onMousePressEvent(const MousePressEvent& event) {
     }
 }
 
+void ros::Application::onStartEvent() {
+
+}
+
 void ros::Application::onUpdateEvent(float) {
 
 }
 
 void ros::Application::onRenderEvent() {
+
+}
+
+void ros::Application::onStopEvent() {
 
 }
 
