@@ -11,25 +11,31 @@
 #include <core/Environment.h>
 
 namespace ros {
+    enum ShaderType {
+        ShaderType_Compute,
+        ShaderType_Vertex,
+        ShaderType_TessControl,
+        ShaderType_TessEvaluation,
+        ShaderType_Geometry,
+        ShaderType_Fragment
+    };
+
+    class Shader;
+    typedef boost::shared_ptr<Shader> ShaderPtr;
+
     class ROS_API Shader: public boost::noncopyable {
         public:
             virtual ~Shader() {}
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-            virtual bool isValid() const =0;
+            static ShaderPtr make();
 
-            virtual const std::string& getPath() const =0;
-
-            const std::string& getName() const { return name; }
-
-        private:
-            std::string name;
+            virtual bool create(ShaderType type) =0;
+            virtual bool uploadSource(const fs::path& path) =0;
+            virtual bool compile() =0;
+            virtual void free() =0;
+            virtual bool isCompiled() const =0;
+            virtual const fs::path& getPath() const =0;
     };
-
-    typedef boost::shared_ptr<Shader> ShaderPtr;
-    typedef std::list<ShaderPtr> ShaderList;
-    typedef std::map<std::string, ShaderPtr> ShaderMap;
 }
 
 #endif // ROS_SHADER_H

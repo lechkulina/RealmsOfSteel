@@ -6,17 +6,14 @@
  */
 #include <application/Logger.h>
 #include <graphics/Shader.h>
+#ifdef ROS_USING_OPENGL
+    #include "OpenGLShader.h"
+#endif
 
-bool ros::Shader::init(const PropertyTree &config) {
-    name = config.data();
-    if (name.empty()) {
-        ROS_ERROR(boost::format("Shader name is missing"));
-        uninit();
-        return false;
-    }
-    return true;
-}
-
-void ros::Shader::uninit() {
-    name.clear();
+ros::ShaderPtr ros::Shader::make() {
+    ShaderPtr shader;
+#ifdef ROS_USING_OPENGL
+    shader.reset(new OpenGLShader());
+#endif
+    return shader;
 }

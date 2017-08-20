@@ -4,37 +4,32 @@
  * This file is part of the Realms Of Steel.
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
-#include <fstream>
 #include <boost/bind.hpp>
 #include <boost/range.hpp>
-#include <boost/scoped_array.hpp>
 #include <Application/Logger.h>
 #include "OpenGLErrors.h"
 #include "OpenGLShader.h"
 
-namespace {
-    typedef boost::optional<GLenum> ShaderTypeOpt;
+static const struct ShaderTypeGLenumMapping {
+    ros::ShaderType first;
+    GLenum second;
+} shaderTypeGLenumMappings[] = {
+    {ros::ShaderType_Compute, GL_COMPUTE_SHADER},
+    {ros::ShaderType_Vertex, GL_VERTEX_SHADER},
+    {ros::ShaderType_TessControl, GL_TESS_CONTROL_SHADER},
+    {ros::ShaderType_TessEvaluation, GL_TESS_EVALUATION_SHADER},
+    {ros::ShaderType_Geometry, GL_GEOMETRY_SHADER},
+    {ros::ShaderType_Fragment, GL_FRAGMENT_SHADER}
+};
 
-    const struct ShaderTypeMapping {
-        const char* str;
-        GLenum type;
-    } shaderTypeMappings[] = {
-        {"compute", GL_COMPUTE_SHADER},
-        {"vertex", GL_VERTEX_SHADER},
-        {"tessellation-control",  GL_TESS_CONTROL_SHADER},
-        {"tessellation-evaluation",  GL_TESS_EVALUATION_SHADER},
-        {"geometry",  GL_GEOMETRY_SHADER},
-        {"fragment",  GL_FRAGMENT_SHADER}
-    };
-
-    ShaderTypeOpt ShaderType_fromString(const char* str) {
-        const ShaderTypeMapping* iter = std::find_if(boost::begin(shaderTypeMappings), boost::end(shaderTypeMappings),
-            boost::bind(strcmp, boost::bind(&ShaderTypeMapping::str, _1), str) == 0);
-        if (iter != boost::end(shaderTypeMappings)) {
-            return iter->type;
-        }
-        return ShaderTypeOpt();
+static ros::GLenumOpt ShaderType_toGLenum(ros::ShaderType type) {
+    const ShaderTypeGLenumMapping* iter = std::find_if(
+        boost::begin(shaderTypeGLenumMappings), boost::end(shaderTypeGLenumMappings),
+        boost::bind(&ShaderTypeGLenumMapping::first, _1) == type);
+    if (iter != boost::end(shaderTypeGLenumMappings)) {
+        return iter->second;
     }
+    return ros::GLenumOpt();
 }
 
 ros::OpenGLShader::OpenGLShader()
@@ -42,61 +37,26 @@ ros::OpenGLShader::OpenGLShader()
 }
 
 ros::OpenGLShader::~OpenGLShader() {
-    uninit();
+    free();
 }
 
-bool ros::OpenGLShader::init(const PropertyTree& config) {
-    if (!Shader::init(config) || !createHandle(config) || !replaceSource(config) || !compile()) {
-        uninit();
+bool ros::OpenGLShader::create(ShaderType type) {
+    GLenumOpt glType = ShaderType_toGLenum(type);
+    if (!glType) {
+        ROS_ERROR(boost::format("Unknown shader type %d") % type);
         return false;
     }
-    return true;
-}
-
-void ros::OpenGLShader::uninit() {
-    path.clear();
-    if (handle) {
-        glDeleteShader(handle);
-        handle = 0;
-    }
-    Shader::uninit();
-}
-
-bool ros::OpenGLShader::isValid() const {
-    return glIsShader(handle);
-}
-
-bool ros::OpenGLShader::createHandle(const PropertyTree& config) {
-    StringOpt typeStr = config.get_optional<std::string>("type");
-    if (!typeStr) {
-        ROS_ERROR(boost::format("Missing type property in shader %s") % getName());
-        return false;
-    }
-    ShaderTypeOpt type = ShaderType_fromString(typeStr->c_str());
-    if (!type) {
-        ROS_ERROR(boost::format("Unknown type %s property used for shader %s")  % getName() % (*typeStr));
-        return false;
-    }
-
-    handle = glCreateShader(*type);
+    handle = glCreateShader(*glType);
     if (!handle || OpenGL_checkForErrors()) {
         return false;
     }
-
     return true;
 }
 
-bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
-    StringOpt path = config.get_optional<std::string>("path");
-    if (!path) {
-        ROS_ERROR(boost::format("Missing path property in shader %s") % getName());
-        return false;
-    }
-
-    this->path = *path;
-    std::ifstream stream(path->c_str(), std::ios::in);
+bool ros::OpenGLShader::uploadSource(const fs::path& path) {
+    std::ifstream stream(path.string().c_str(), std::ios::in);
     if (!stream.good()) {
-        ROS_ERROR(boost::format("Unable to open source file %s for shader %s") % (*path) % getName());
+        ROS_ERROR(boost::format("Unable to open shader source file %s") % path);
         return false;
     }
 
@@ -104,7 +64,7 @@ bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     GLint length = stream.tellg();
     stream.seekg(0, std::ios::beg);
     if (length == 0) {
-        ROS_ERROR(boost::format("Source file %s used for shaders %s is empty") % (*path) % getName());
+        ROS_ERROR(boost::format("Shader source file %s is empty") % path);
         return false;
     }
 
@@ -112,7 +72,7 @@ bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     memset(buffer.get(), 0, sizeof(GLchar) * length);
     stream.read(buffer.get(), length);
     if (stream.bad()) {
-        ROS_ERROR(boost::format("Failed to read %d bytes from source file %s used for shader %s") % length % (*path) % getName());
+        ROS_ERROR(boost::format("Failed to read %d bytes from shader source file %s") % length % path);
         return false;
     }
 
@@ -122,6 +82,7 @@ bool ros::OpenGLShader::replaceSource(const PropertyTree& config) {
     if (OpenGL_checkForErrors()) {
         return false;
     }
+    this->path = path;
 
     return true;
 }
@@ -133,27 +94,39 @@ bool ros::OpenGLShader::compile() {
     if (OpenGL_checkForErrors()) {
         return false;
     }
-
     if (!status) {
-        ROS_ERROR(boost::format("Failed to compile shader %s using source file %s") % getName() % path);
-
-        GLint length = 0;
-        glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length);
-        if (length == 0 || OpenGL_checkForErrors()) {
-            return false;
-        }
-
-        boost::scoped_array<GLchar> buffer(new GLchar[length]);
-        memset(buffer.get(), 0, sizeof(GLchar) * length);
-        glGetShaderInfoLog(handle, length, NULL, buffer.get());
-        if (OpenGL_checkForErrors()) {
-            return false;
-        }
-
-        ROS_DEBUG(boost::format("Shader %s information log: %s") % getName() % buffer.get());
+        ROS_ERROR(boost::format("Failed to compile shader %s") % path);
+        dumpInfoLog();
         return false;
     }
-
-    ROS_TRACE(boost::format("Shader %s compiled successfully using source file %s") % getName() % path);
     return true;
+}
+
+void ros::OpenGLShader::free() {
+    if (handle) {
+        glDeleteShader(handle);
+        handle = 0;
+    }
+    path.clear();
+}
+
+bool ros::OpenGLShader::isCompiled() const {
+    return glIsShader(handle);
+}
+
+void ros::OpenGLShader::dumpInfoLog() {
+    GLint length = 0;
+    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length);
+    if (length == 0 || OpenGL_checkForErrors()) {
+        return;
+    }
+
+    boost::scoped_array<GLchar> buffer(new GLchar[length]);
+    memset(buffer.get(), 0, sizeof(GLchar) * length);
+    glGetShaderInfoLog(handle, length, NULL, buffer.get());
+    if (OpenGL_checkForErrors()) {
+        return;
+    }
+
+    ROS_DEBUG(boost::format("Lastest shader %s information log: %s") % path % buffer.get());
 }

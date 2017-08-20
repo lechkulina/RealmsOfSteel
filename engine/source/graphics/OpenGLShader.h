@@ -18,21 +18,20 @@ namespace ros {
             OpenGLShader();
             virtual ~OpenGLShader();
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-            virtual bool isValid() const;
-
-            virtual const std::string& getPath() const { return path; }
+            virtual bool create(ShaderType type);
+            virtual bool uploadSource(const fs::path& path);
+            virtual bool compile();
+            virtual void free();
+            virtual bool isCompiled() const;
+            virtual const fs::path& getPath() const { return path; }
 
             GLuint getHandle() const { return handle; }
 
         private:
             GLuint handle;
-            std::string path;
+            fs::path path;
 
-            bool createHandle(const PropertyTree& config);
-            bool replaceSource(const PropertyTree& config);
-            bool compile();
+            void dumpInfoLog();
     };
 
     typedef boost::shared_ptr<OpenGLShader> OpenGLShaderPtr;
