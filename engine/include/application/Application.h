@@ -13,10 +13,6 @@
 #include <application/Events.h>
 #include <application/Window.h>
 #include <application/View.h>
-#include <graphics/Shader.h>
-#include <graphics/Program.h>
-#include <graphics/ShaderManager.h>
-#include <graphics/ProgramManager.h>
 #include <graphics/Image.h>
 
 namespace ros {
@@ -37,14 +33,10 @@ namespace ros {
             virtual int run();
 
             WindowPtr getWindow() const { return window; }
-            ShaderManager& getShaderManager() { return shaderManager; }
-            ProgramManager& getProgramManager() { return programManager; }
 
             virtual float getTicks() const =0;
 
             virtual WindowPtr createWindow() =0;
-            virtual ShaderPtr createShader() =0;
-            virtual ProgramPtr createProgram() =0;
             virtual ImagePtr createImage() =0;
 
         protected:
@@ -64,8 +56,6 @@ namespace ros {
             static ApplicationFactory factory;
             static ApplicationPtr application;
             WindowPtr window;
-            ShaderManager shaderManager;
-            ProgramManager programManager;
             float framesPerSecond;
             float maxAccumulatedTicks;
             bool quitOnEscape;

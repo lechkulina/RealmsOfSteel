@@ -21,8 +21,6 @@ namespace ros {
             virtual float getTicks() const;
 
             virtual WindowPtr createWindow();
-            virtual ShaderPtr createShader();
-            virtual ProgramPtr createProgram();
             virtual ImagePtr createImage();
 
         protected:

@@ -9,8 +9,6 @@
 #include <application/Logger.h>
 #include "SDLOpenGLApplication.h"
 #include "SDLOpenGLWindow.h"
-#include "../graphics/OpenGLShader.h"
-#include "../graphics/OpenGLProgram.h"
 #include "../graphics/SDLImage.h"
 
 namespace {
@@ -185,14 +183,6 @@ float ros::SDLOpenGLApplication::getTicks() const {
 
 ros::WindowPtr ros::SDLOpenGLApplication::createWindow() {
     return boost::make_shared<SDLOpenGLWindow>();
-}
-
-ros::ShaderPtr ros::SDLOpenGLApplication::createShader() {
-    return boost::make_shared<OpenGLShader>();
-}
-
-ros::ProgramPtr ros::SDLOpenGLApplication::createProgram() {
-    return boost::make_shared<OpenGLProgram>();
 }
 
 ros::ImagePtr ros::SDLOpenGLApplication::createImage() {
