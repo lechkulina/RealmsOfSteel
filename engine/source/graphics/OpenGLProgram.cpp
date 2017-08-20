@@ -19,6 +19,7 @@ ros::OpenGLProgram::~OpenGLProgram() {
 }
 
 bool ros::OpenGLProgram::create() {
+    free();
     handle = glCreateProgram();
     if (!handle || OpenGL_checkForErrors()) {
         return false;

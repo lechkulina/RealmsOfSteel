@@ -41,6 +41,7 @@ ros::OpenGLShader::~OpenGLShader() {
 }
 
 bool ros::OpenGLShader::create(ShaderType type) {
+    free();
     GLenumOpt glType = ShaderType_toGLenum(type);
     if (!glType) {
         ROS_ERROR(boost::format("Unknown shader type %d") % type);
