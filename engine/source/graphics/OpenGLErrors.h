@@ -7,7 +7,12 @@
 #ifndef ROS_OPENGL_ERRORS_H
 #define ROS_OPENGL_ERRORS_H
 
+#include <core/Common.h>
+#include <GL/glew.h>
+
 namespace ros {
+    typedef boost::optional<GLenum> GLenumOpt;
+
     bool OpenGL_checkForErrors();
 }
 

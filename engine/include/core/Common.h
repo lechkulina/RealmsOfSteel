@@ -25,7 +25,9 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_array.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/pointer_cast.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
 #include <boost/integer.hpp>
