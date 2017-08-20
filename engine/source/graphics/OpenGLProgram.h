@@ -16,7 +16,7 @@ namespace ros {
         GLint size;
         GLenum type;
     };
-    typedef std::map<std::string, OpenGLAttribute> OpenGLAttributeMap;
+    typedef std::map<std::string, OpenGLAttribute> OpenGLAttributesMap;
 
     struct OpenGLUniform {
         GLuint index;
@@ -24,38 +24,34 @@ namespace ros {
         GLenum type;
         GLint location;
     };
-    typedef std::map<std::string, OpenGLUniform> OpenGLUniformMap;
+    typedef std::map<std::string, OpenGLUniform> OpenGLUniformsMap;
 
     class ROS_API OpenGLProgram: public Program {
         public:
             OpenGLProgram();
             virtual ~OpenGLProgram();
 
-            virtual bool init(const PropertyTree& config);
-            virtual void uninit();
-            virtual bool isValid() const;
+            virtual bool create();
+            virtual bool attachShader(ShaderPtr shader);
+            virtual bool link();
+            virtual void free();
+            virtual bool isLinked() const;
 
             virtual bool bind();
             virtual void unbind();
 
             virtual bool setUniform(const char* name, int value);
-            virtual bool setUniform(const char* name, const Vector4D& value);
-            virtual bool setUniform(const char* name, const Matrix4D& value);
+            virtual bool setUniform(const char* name, const glm::vec4& value);
+            virtual bool setUniform(const char* name, const glm::mat4& value);
 
             GLuint getHandle() const { return handle; }
-            const OpenGLAttributeMap& getAttributes() const { return attributes; }
-            const OpenGLUniformMap& getUniforms() const { return uniforms; }
-
-        protected:
-            virtual bool attachShader(ShaderPtr shader);
 
         private:
             GLuint handle;
-            OpenGLAttributeMap attributes;
-            OpenGLUniformMap uniforms;
+            OpenGLAttributesMap attributes;
+            OpenGLUniformsMap uniforms;
 
-            bool createHandle();
-            bool link();
+            void dumpInfoLog();
             bool retrieveAttributes();
             bool retrieveUniforms();
     };

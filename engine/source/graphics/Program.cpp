@@ -5,35 +5,15 @@
  * For conditions of distribution and use, see copyright details in the LICENSE file.
  */
 #include <application/Logger.h>
-#include <application/Application.h>
 #include <graphics/Program.h>
+#ifdef ROS_USING_OPENGL
+    #include "OpenGLProgram.h"
+#endif
 
-bool ros::Program::init(const PropertyTree &config) {
-    name = config.data();
-    if (name.empty()) {
-        ROS_ERROR(boost::format("Program name is missing"));
-        uninit();
-        return false;
-    }
-
-    if (!Application::getInstance()->getShaderManager().initShaders(config, shaders)) {
-        uninit();
-        return false;
-    }
-
-    return true;
+ros::ProgramPtr ros::Program::make() {
+    ProgramPtr program;
+#ifdef ROS_USING_OPENGL
+    program.reset(new OpenGLProgram());
+#endif
+    return program;
 }
-
-void ros::Program::uninit() {
-    name.clear();
-    shaders.clear();
-}
-
- bool ros::Program::attachShaders() {
-     for (ShaderList::iterator iter = shaders.begin(); iter != shaders.end(); ++iter) {
-         if (!attachShader(*iter)) {
-             return false;
-         }
-     }
-     return true;
- }
