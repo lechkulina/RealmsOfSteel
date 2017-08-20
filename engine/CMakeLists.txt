@@ -35,6 +35,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/math/EulerAngles.cpp
     source/graphics/Shader.cpp
     source/graphics/Program.cpp
+    source/graphics/VertexBuffer.cpp
     source/graphics/Texture.cpp
     source/graphics/Material.cpp
     source/graphics/Mesh.cpp
@@ -83,6 +84,7 @@ if (ROS_USE_OPENGL)
             source/graphics/OpenGLErrors.cpp
             source/graphics/OpenGLShader.cpp
             source/graphics/OpenGLProgram.cpp
+            source/graphics/OpenGLVertexBuffer.cpp
         )
     endif()
 endif()
