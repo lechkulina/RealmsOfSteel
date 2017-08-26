@@ -36,6 +36,7 @@ add_library(Engine ${ROS_LINKAGE_TYPE}
     source/graphics/Shader.cpp
     source/graphics/Program.cpp
     source/graphics/VertexBuffer.cpp
+    source/graphics/VertexArray.cpp
     source/graphics/Texture.cpp
     source/graphics/Material.cpp
     source/graphics/Mesh.cpp
@@ -85,6 +86,7 @@ if (ROS_USE_OPENGL)
             source/graphics/OpenGLShader.cpp
             source/graphics/OpenGLProgram.cpp
             source/graphics/OpenGLVertexBuffer.cpp
+            source/graphics/OpenGLVertexArray.cpp
         )
     endif()
 endif()

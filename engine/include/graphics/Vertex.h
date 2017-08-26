@@ -14,6 +14,12 @@
 #include <core/Environment.h>
 
 namespace ros {
+    enum VertexAttributeType {
+        VertexAttributeType_Vec2,
+        VertexAttributeType_Vec3,
+        VertexAttributeType_Vec4
+    };
+
     struct ROS_API Vertex {
         glm::vec4 color;
         glm::vec3 position;
