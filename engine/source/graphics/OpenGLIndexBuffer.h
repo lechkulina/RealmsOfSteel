@@ -19,7 +19,7 @@ namespace ros {
             virtual bool create();
             virtual bool bind();
             virtual void unbind();
-            virtual bool allocate(U32 indices, U32* data = ROS_NULL, IndexBufferUsage usage = IndexBufferUsage_StaticDraw);
+            virtual bool allocate(U32 indices, const U32* data = ROS_NULL, IndexBufferUsage usage = IndexBufferUsage_StaticDraw);
             virtual void free();
             virtual bool isAllocated() const;
             virtual U32 getIndices() const { return indices; }

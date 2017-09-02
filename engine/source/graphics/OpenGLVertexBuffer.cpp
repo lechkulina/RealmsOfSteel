@@ -78,7 +78,7 @@ void ros::OpenGLVertexBuffer::unbind() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-bool ros::OpenGLVertexBuffer::allocate(U32 size, void* data /*= ROS_NULL */, VertexBufferUsage usage /*= VertexBufferUsage_StaticDraw*/) {
+bool ros::OpenGLVertexBuffer::allocate(U32 size, const void* data /*= ROS_NULL */, VertexBufferUsage usage /*= VertexBufferUsage_StaticDraw*/) {
     GLenumOpt glUsage = VertexBufferUsage_toGLenum(usage);
     if (!glUsage) {
         ROS_ERROR(boost::format("Unknown vertex buffer usage %d") % usage);

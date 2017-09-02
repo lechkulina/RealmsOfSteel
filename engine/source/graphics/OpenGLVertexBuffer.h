@@ -19,7 +19,7 @@ namespace ros {
             virtual bool create();
             virtual bool bind();
             virtual void unbind();
-            virtual bool allocate(U32 size, void* data = ROS_NULL, VertexBufferUsage usage = VertexBufferUsage_StaticDraw);
+            virtual bool allocate(U32 size, const void* data = ROS_NULL, VertexBufferUsage usage = VertexBufferUsage_StaticDraw);
             virtual void free();
             virtual bool isAllocated() const;
             virtual U32 getSize() const { return size; }

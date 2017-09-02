@@ -78,7 +78,7 @@ void ros::OpenGLIndexBuffer::unbind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-bool ros::OpenGLIndexBuffer::allocate(U32 indices, U32* data /*= ROS_NULL */, IndexBufferUsage usage /*= IndexBufferUsage_StaticDraw*/) {
+bool ros::OpenGLIndexBuffer::allocate(U32 indices, const U32* data /*= ROS_NULL */, IndexBufferUsage usage /*= IndexBufferUsage_StaticDraw*/) {
     GLenumOpt glUsage = IndexBufferUsage_toGLenum(usage);
     if (!glUsage) {
         ROS_ERROR(boost::format("Unknown index buffer usage %d") % usage);
